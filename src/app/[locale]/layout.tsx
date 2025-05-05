@@ -1,17 +1,17 @@
-import {NextIntlClientProvider, hasLocale} from 'next-intl';
-import {notFound} from 'next/navigation';
-import {routing} from '@/i18n/routing';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
 import { Metadata } from 'next';
 
 
 // locale-specific metadata for better SEO performance
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
   try {
-    const metadata = await import(`../../metadata/${params.locale}.ts`);
+    const metadata = await import(`../../metadata/${params.locale}`);
     return metadata.default;
   } catch {
     // fallback to English if locale file not found
-    const metadata = await import("../../metadata/en.ts");
+    const metadata = await import("../../metadata/en");
     return metadata.default;
   }
 }

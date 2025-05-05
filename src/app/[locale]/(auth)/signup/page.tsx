@@ -1,7 +1,7 @@
 'use client'
 
 import AuthForm from '../AuthForm';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';;
 
 export default function SignupPage() {
 

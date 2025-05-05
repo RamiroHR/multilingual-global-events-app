@@ -1,6 +1,6 @@
 import React from 'react';
-import {useTranslations} from 'next-intl';
-import Link from 'next/link'
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 export default function AuthLayout({ children }: { children : React.ReactNode }) {
   const t = useTranslations('AuthLayout')
