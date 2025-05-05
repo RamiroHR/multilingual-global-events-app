@@ -1,12 +1,16 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function AuthLayout({ children }: { children : React.ReactNode }) {
   const t = useTranslations('AuthLayout')
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center from-slate-100 to-blue-200" >
+      <div className="absolute right-8 top-8">
+        <LanguageSwitcher />
+      </div>
       <header className="mb-5">
         <h1 className="text-center">
           <Link href='/'>
@@ -14,9 +18,6 @@ export default function AuthLayout({ children }: { children : React.ReactNode })
           </Link>
           <span className="block text-m text-gray-300 italic">{t('teasing')}</span>
         </h1>
-        {/* <p className="text-gray-600 text-center mt-4">
-          {t('cta')}
-        </p> */}
       </header>
       <main className="bg-gray-700 p-8 rounded-lg shadow-lg">
         {children}
