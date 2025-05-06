@@ -1,10 +1,13 @@
 'use client'
 
+import { useTranslations } from 'next-intl';
 import AuthForm from '../AuthForm';
 import { Link, useRouter } from '@/i18n/navigation';
 import axios from 'axios';
 
+
 export default function LoginPage() {
+  const t = useTranslations("LoginPage");
   const router = useRouter();
 
   const handleLogin = async ({ email, password } : { email: string, password: string}) => {
@@ -29,7 +32,7 @@ export default function LoginPage() {
         href="/signup"
         className="text-blue-500 hover:underline text-center block mt-4"
       >
-        Don't have an account? Sign Up
+        {t('cta')}
       </Link>
     </>
   );
