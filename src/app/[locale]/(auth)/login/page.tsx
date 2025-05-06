@@ -1,37 +1,43 @@
-'use client'
+"use client";
 
-import AuthForm from '../AuthForm';
-import { Link } from '@/i18n/navigation';;
+import { useTranslations } from "next-intl";
+import AuthForm from "../AuthForm";
+import { Link, useRouter } from "@/i18n/navigation";
+import axios from "axios";
 
 export default function LoginPage() {
+  const t = useTranslations("LoginPage");
+  const router = useRouter();
 
-  const handleLogin = async ({ email, password } : { email: string, password: string}) => {
-
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-      headers: { 'Content-type': 'application/json'},
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.error || 'Login Failed')
+  const handleLogin = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    try {
+      const res = await axios.post("/api/auth/login", { email, password });
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+      router.push("/dashboard");
+    } catch (error: unknown) {
+      let message = "Login Failed";
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        message = error.response.data.error;
+      }
+      throw new Error(message);
     }
+  };
 
-    // if res ok, then handle JWT token -- to-do
-  }
-
-  return(
+  return (
     <>
-      <AuthForm
-        type='login'
-        onSubmit={handleLogin}
-      />
+      <AuthForm type="login" onSubmit={handleLogin} />
       <Link
         href="/signup"
-        className="text-blue-500 hover:underline text-center block mt-4"
+        className="mt-4 block text-center text-blue-500 hover:underline"
       >
-        Don't have an account? Sign Up
+        {t("cta")}
       </Link>
     </>
   );

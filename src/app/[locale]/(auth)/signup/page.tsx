@@ -1,49 +1,48 @@
-'use client'
+"use client";
 
-import AuthForm from '../AuthForm';
-import { Link } from '@/i18n/navigation';;
+import { useTranslations } from "next-intl";
+import AuthForm from "../AuthForm";
+import { Link, useRouter } from "@/i18n/navigation";
+import axios from "axios";
 
 export default function SignupPage() {
+  const t = useTranslations("SignupPage");
+  const router = useRouter();
 
   const handleSignup = async ({
     email,
     password,
-    username
-  } : {
-    email: string,
-    password: string,
-    username?: string,
+    username,
+  }: {
+    email: string;
+    password: string;
+    username?: string;
   }) => {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, username }),
-      headers:{ 'Content-type' : 'application/json' },
-    });
-
-    if(!res.ok) {
-      const data = await res.json()
-      throw new Error( data.error || 'Signup Failed')
+    try {
+      await axios.post("/api/auth/signup", {
+        email,
+        password,
+        username,
+      });
+      router.push("/login");
+    } catch (error: unknown) {
+      let message = "Signup Failed";
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        message = error.response?.data?.error;
+      }
+      throw new Error(message);
     }
+  };
 
-    // TODO:
-    // if res ok:
-    // redirect to login or display a sucsess message
-
-  }
-
-  return(
+  return (
     <>
-      <AuthForm
-      type='signup'
-      onSubmit={handleSignup}
-      />
+      <AuthForm type="signup" onSubmit={handleSignup} />
       <Link
-        href='/login'
-        className="text-blue-500 hover:underline text-center block mt-4"
+        href="/login"
+        className="mt-4 block text-center text-blue-500 hover:underline"
       >
-        Go to login
+        {t("cta")}
       </Link>
     </>
-
   );
 }

@@ -8,5 +8,24 @@
     "app-name": "Join The Spot",
     "teasing": "The place to explore events worldwide",
     "cta": "Log in or sign up to continue"
+  },
+  "LoginPage": {
+    "title": "Log In",
+    "email":"Email",
+    "password":"Password",
+    "button":"Login",
+    "cta": "Don't have an account? Sign Up",
+    "error-message": "Login failed. Please try again.",
+    "success-message": "Login successful!"
+  },
+  "SignupPage": {
+    "title": "Sign Up",
+    "email":"Email",
+    "username":"Username",
+    "password":"Password",
+    "button":"Signup",
+    "cta": "Already have an account? Log In",
+    "error-message": "Signup failed. Please try again.",
+    "success-message": "Account created successfully!"
   }
 }
