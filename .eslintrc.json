@@ -9,8 +9,6 @@
     "next/core-web-vitals",                     // next recommended rules, best practices for performance and accesibility
     "next/typescript",
     "plugin:@typescript-eslint/recommended",    // typescript-specific rules
-    "plugin:react/recommended",                 // react-specific baest practices (no deprecated imports)
-    "plugin:react-hooks/recommended",           // ensure correct usage of react hooks
     "plugin:tailwindcss/recommended",           // lints for tailwind css class usage (e.g., detect typos, etc)
     "plugin:node/recommended",                  // node.js best practices
     "prettier"                                  // disable rules that conflict with prettier so formating is handled by prettier, not eslint.
@@ -18,7 +16,6 @@
   "plugins": [              // plugins required to enable the rules in 'extends' section and for custom rules.
     "@typescript-eslint",
     "react",
-    "react-hooks",
     "tailwindcss",
     "node",
     "prettier"
@@ -31,13 +28,18 @@
   },
   "rules": {
     "prettier/prettier": "warn",  // warns code not formatted according to Prettier
-    "react/react-in-jsx-scope": "off",  // Not needed for Next.js / React 17+ (no need to import React in every file)
+    "react/react-in-jsx-scope": "off",                // Not needed for Next.js / React 17+ (no need to import React in every file)
     "node/no-unsupported-features/es-syntax": "off",  // Allow ES modules in Node.js (import/export in backend)
-    "tailwindcss/no-custom-classname": "off"  // Allow custom Tailwind class names
+    "tailwindcss/no-custom-classname": "off",         // Allow custom Tailwind class names
+    "import/no-unresolved": "error",       //
+    "node/no-missing-import": "off"        // Don't flag as error TypeScript import aliases like '@/*'
   },
   "settings": {
     "react": {
       "version": "detect"         // automatically detect react version for linting
+    },
+    "import/resolver": {
+      "typescript": {}            // recognize '@/*' import statements
     }
   }
 }
