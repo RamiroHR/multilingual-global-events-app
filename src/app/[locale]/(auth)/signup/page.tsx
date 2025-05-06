@@ -1,9 +1,11 @@
 'use client'
 
 import AuthForm from '../AuthForm';
-import { Link } from '@/i18n/navigation';;
+import { Link, useRouter } from '@/i18n/navigation';
+import axios from 'axios';
 
 export default function SignupPage() {
+  const router = useRouter();
 
   const handleSignup = async ({
     email,
@@ -14,21 +16,13 @@ export default function SignupPage() {
     password: string,
     username?: string,
   }) => {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, username }),
-      headers:{ 'Content-type' : 'application/json' },
-    });
-
-    if(!res.ok) {
-      const data = await res.json()
-      throw new Error( data.error || 'Signup Failed')
+    try {
+      const res = await axios.post('/api/auth/signup', { email, password, username })
+      router.push('/login');
+    } catch(error: any) {
+      const message = error.response?.data?.error || 'Signup Failed'
+      throw new Error(message)
     }
-
-    // TODO:
-    // if res ok:
-    // redirect to login or display a sucsess message
-
   }
 
   return(

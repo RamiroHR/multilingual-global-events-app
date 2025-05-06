@@ -14,19 +14,19 @@ export default function AuthForm({type, onSubmit}: AuthFormProps) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setError('');
-  setSuccess('');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
 
-  try {
-    if (type === 'login') await onSubmit({email, password});
-    if (type === 'signup') await onSubmit({email, password, username});
-    setSuccess(`${type} submission succeeded`);
-  } catch (err: any) {
-    setError(err.message || `Something went wrong: ${type} submission failed`);
+    try {
+      if (type === 'login') await onSubmit({email, password});
+      if (type === 'signup') await onSubmit({email, password, username});
+      setSuccess(`${type} submission succeeded`);
+    } catch (err: any) {
+      setError(err.message || `Something went wrong: ${type} submission failed`);
+    }
   }
-}
 
   return(
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
