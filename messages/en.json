@@ -1,8 +1,12 @@
 {
   "HomePage": {
     "title": "Join The Spot",
-    "subtitle": "Join our comunity events",
-    "cta": "Start Exploring!",
-    "about": "Go to the about page"
+    "subtitle": "your worldwide events platform",
+    "cta": "Start Exploring!"
+  },
+  "AuthLayout": {
+    "app-name": "Join The Spot",
+    "teasing": "The place to explore events worldwide",
+    "cta": "Log in or sign up to continue"
   }
 }

@@ -1,8 +1,12 @@
 {
   "HomePage": {
     "title": "Join The Spot",
-    "subtitle": "Sumate a los eventos de nuestra comunidad",
-    "cta": "Veni à Explorar!",
-    "about": "Explorá nuestro sitio"
+    "subtitle": "Tu plataforma de eventos globales",
+    "cta": "Veni a Explorá!"
+  },
+  "AuthLayout": {
+    "app-name": "Join The Spot",
+    "teasing": "Eventos de todo el mundo, aquí!",
+    "cta": "Inicia sesión o registrate para continuar"
   }
 }
