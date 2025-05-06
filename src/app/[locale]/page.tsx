@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
+// Define locale-specific Home Page
 export default function HomePage() {
   const t = useTranslations('HomePage');
   return (

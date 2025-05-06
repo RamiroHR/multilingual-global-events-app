@@ -34,7 +34,7 @@ export default function LanguageSwitcher() {
       </button>
 
       {open && (
-        <ul className="absolute right-0 mt-2 bg-white border rounded shadow z=10">
+        <ul className="absolute right-0 mt-2 bg-gray-100 border rounded shadow z=10">
           {locales.map(locale =>(
             <li
               key={locale}

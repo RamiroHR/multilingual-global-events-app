@@ -1,16 +1,12 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function AuthLayout({ children }: { children : React.ReactNode }) {
   const t = useTranslations('AuthLayout')
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center from-slate-100 to-blue-200" >
-      <div className="absolute right-8 top-8">
-        <LanguageSwitcher />
-      </div>
       <header className="mb-5">
         <h1 className="text-center">
           <Link href='/'>
