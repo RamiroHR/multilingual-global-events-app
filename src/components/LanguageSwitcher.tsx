@@ -1,13 +1,12 @@
-'use client'
+"use client";
 
-import React from 'react';
-import { usePathname, useRouter } from '@/i18n/navigation';
-import { routing } from '@/i18n/routing';
-import { useParams } from 'next/navigation';
+import React from "react";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
+import { useParams } from "next/navigation";
 import { FaCheck } from "react-icons/fa6";
 import { IoLanguage } from "react-icons/io5";
-import { useState } from 'react';
-
+import { useState } from "react";
 
 export default function LanguageSwitcher() {
   const pathname = usePathname();
@@ -18,35 +17,30 @@ export default function LanguageSwitcher() {
 
   const [open, setOpen] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newLocale = e.target.value;
-    router.push(pathname, { locale: newLocale });
-  }
-
-  return(
+  return (
     <div className="relative inline-block">
       <button
-      type="button"
-      className="p-2 rounded text-gray-200 flex items-center"
-      onClick={() => setOpen((prev) => !prev)}
+        type="button"
+        className="flex items-center rounded p-2 text-gray-200"
+        onClick={() => setOpen((prev) => !prev)}
       >
-        <IoLanguage size={30}/>
+        <IoLanguage size={30} />
       </button>
 
       {open && (
-        <ul className="absolute right-0 mt-2 bg-gray-100 border rounded shadow z=10">
-          {locales.map(locale =>(
+        <ul className="z=10 absolute right-0 mt-2 rounded border bg-gray-100 shadow">
+          {locales.map((locale) => (
             <li
               key={locale}
-              className="flex items-center px-4 py-2 cursor-pointer hover:bg-blue-100"
+              className="flex cursor-pointer items-center px-4 py-2 hover:bg-blue-100"
               onClick={() => {
                 setOpen(false);
                 router.push(pathname, { locale });
               }}
             >
-              <span className="w-4 mr-2 flex justify-center">
+              <span className="mr-2 flex w-4 justify-center">
                 {locale === currentLocale ? (
-                  <FaCheck className="text-blue-500"/>
+                  <FaCheck className="text-blue-500" />
                 ) : (
                   <span />
                 )}

@@ -14,7 +14,8 @@ const geistMono = localFont({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const OG_IMAGE_URL = process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
+const OG_IMAGE_URL =
+  process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
 
 // Fallback metadata, including Open Graph & Twitter cards
 export const metadata: Metadata = {
@@ -43,7 +44,6 @@ export const metadata: Metadata = {
   },
 };
 
-
 // Root layout - define html structure and global variables
 export default function RootLayout({
   children,
@@ -52,7 +52,9 @@ export default function RootLayout({
 }>) {
   return (
     <html>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         {children}
       </body>
     </html>

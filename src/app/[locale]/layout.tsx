@@ -1,11 +1,15 @@
-import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
-import { Metadata } from 'next';
-import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import { Metadata } from "next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 // locale-specific metadata for better SEO performance
-export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { locale: string };
+}): Promise<Metadata> {
   try {
     const metadata = await import(`../../metadata/${params.locale}`);
     return metadata.default;
@@ -16,17 +20,16 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   }
 }
 
-
 // locale-specific layout - provide language context to children
 export default async function LocaleLayout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{locale: string}>;
+  params: Promise<{ locale: string }>;
 }) {
   // Ensure that the incoming `locale` is valid
-  const {locale} = await params;
+  const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
@@ -38,6 +41,5 @@ export default async function LocaleLayout({
       </div>
       {children}
     </NextIntlClientProvider>
-
   );
 }
