@@ -13,7 +13,7 @@ export async function findUserByEmail(email: string) {
 export async function createUser(
   email: string,
   username: string,
-  hashedPassword: string,
+  hashedPassword: string
 ) {
   const newUser = prisma.user.create({
     data: {
