@@ -7,6 +7,8 @@
 .yarn/install-state.gz
 
 # testing
+/tests/__output__/*
+!/tests/__output__/.gitkeep
 /coverage
 
 # next.js
@@ -27,6 +29,7 @@ yarn-error.log*
 
 # local env files
 .env
+.env.test
 .env*.local
 
 # vercel
