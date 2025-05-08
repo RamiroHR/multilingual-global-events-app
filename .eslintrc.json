@@ -33,7 +33,6 @@
       "warn",
       {
         // warns code not formatted according to Prettier
-        "endOfLine": "lf",
         "tabWidth": 2,
         "useTabs": false,
         "semi": true,
