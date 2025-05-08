@@ -3,7 +3,6 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { findUserByEmail } from "@/lib/user";
 import dotenv from "dotenv";
-import { mock } from "node:test";
 dotenv.config({ path: "./.env.test" });
 
 // helper function to simulate the request body to send to the endpoint
@@ -16,6 +15,7 @@ type SignupRequestBody = {
 const createMockRequest = (body: SignupRequestBody) =>
   ({ json: async () => body }) as unknown as NextRequest;
 
+// test suite
 describe("POST /api/auth/signup", () => {
   // Initial & Final Cleanup
   beforeEach(async () => {
