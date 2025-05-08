@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Create JWT
-  const token = generateToken({ userId: user.id, email: user.email });
+  const token = await generateToken({ userId: user.id, email: user.email });
 
   return NextResponse.json({ token });
 }
