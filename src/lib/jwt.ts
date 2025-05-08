@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { config } from "@/config";
 
-const SECRET_KEY = process.env.JWT_SECRET;
+// const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = config.jwtSecret;
 
 // hash user password
 export async function hashPassword(password: string) {
