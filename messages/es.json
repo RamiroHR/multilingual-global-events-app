@@ -1,0 +1,31 @@
+{
+  "HomePage": {
+    "title": "Join The Spot",
+    "subtitle": "Tu plataforma de eventos globales",
+    "cta": "Veni a Explorá!"
+  },
+  "AuthLayout": {
+    "app-name": "Join The Spot",
+    "teasing": "Eventos de todo el mundo, aquí!",
+    "cta": "Inicia sesión o registrate para continuar"
+  },
+  "LoginPage": {
+    "title": "Iniciar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "button": "Acceder",
+    "cta": "¿No tienes una cuenta? Regístrate",
+    "error-message": "Algo falló. No se pudo iniciar sesión",
+    "success-message": "Inicio de sesión exitoso."
+  },
+  "SignupPage": {
+    "title": "Crear cuenta",
+    "email": "Correo Electrónico",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "button": "Registrar",
+    "cta": "¿Ya tienes cuenta? Inicia sesión",
+    "error-message": "Error al registrarse. Inténtalo de nuevo",
+    "success-message": "¡Cuenta creada con éxito!"
+  }
+}
