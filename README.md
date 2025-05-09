@@ -15,21 +15,28 @@ A modern web application built with Next.js for managing and displaying global e
 
 ### Application Screenshots
 #### Home Page
-<div align="center" style="display: flex; flex-direction: column; align-items: center;">
+<div align="center">
   <img src="./public/screenshots/home.png" alt="Login Page" width="420"/>
+  <br/>
   <em>Landing Page</em>
 </div>
 
 #### Authentication
-<div align="center" style="display: flex; justify-content: center; gap: 20px;">
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <img src="./public/screenshots/login.png" alt="Login Page" width="200"/>
-    <em>Login Page</em>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <img src="./public/screenshots/signup.png" alt="Signup Page" width="200"/>
-    <em>Signup Page</em>
-  </div>
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="./public/screenshots/login.png" alt="Login Page" width="200"/>
+        <br/>
+        <em>Login Page</em>
+      </td>
+      <td align="center">
+        <img src="./public/screenshots/signup.png" alt="Signup Page" width="200"/>
+        <br/>
+        <em>Signup Page</em>
+      </td>
+    </tr>
+  </table>
 </div>
 
 ## Tech Stack
