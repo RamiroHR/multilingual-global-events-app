@@ -33,6 +33,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       JWT_SECRET: my-gituhb-actions-jwt-secret-key
+      NODE_ENV: test
 
     steps:
       # clone the repo into the github actions VM
@@ -73,6 +74,8 @@ jobs:
         # executes unit tests
       - name: Run Unit Tests
         run: npm run test:coverage
+        env:
+          NODE_ENV: test
 
         # upload results
       - name: Upload test results
