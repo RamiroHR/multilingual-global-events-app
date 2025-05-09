@@ -3,7 +3,17 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { findUserByEmail } from "@/lib/user";
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env.test" });
+import path from "path";
+
+const testEnvPath = path.resolve(process.cwd(), ".env.test");
+console.log("Test file loading env from:", testEnvPath);
+const result = dotenv.config({ path: testEnvPath, override: true });
+
+if (result.error) {
+  console.error("Error loading .env.test in test file:", result.error);
+} else {
+  console.log("Successfully loaded .env.test in test file");
+}
 
 // helper function to simulate the request body to send to the endpoint
 type SignupRequestBody = {

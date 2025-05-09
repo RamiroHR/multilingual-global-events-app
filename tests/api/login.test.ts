@@ -2,9 +2,18 @@ import { POST as signupPOST } from "@/app/api/auth/signup/route";
 import { POST as loginPOST } from "@/app/api/auth/login/route";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { findUserByEmail } from "@/lib/user";
 import dotenv from "dotenv";
-dotenv.config({ path: "./.env.test" });
+import path from "path";
+
+const testEnvPath = path.resolve(process.cwd(), ".env.test");
+console.log("Test file loading env from:", testEnvPath);
+const result = dotenv.config({ path: testEnvPath, override: true });
+
+if (result.error) {
+  console.error("Error loading .env.test in test file:", result.error);
+} else {
+  console.log("Successfully loaded .env.test in test file");
+}
 
 // Types for request Bodies
 type SignupRequestBody = {
@@ -117,6 +126,4 @@ describe("POST /api/auth/login", () => {
       expect(data.error).toBe("Invalid credentials");
     }
   });
-
-  it("should correctly compare ");
 });
