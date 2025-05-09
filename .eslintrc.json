@@ -1,45 +1,57 @@
 {
-  "root": true,       // where to find the eslint config file
-  "env": {                 // envs for fullstack project:
-    "browser": true,       // enabling browser global variables
-    "es2021": true,        // enabling ES2021 globals and syntax
-    "node": true           // enabling node.js globals and node scoping
+  "root": true, // where to find the eslint config file
+  "env": {
+    // envs for fullstack project:
+    "browser": true, // enabling browser global variables
+    "es2021": true, // enabling ES2021 globals and syntax
+    "node": true // enabling node.js globals and node scoping
   },
   "extends": [
-    "next/core-web-vitals",                     // next recommended rules, best practices for performance and accesibility
+    "next/core-web-vitals", // next recommended rules, best practices for performance and accesibility
     "next/typescript",
-    "plugin:@typescript-eslint/recommended",    // typescript-specific rules
-    "plugin:tailwindcss/recommended",           // lints for tailwind css class usage (e.g., detect typos, etc)
-    "plugin:node/recommended",                  // node.js best practices
-    "prettier"                                  // disable rules that conflict with prettier so formating is handled by prettier, not eslint.
+    "plugin:@typescript-eslint/recommended", // typescript-specific rules
+    "plugin:tailwindcss/recommended", // lints for tailwind css class usage (e.g., detect typos, etc)
+    "plugin:node/recommended", // node.js best practices
+    "prettier" // disable rules that conflict with prettier so formating is handled by prettier, not eslint.
   ],
-  "plugins": [              // plugins required to enable the rules in 'extends' section and for custom rules.
+  "plugins": [
+    // plugins required to enable the rules in 'extends' section and for custom rules.
     "@typescript-eslint",
     "react",
     "tailwindcss",
     "node",
     "prettier"
   ],
-  "parser": "@typescript-eslint/parser",   // use TypeScript parse so Eslint can understand TypeScript syntax
+  "parser": "@typescript-eslint/parser", // use TypeScript parse so Eslint can understand TypeScript syntax
   "parserOptions": {
-    "ecmaVersion": 2021,          // allows modern javascript features
-    "sourceType": "module",       // enabes ES modules syntax (import/export)
-    "project": "./tsconfig.json"  // points to TypeScript config for type-aware linting
+    "ecmaVersion": 2021, // allows modern javascript features
+    "sourceType": "module", // enabes ES modules syntax (import/export)
+    "project": "./tsconfig.json" // points to TypeScript config for type-aware linting
   },
   "rules": {
-    "prettier/prettier": "warn",  // warns code not formatted according to Prettier
-    "react/react-in-jsx-scope": "off",                // Not needed for Next.js / React 17+ (no need to import React in every file)
-    "node/no-unsupported-features/es-syntax": "off",  // Allow ES modules in Node.js (import/export in backend)
-    "tailwindcss/no-custom-classname": "off",         // Allow custom Tailwind class names
-    "import/no-unresolved": "error",       //
-    "node/no-missing-import": "off"        // Don't flag as error TypeScript import aliases like '@/*'
+    "prettier/prettier": [
+      "warn",
+      {
+        // warns code not formatted according to Prettier
+        "tabWidth": 2,
+        "useTabs": false,
+        "semi": true,
+        "singleQuote": false,
+        "trailingComma": "es5"
+      }
+    ],
+    "react/react-in-jsx-scope": "off", // Not needed for Next.js / React 17+ (no need to import React in every file)
+    "node/no-unsupported-features/es-syntax": "off", // Allow ES modules in Node.js (import/export in backend)
+    "tailwindcss/no-custom-classname": "off", // Allow custom Tailwind class names
+    "import/no-unresolved": "error", //
+    "node/no-missing-import": "off" // Don't flag as error TypeScript import aliases like '@/*'
   },
   "settings": {
     "react": {
-      "version": "detect"         // automatically detect react version for linting
+      "version": "detect" // automatically detect react version for linting
     },
     "import/resolver": {
-      "typescript": {}            // recognize '@/*' import statements
+      "typescript": {} // recognize '@/*' import statements
     }
   }
 }

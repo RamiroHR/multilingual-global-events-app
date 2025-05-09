@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (existingUser) {
     return NextResponse.json(
       { error: "Email already in use" },
-      { status: 409 },
+      { status: 409 }
     );
   }
 

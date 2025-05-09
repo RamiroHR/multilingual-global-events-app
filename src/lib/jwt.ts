@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { config } from "@/config";
 
-const SECRET_KEY = process.env.JWT_SECRET;
+// const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = config.jwtSecret;
 
 // hash user password
 export async function hashPassword(password: string) {
@@ -11,7 +13,7 @@ export async function hashPassword(password: string) {
 // compare raw password with hash version
 export async function comparePassword(
   password: string,
-  hashedPassword: string,
+  hashedPassword: string
 ) {
   return bcrypt.compare(password, hashedPassword);
 }

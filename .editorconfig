@@ -12,7 +12,7 @@ insert_final_newline = true
 
 
 # Special settings for JavaScript, TypeScript, and JSON, Typescript
-[*.{js,jsx,json,mjs,ts,tsx,prisma}]
+[*.{js,jsx,json,mjs,ts,tsx,prisma,css}]
 indent_size = 2
 
 # Special settings for Markdown (keep trailing spaces for formatting)
