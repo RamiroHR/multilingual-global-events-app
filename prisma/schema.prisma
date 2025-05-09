@@ -17,7 +17,7 @@ model User {
   id         Int        @id @default(autoincrement())
   email      String     @unique
   username   String     @unique
-  password   Password?  // relation field only (required as 'optional' this table is pointed by the Password, not the other way around)
+  password   Password?  @relation("UserToPassword") // required as 'optional' for now
   }
 
 model Password {
@@ -26,5 +26,5 @@ model Password {
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt()
   userId     Int        @unique       // Foreign key, unique to enforce 1:1 relation
-  user       User       @relation(fields: [userId], references: [id])   // relation pointing to User table
+  user       User       @relation("UserToPassword", fields: [userId], references: [id], onDelete: Cascade)
 }
