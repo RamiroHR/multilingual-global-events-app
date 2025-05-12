@@ -1,39 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/jwt";
 import { createEvent } from "@/lib/events";
-
-interface DecodedToken {
-  userId: string;
-  email: string;
-  iat: number;
-  exp: number;
-}
+import { verifyAuth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    // Get the authorization header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer")) {
+    const authResult = await verifyAuth(req);
+    if (!authResult.success) {
       return NextResponse.json(
-        { error: "Unauthorized - No token provided" },
-        { status: 401 }
+        { error: authResult.error },
+        { status: authResult.status }
       );
     }
 
-    // get token
-    const token = authHeader.split(" ")[1];
-
-    // verify token
-    const decoded = await verifyToken(token);
-    if (!decoded || typeof decoded === "string") {
-      return NextResponse.json(
-        { error: "Unauthorized - Invalid token" },
-        { status: 401 }
-      );
-    }
-
-    // get verified user
-    const userData = decoded as DecodedToken;
+    const userData = authResult.userData!;
 
     // get event information from request body
     const { title, description, date, location, maxCapacity } =
