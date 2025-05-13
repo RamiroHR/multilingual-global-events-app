@@ -1,23 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEvent } from "@/lib/events/index";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { createEventSchema } from "@/lib/validations/schemas";
+import { validateRequest } from "@/lib/validations/validate";
 
 const createEventHandler: RouteHandler = async (
   req: NextRequest,
   userData: DecodedToken
 ) => {
   try {
-    // get event information from request body
-    const { title, description, date, location, maxCapacity } =
-      await req.json();
+    // Validate request body
+    const validationResult = await validateRequest(createEventSchema)(req);
+    if (validationResult instanceof NextResponse) return validationResult;
 
-    // Validate required fields
-    if (!title || !description || !date || !location || !maxCapacity) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+    // get event information from validated request
+    const { title, description, date, location, isOnline, maxCapacity } =
+      validationResult.body;
 
     // Create the event
     const event = await createEvent({
@@ -25,6 +23,7 @@ const createEventHandler: RouteHandler = async (
       description,
       date: new Date(date),
       location,
+      isOnline,
       maxCapacity,
       creatorId: Number(userData.userId),
     });

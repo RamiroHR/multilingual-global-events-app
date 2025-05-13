@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateParticipationStatus } from "@/lib/participation";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { updateParticipationStatusSchema } from "@/lib/validations/schemas";
+import { validateRequest } from "@/lib/validations/validate";
 
 type UpdateParticipationStatusParams = {
   participationId: string;
@@ -18,16 +20,13 @@ const updateParticipationStatusHandler: RouteHandler<
       );
     }
 
-    // Get the new status from the request body
-    const { status } = await req.json();
+    // Validate request body and get the parsed body
+    const validationResult = await validateRequest(
+      updateParticipationStatusSchema
+    )(req);
+    if (validationResult instanceof NextResponse) return validationResult;
 
-    if (!status || !["APPROVED", "REJECTED"].includes(status)) {
-      return NextResponse.json(
-        { error: "Valid status (APPROVED or REJECTED) is required" },
-        { status: 400 }
-      );
-    }
-
+    const { status } = validationResult.body;
     const participationId = params.participationId;
     const eventCreatorId = userData.userId;
 
