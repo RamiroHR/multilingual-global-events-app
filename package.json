@@ -23,7 +23,8 @@
     "next-intl": "^4.1.0",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
