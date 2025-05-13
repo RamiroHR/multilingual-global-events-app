@@ -44,7 +44,7 @@ describe("POST /api/auth/signup", () => {
     const mockUserData = {
       email: "test@example.com",
       username: "testuser",
-      password: "pasword123",
+      password: "Pasword123",
     };
 
     // test logic
@@ -70,8 +70,8 @@ describe("POST /api/auth/signup", () => {
     // mosck data
     const testCases = [
       { email: "test@example.com", username: "testuser" },
-      { email: "test@example.com", password: "password123" },
-      { username: "testuser", password: "password123" },
+      { email: "test@example.com", password: "Password123" },
+      { username: "testuser", password: "Password123" },
       {}, // missing all fields
     ];
 
@@ -83,7 +83,7 @@ describe("POST /api/auth/signup", () => {
 
       // response assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Missing fields");
+      expect(data.error).toBe("Validation failed");
     }
   });
 
@@ -92,7 +92,7 @@ describe("POST /api/auth/signup", () => {
     const mockUserData = {
       email: "test@example.com",
       username: "testuser",
-      password: "pasword123",
+      password: "Pasword123",
     };
 
     // test logic
@@ -116,7 +116,7 @@ describe("POST /api/auth/signup", () => {
     const mockUserData = {
       email: "test@example.com",
       username: "testuser",
-      password: "password123",
+      password: "Password123",
     };
 
     // test logic
