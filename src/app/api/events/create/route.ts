@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createEvent } from "@/lib/events";
-import { verifyAuth } from "@/lib/auth";
+import { createEvent } from "@/lib/events/index";
+import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 
-export async function POST(req: NextRequest) {
+const createEventHandler: RouteHandler = async (
+  req: NextRequest,
+  userData: DecodedToken
+) => {
   try {
-    const authResult = await verifyAuth(req);
-    if (!authResult.success) {
-      return NextResponse.json(
-        { error: authResult.error },
-        { status: authResult.status }
-      );
-    }
-
-    const userData = authResult.userData!;
-
     // get event information from request body
     const { title, description, date, location, maxCapacity } =
       await req.json();
@@ -38,10 +31,12 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(event);
   } catch (error) {
-    console.error("Authorization error:", error);
+    console.error("Error Creating event:", error);
     return NextResponse.json(
-      { error: "Authetication failed" },
-      { status: 401 }
+      { error: "Internal server error" },
+      { status: 500 }
     );
   }
-}
+};
+
+export const POST = withAuth(createEventHandler);
