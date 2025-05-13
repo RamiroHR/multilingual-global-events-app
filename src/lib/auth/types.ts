@@ -7,8 +7,8 @@ export interface DecodedToken {
   exp: number;
 }
 
-export type RouteHandler = (
+export type RouteHandler<TParams = undefined> = (
   req: NextRequest,
   userData: DecodedToken,
-  params?: { eventId: string }
+  params?: TParams
 ) => Promise<NextResponse>;
