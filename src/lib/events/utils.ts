@@ -124,3 +124,35 @@ export async function applyToEvent(eventId: string, userId: string) {
 
   return application;
 }
+
+export async function getEvent(eventId: string) {
+  const event = await prisma.event.findUnique({
+    where: { id: Number(eventId) },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
+      participants: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  return event;
+}
