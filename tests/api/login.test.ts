@@ -53,7 +53,7 @@ describe("POST /api/auth/login", () => {
     const mockUserData = {
       email: "login-test@example.com",
       username: "logintestuser",
-      password: "password123",
+      password: "Password123",
     };
     const req = createMockSignupRequest(mockUserData);
     await signupPOST(req);
@@ -102,7 +102,7 @@ describe("POST /api/auth/login", () => {
 
       // assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Missing fields");
+      expect(data.error).toBe("Validation failed");
     }
   });
 
