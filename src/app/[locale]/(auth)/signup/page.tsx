@@ -31,7 +31,7 @@ export default function SignupPage() {
       const res = await axios.post("/api/auth/login", { email, password });
 
       // update login app state
-      login({ email, username });
+      login({ email: res.data.email, username: res.data.username });
 
       // store jwt token in local storage
       const token = res.data.token;
