@@ -4,10 +4,12 @@ import { useTranslations } from "next-intl";
 import AuthForm from "../AuthForm";
 import { Link, useRouter } from "@/i18n/navigation";
 import axios from "axios";
+import { useAuthStore } from "@/store/authStore";
 
 export default function SignupPage() {
   const t = useTranslations("SignupPage");
   const router = useRouter();
+  const login = useAuthStore((state) => state.login);
 
   const handleSignup = async ({
     email,
@@ -24,7 +26,19 @@ export default function SignupPage() {
         password,
         username,
       });
-      router.push("/login");
+
+      // automatically login new user
+      const res = await axios.post("/api/auth/login", { email, password });
+
+      // update login app state
+      login({ email, username });
+
+      // store jwt token in local storage
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+
+      // redirect
+      router.push("/dashboard");
     } catch (error: unknown) {
       let message = "Signup Failed";
       if (axios.isAxiosError(error) && error.response?.data?.error) {
