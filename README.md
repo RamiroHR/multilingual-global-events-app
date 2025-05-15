@@ -259,6 +259,26 @@ Time:        4.608 s, estimated 5 s
    npm run test:coverage
    ```
 
+## Mock Data
+
+This directory is for development-only mock data. Do not commit actual mock data files to the repository.
+
+### Usage
+
+1. Copy `events.template.ts` to `events.ts`
+2. Add your mock data to `events.ts` following the example
+3. After creating the user mock data, change the importing in `events.ts` to: `import { mockUsers } from "@/mocks/users";`
+4. Use the mock data in your development environment. Importing it in your page.tsx as:
+   ```bash
+   import { getAllMockEvents, getMockEventsByType } from "@/mocks/events";
+   ```
+5. Do not commit `events.ts` to the repository
+
+### Available Templates
+
+- `events.template.ts`: Template for event mock data
+- `users.template.ts`: Template for user mock data
+
 ## License
 
 This project is licensed under the terms of the license included in the repository.
