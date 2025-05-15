@@ -44,6 +44,39 @@ export async function updateEvent(
   return updatedEvent;
 }
 
+export async function getUserEvents(userId: string) {
+  const events = await prisma.event.findMany({
+    where: {
+      creatorId: Number(userId),
+    },
+    orderBy: {
+      date: "asc",
+    },
+    include: {
+      creator: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+        },
+      },
+      participants: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return events;
+}
+
 export async function getUpcomingEvents(limit: number = 12) {
   const currentDate = new Date();
 
@@ -63,6 +96,17 @@ export async function getUpcomingEvents(limit: number = 12) {
           id: true,
           username: true,
           email: true,
+        },
+      },
+      participants: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
         },
       },
     },
