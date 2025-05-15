@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { HomeIcon, CompassIcon, CalendarIcon, UserIcon } from "lucide-react";
 
@@ -23,39 +24,51 @@ export default function Sidebar() {
   return (
     <div className="flex h-full w-40 flex-col border-r border-space-300 bg-space-200">
       <div className="flex h-16 items-center border-b border-space-300 px-4">
-        <h2 className="text-lg font-semibold text-white-100">Dashboard</h2>
+        <h2 className="text-lg font-semibold text-blue-600">Join The Spot</h2>
       </div>
-      <nav className="flex-1 space-y-1 px-2 py-4">
-        {navigation.map((item) => {
-          const isActive = pathname.endsWith(item.href);
-          console.log(
-            `Path: ${pathname}, Item: ${item.href}, IsActive: ${isActive}`
-          );
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`
-                flex items-center rounded-md p-2 text-sm font-medium
-                ${
-                  isActive
-                    ? "bg-cosmic-500 text-white-100"
-                    : "text-lunar-300 hover:bg-space-100 hover:text-white-100"
-                }
-                transition-colors duration-200
-              `}
-            >
-              <item.icon
+      <div className="relative flex-1">
+        <nav className="absolute inset-0 space-y-1 px-2 py-4">
+          {navigation.map((item) => {
+            const isActive = pathname.endsWith(item.href);
+            console.log(
+              `Path: ${pathname}, Item: ${item.href}, IsActive: ${isActive}`
+            );
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
                 className={`
-                  mr-3 size-5
-                  ${isActive ? "text-terracotta-800" : "text-lunar-400"}
+                  flex items-center rounded-md p-2 text-sm font-medium
+                  ${
+                    isActive
+                      ? "bg-cosmic-500 text-white-100"
+                      : "text-lunar-300 hover:bg-space-100 hover:text-white-100"
+                  }
+                  transition-colors duration-200
                 `}
-              />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+              >
+                <item.icon
+                  className={`
+                    mr-3 size-5
+                    ${isActive ? "text-terracotta-800" : "text-lunar-400"}
+                  `}
+                />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="flex h-full items-center justify-center">
+          <Image
+            className="mt-4 h-auto w-full max-w-[200px]"
+            src="/astronaut.png"
+            width={200}
+            height={200}
+            alt="astronaut"
+            sizes="(max-width: 100px) 100vw, 200px"
+          />
+        </div>
+      </div>
     </div>
   );
 }
