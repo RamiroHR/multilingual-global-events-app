@@ -1,38 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Event, User } from "@prisma/client";
-////////////////////////////////////////////////////////////////
-// Use mock data only in development
-import { getMockEventsByCreator } from "@/mocks/events";
-////////////////////////////////////////////////////////////////
+import axios from "axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 
 export default function MyEventsPage() {
-  const [events, setEvents] = useState<
-    (Event & {
-      creator: User;
-      participants: {
-        id: number;
-        status: string;
-        user: User;
-      }[];
-    })[]
-  >([]);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    ////////////////////////////////////////////////////////////////
-    // For now, we'll use a hardcoded creator ID (1), with Mock data
-    const userEvents = getMockEventsByCreator(1);
-    ////////////////////////////////////////////////////////////////
+    const fetchEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/events/my-events", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setEvents(response.data);
+        setError("");
+      } catch (err) {
+        setError("Failed to load events. Please try again later.");
+        console.error("Error fetching events:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Sort events by date (upcoming first)
-    const sortedEvents = userEvents.sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    setEvents(sortedEvents);
-    setLoading(false);
+    fetchEvents();
   }, []);
 
   const handleEdit = (eventId: number) => {
@@ -54,6 +50,14 @@ export default function MyEventsPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="size-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-terracotta-500">{error}</div>
       </div>
     );
   }

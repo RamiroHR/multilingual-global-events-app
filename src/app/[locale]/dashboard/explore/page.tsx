@@ -1,15 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EventList } from "@/components/events/EventList";
-import { getAllMockEvents, getMockEventsByType } from "@/mocks/events";
+import axios from "axios";
+import { Event, User } from "@prisma/client";
+
+type EventWithRelations = Event & {
+  creator: User;
+  participants: {
+    id: number;
+    status: string;
+    user: User;
+  }[];
+};
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const allEvents = getAllMockEvents();
+  const [events, setEvents] = useState<EventWithRelations[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axios.get("/api/events/upcoming", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setEvents(response.data);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
   const displayedEvents = showOnlineOnly
-    ? getMockEventsByType(true)
-    : allEvents;
+    ? events.filter((event) => event.isOnline)
+    : events;
 
   return (
     <div className="min-h-screen rounded bg-space-300">
@@ -42,8 +76,24 @@ export default function ExplorationPage() {
         </div>
       </div>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex justify-center py-8">
+          <div className="size-8 animate-spin rounded-full border-b-2 border-cosmic-500"></div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="container mx-auto p-4">
+          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">
+            {error}
+          </div>
+        </div>
+      )}
+
       {/* Events List */}
-      <EventList events={displayedEvents} />
+      {!loading && !error && <EventList events={displayedEvents} />}
     </div>
   );
 }
