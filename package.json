@@ -10,6 +10,7 @@
     "lint:check": "next lint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "seed": "tsx prisma/seed.ts",
     "test": "cross-env NODE_ENV=test jest",
     "test:coverage": "cross-env NODE_ENV=test jest --coverage"
   },
@@ -52,6 +53,7 @@
     "prettier": "^3.5.3",
     "prisma": "^6.7.0",
     "ts-jest": "^29.3.2",
+    "tsx": "^4.19.4",
     "typescript": "^5"
   }
 }

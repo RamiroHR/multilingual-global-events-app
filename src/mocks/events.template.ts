@@ -52,13 +52,13 @@ export const mockEvents: (Event & {
 })[] = [
   {
     id: 1,
-    title: "Tech Conference 2024",
+    title: "Eiffel Tower Sunset Tour",
     description:
-      "Join us for the biggest tech conference of the year! Learn about the latest trends in AI, Web3, and Cloud Computing.",
-    date: new Date("2024-06-15T09:00:00Z"),
-    location: "Convention Center, San Francisco",
+      "Experience the magic of Paris from the iconic Eiffel Tower during golden hour. Includes skip-the-line access and a guided tour of the tower's history.",
+    date: new Date("2024-06-15T18:00:00Z"),
+    location: "Eiffel Tower, Paris",
     isOnline: false,
-    maxCapacity: 500,
+    maxCapacity: 20,
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2024-01-01T00:00:00Z"),
     creatorId: 1,

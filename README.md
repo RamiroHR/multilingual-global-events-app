@@ -263,7 +263,7 @@ Time:        4.608 s, estimated 5 s
 
 This directory is for development-only mock data. Do not commit actual mock data files to the repository.
 
-### Usage
+#### Usage
 
 1. Copy `events.template.ts` to `events.ts`
 2. Add your mock data to `events.ts` following the example
@@ -274,10 +274,24 @@ This directory is for development-only mock data. Do not commit actual mock data
    ```
 5. Do not commit `events.ts` to the repository
 
-### Available Templates
+#### Available Templates
 
 - `events.template.ts`: Template for event mock data
 - `users.template.ts`: Template for user mock data
+
+### Database Seeding
+
+Alternatively the mock data can be used to seed a fresh database. The seed script `prisma/seed.ts` will:
+
+- Signup the mock users (all with password: "Password123") from the file `src/mocks/user.ts`
+- Create the mock events (mix of online and offline events) from the file `src/mocks/events.ts`
+- Set up event participants and relationships as describen in the file `src/mocks/events.ts`
+
+To seed the database with mock data execute:
+
+```bash
+npm run seed
+```
 
 ## License
 
