@@ -91,7 +91,7 @@ export default function MyEventsPage() {
 
       {showCreateForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-          <div className="max-h-[90vh] w-[70%] max-w-4xl overflow-y-auto rounded-lg bg-lunar-900 shadow-xl">
+          <div className="max-h-[90vh] w-[70%] max-w-4xl overflow-y-auto rounded-lg bg-space-200 shadow-xl">
             <CreateEventForm
               onSuccess={handleCreateSuccess}
               onCancel={() => setShowCreateForm(false)}
