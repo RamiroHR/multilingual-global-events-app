@@ -3,31 +3,36 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
+import { CreateEventForm } from "@/components/events/CreateEventForm";
+import { getUserEvents } from "@/lib/events/utils";
 
 export default function MyEventsPage() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<
+    Awaited<ReturnType<typeof getUserEvents>> // define the exact type as of what getUserEvents returns
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get("/api/events/my-events", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setEvents(response.data);
+      setError("");
+    } catch (err) {
+      setError("Failed to load events. Please try again later.");
+      console.error("Error fetching events:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get("/api/events/my-events", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setEvents(response.data);
-        setError("");
-      } catch (err) {
-        setError("Failed to load events. Please try again later.");
-        console.error("Error fetching events:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEvents();
   }, []);
 
@@ -44,6 +49,11 @@ export default function MyEventsPage() {
   const handleManageSubscriptions = (eventId: number) => {
     // TODO: Implement subscription management
     console.log("Manage subscriptions:", eventId);
+  };
+
+  const handleCreateSuccess = () => {
+    setShowCreateForm(false);
+    fetchEvents(); // Refresh the events list
   };
 
   if (loading) {
@@ -71,10 +81,25 @@ export default function MyEventsPage() {
         <p className="mb-6 text-lunar-200">
           Create and manage events that your are hosting!
         </p>
-        <button className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600">
+        <button
+          onClick={() => setShowCreateForm(true)}
+          className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+        >
           Create New Event
         </button>
       </div>
+
+      {showCreateForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+          <div className="max-h-[90vh] w-[70%] max-w-4xl overflow-y-auto rounded-lg bg-lunar-900 shadow-xl">
+            <CreateEventForm
+              onSuccess={handleCreateSuccess}
+              onCancel={() => setShowCreateForm(false)}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="space-y-4">
         {events.map((event) => (
           <EventOwnerCard

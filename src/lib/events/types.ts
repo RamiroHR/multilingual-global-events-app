@@ -3,7 +3,7 @@ export interface CreateEventInput {
   description: string;
   date: Date;
   location: string;
-  isOnline?: string;
+  isOnline?: boolean;
   maxCapacity: number;
   creatorId: number;
 }
