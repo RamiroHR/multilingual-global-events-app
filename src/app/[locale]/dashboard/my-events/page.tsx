@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { getUserEvents } from "@/lib/events/utils";
 
 export default function MyEventsPage() {
+  const router = useRouter();
+
   const [events, setEvents] = useState<
     Awaited<ReturnType<typeof getUserEvents>> // define the exact type as of what getUserEvents returns
   >([]);
@@ -38,7 +41,7 @@ export default function MyEventsPage() {
 
   const handleEdit = (eventId: number) => {
     // TODO: Implement edit functionality
-    console.log("Edit event:", eventId);
+    router.push(`/dashboard/my-events/${eventId}/edit`);
   };
 
   const handleCancel = (eventId: number) => {
