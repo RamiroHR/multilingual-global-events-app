@@ -1,6 +1,7 @@
 import { Event, User } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users, Globe } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface EventCardProps {
   event: Event & {
@@ -14,6 +15,8 @@ interface EventCardProps {
 }
 
 export const EventCard = ({ event }: EventCardProps) => {
+  const router = useRouter();
+
   return (
     <div className="overflow-hidden rounded-lg border border-lunar-200 bg-gray-50 shadow-md transition-shadow duration-300 hover:shadow-lg">
       <div className="flex h-full flex-col p-6">
@@ -64,7 +67,10 @@ export const EventCard = ({ event }: EventCardProps) => {
 
         {/* Action Buttons */}
         <div className="mt-6 flex items-center justify-between">
-          <button className="rounded-md bg-cosmic-500 px-4 py-2 text-white-50 transition-colors hover:bg-cosmic-600">
+          <button
+            onClick={() => router.push(`/dashboard/explore/${event.id}`)}
+            className="rounded-md bg-cosmic-500 px-4 py-2 text-white-50 transition-colors hover:bg-cosmic-600"
+          >
             View Details
           </button>
           <span className="text-sm">
