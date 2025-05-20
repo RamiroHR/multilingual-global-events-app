@@ -45,6 +45,7 @@ model Event {
   location     String?    // Optional for virtual events
   isOnline     Boolean    @default(false)
   maxCapacity  Int        @default(2)
+  isCancelled  Boolean    @default(false)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt()
 
