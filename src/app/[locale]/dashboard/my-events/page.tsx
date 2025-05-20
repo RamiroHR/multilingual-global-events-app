@@ -40,18 +40,17 @@ export default function MyEventsPage() {
   }, []);
 
   const handleEdit = (eventId: number) => {
-    // TODO: Implement edit functionality
     router.push(`/dashboard/my-events/${eventId}/edit`);
   };
 
   const handleCancel = (eventId: number) => {
-    // TODO: Implement cancel functionality
-    console.log("Cancel event:", eventId);
+    router.push(`/dashboard/my-events/${eventId}/cancel`);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManageSubscriptions = (eventId: number) => {
     // TODO: Implement subscription management
-    console.log("Manage subscriptions:", eventId);
+    // console.log("Manage subscriptions (TODO)", eventId);
   };
 
   const handleCreateSuccess = () => {
