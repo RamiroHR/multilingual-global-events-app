@@ -2,13 +2,16 @@
 
 A modern web application built with Next.js for managing and displaying global events with multilingual support.
 
+#### Development Status Legend:
+> ✅ Completed, ⬜ Not implemented, 🔄 In progress
+
 ## Features
 
-- ✅ Multilingual support using next-intl
+- ✅ Multilingual support using next-intl (EN, ES)
 - ✅ Authentication with JWT
 - ⬜ Event management system
 - ⬜ Concurrency management
-- 🔄 Modern UI made with React
+- 🔄 UI made with React
 - 🔄 Responsive design with Tailwind CSS
 - ✅ TypeScript for type safety
 - ✅ Comprehensive testing with Jest, GitHub Actions
@@ -42,15 +45,63 @@ A modern web application built with Next.js for managing and displaying global e
   </table>
 </div>
 
+#### User Dashboard
+
+<div align="center">
+  <img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800"/>
+  <br/>
+  <em>Personal Dashboard</em>
+</div>
+
+The dashboard provides users with a comprehensive overview of their event activities. Users can:
+- ⬜View upcoming events they're attending
+- ✅ See their event hosting schedule
+- ✅ Access quick actions for event management
+- ⬜Get notifications about event updates and changes
+
+#### Explore Events
+
+<div align="center">
+  <img src="./public/screenshots/explore.png" alt="Explore Events" width="800"/>
+  <br/>
+  <em>Public Events Discovery</em>
+</div>
+
+The Explore page serves as a central hub for discovering events:
+- 🔄 Browse all public events with advanced filtering options
+- 🔄 Search events by type: online/in-person (TODO: by location, date, or category)
+- ✅ View detailed event information
+- 🔄 Subscribe to events of interest
+- ✅ Share events with other users
+
+#### My Events
+
+<div align="center">
+  <img src="./public/screenshots/my-events.png" alt="My Events" width="800"/>
+  <br/>
+  <em>Event Management Center</em>
+</div>
+
+The My Events page is a dedicated space for event management:
+- ✅ Create and publish new events
+- ✅ Edit existing event details
+- ⬜ Manage participant subscriptions
+- ✅ Handle event cancellations
+- ⬜ View event statistics and attendance
+- ⬜ Send updates to participants
+
 ## Tech Stack
 
 - **Framework:** Next.js 14 + React
 - **Language:** Node.js + TypeScript
 - **Styling:** Tailwind CSS
 - **Database:** PostgreSQL + Prisma ORM
+- **Backend query:** Axios
 - **Authentication:** JWT + bcryptjs
 - **Testing:** Jest
 - **Linting:** ESLint + Prettier
+- **App state:** Zustand
+- **Forms and Validation:** Formik + Yup
 
 ## Project Structure
 
@@ -62,7 +113,8 @@ A modern web application built with Next.js for managing and displaying global e
 │
 ├── prisma/              # Database & ORM configuration
 │   ├── migrations/         # Database migrations
-│   └── schema.prisma       # Database schema
+│   ├── schema.prisma       # Database schema
+│   └── schema.prisma       # Script to seed the database with mock data
 │
 ├── public/              # Static files: images
 │
@@ -78,6 +130,8 @@ A modern web application built with Next.js for managing and displaying global e
 │   ├── i18n/               # Internationalization setup
 │   ├── lib/                # Utility functions
 │   ├── metadata/           # App metadata for SEO
+│   ├── mocks/              # Mock data & templates
+│   ├── store/              # App state stores
 │   ├── config.ts           # environment NODE_ENV configuration
 │   └── middleware.ts       # Next.js middleware
 │
