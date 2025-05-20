@@ -2,8 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { HomeIcon, CompassIcon, CalendarIcon, UserIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  HomeIcon,
+  CompassIcon,
+  CalendarIcon,
+  UserIcon,
+  LogOutIcon,
+} from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
 
 interface NavItem {
   name: string;
@@ -20,14 +27,23 @@ const navigation: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    logout();
+    router.push("/");
+  };
 
   return (
     <div className="flex h-full w-40 flex-col border-r border-space-300 bg-space-200">
       <div className="flex h-16 items-center border-b border-space-300 px-4">
         <h2 className="text-lg font-semibold text-blue-600">Join The Spot</h2>
       </div>
-      <div className="relative flex-1">
-        <nav className="absolute inset-0 space-y-1 px-2 py-4">
+      <div className="scrollbar-none flex flex-1 flex-col overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* Navigation Bar */}
+        <nav className="space-y-1 px-2 py-4">
           {navigation.map((item) => {
             const isActive = pathname.endsWith(item.href);
             console.log(
@@ -58,6 +74,8 @@ export default function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Image */}
         <div className="flex h-full items-center justify-center">
           <Image
             className="mt-4 h-auto w-full max-w-[200px]"
@@ -68,6 +86,17 @@ export default function Sidebar() {
             sizes="(max-width: 100px) 100vw, 200px"
           />
         </div>
+
+        {/* Log-Out */}
+        <button
+          onClick={handleLogout}
+          className="mx-2 my-4 flex items-center rounded-md border border-terracotta-300/70
+            bg-space-100/50 p-2 text-sm font-medium text-terracotta-400 transition-colors
+            duration-200 hover:bg-space-900 hover:text-terracotta-100"
+        >
+          <LogOutIcon className="mr-3 size-5 rotate-180 text-terracotta-400" />
+          Logout
+        </button>
       </div>
     </div>
   );
