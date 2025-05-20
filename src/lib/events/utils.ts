@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { Prisma } from "@prisma/client";
 import { CreateEventInput, UpdateEventInput } from "./types";
 
 export async function createEvent(data: CreateEventInput) {
@@ -48,7 +49,8 @@ export async function getUserEvents(userId: string) {
   const events = await prisma.event.findMany({
     where: {
       creatorId: Number(userId),
-    },
+      isCancelled: false,
+    } as Prisma.EventWhereInput,
     orderBy: {
       date: "asc",
     },
@@ -197,6 +199,28 @@ export async function getEvent(eventId: string) {
   if (!event) {
     throw new Error("Event not found");
   }
+
+  return event;
+}
+
+export async function cancelEvent(eventId: string, creatorId: string) {
+  // Check if the event exists and belongs to the user
+  const existingEvent = await prisma.event.findUnique({
+    where: { id: Number(eventId) },
+  });
+
+  if (!existingEvent) {
+    throw new Error("Event not found");
+  }
+
+  if (existingEvent.creatorId !== Number(creatorId)) {
+    throw new Error("Not authorized to cancel this event");
+  }
+
+  const event = await prisma.event.update({
+    where: { id: Number(eventId) },
+    data: { isCancelled: true } as Prisma.EventUpdateInput,
+  });
 
   return event;
 }

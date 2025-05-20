@@ -14,4 +14,5 @@ export interface UpdateEventInput {
   date?: Date;
   location?: string;
   maxCapacity?: number;
+  isCancelled?: boolean;
 }
