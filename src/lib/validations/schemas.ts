@@ -57,24 +57,39 @@ export const createEventSchema = yup.object({
     .required("Max capacity is required")
     .min(2, "Max capacity must be at least 2")
     .max(500, "Max capacity must not exceed 500"),
+  webinar: yup.string().when("isOnline", {
+    is: true,
+    then: (schema) =>
+      schema.required("Webinar link is required for online events"),
+    otherwise: (schema) => schema.nullable(),
+  }),
 });
 
 export const updateEventSchema = yup.object({
   title: yup
     .string()
+    .required("Title is required")
     .min(3, "Title must be at least 3 characters")
     .max(100, "Title must not exceed 100 characters"),
   description: yup
     .string()
+    .required("Description is required")
     .min(10, "Description must be at least 10 characters")
     .max(1000, "Description must not exceed 1000 characters"),
-  date: yup.date().min(new Date(), "Event date must be in the future"),
-  location: yup.string().nullable(),
-  isOnline: yup.boolean(),
+  date: yup.string().required("Date is required"),
+  location: yup.string().required("Location is required"),
+  isOnline: yup.boolean().required("isOnline status is required"),
   maxCapacity: yup
     .number()
+    .required("Max capacity is required")
     .min(2, "Max capacity must be at least 2")
     .max(500, "Max capacity must not exceed 500"),
+  webinar: yup.string().when("isOnline", {
+    is: true,
+    then: (schema) =>
+      schema.required("Webinar link is required for online events"),
+    otherwise: (schema) => schema.nullable(),
+  }),
 });
 
 // Event application management schema

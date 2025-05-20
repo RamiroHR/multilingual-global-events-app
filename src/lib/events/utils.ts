@@ -9,9 +9,11 @@ export async function createEvent(data: CreateEventInput) {
       description: data.description,
       date: data.date,
       location: data.location,
+      isOnline: data.isOnline,
       maxCapacity: data.maxCapacity,
       creatorId: data.creatorId,
-    },
+      webinar: data.webinar || "",
+    } as unknown as Prisma.EventCreateInput,
   });
   return newEvent;
 }

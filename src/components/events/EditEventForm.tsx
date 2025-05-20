@@ -1,7 +1,7 @@
 import { EventFormBase, EventFormValues } from "./EventFormBase";
 import { updateEventSchema } from "@/lib/validations/schemas";
 import { CreateEventInput } from "@/lib/events/types";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { FormikHelpers } from "formik";
@@ -34,23 +34,10 @@ export const EditEventForm = ({
     helpers: FormikHelpers<EventFormValues>
   ) => {
     try {
-      console.log("Submitting update for event:", event.id);
-      console.log("Update data:", values);
-      const { webinar, ...updateData } = values;
-
-      const response = await axios.put(
-        `/api/events/${event.id}/edit`,
-        {
-          ...updateData,
-          date: new Date(values.date).toISOString(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log("Update response:", response.data);
+      await axiosInstance.put(`/api/events/${event.id}/edit`, {
+        ...values,
+        date: new Date(values.date).toISOString(),
+      });
     } catch (error) {
       console.error("Update error:", error);
       if (error instanceof AxiosError && error.response?.data?.errors) {

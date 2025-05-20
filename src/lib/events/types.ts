@@ -3,9 +3,10 @@ export interface CreateEventInput {
   description: string;
   date: Date;
   location: string;
-  isOnline?: boolean;
+  isOnline: boolean;
   maxCapacity: number;
   creatorId: number;
+  webinar?: string;
 }
 
 export interface UpdateEventInput {
@@ -15,4 +16,5 @@ export interface UpdateEventInput {
   location?: string;
   maxCapacity?: number;
   isCancelled?: boolean;
+  webinar?: string;
 }

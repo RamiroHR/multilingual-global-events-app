@@ -1,8 +1,8 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { createEventSchema } from "@/lib/validations/schemas";
 import { CreateEventInput } from "@/lib/events/types";
-import axios from "axios";
 import { AxiosError } from "axios";
+import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
 
 interface CreateEventFormProps {
@@ -26,7 +26,7 @@ export const CreateEventForm = ({
     description: "",
     date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       .toISOString()
-      .slice(0, 16), // New week at current time
+      .slice(0, 16), // Next week at current time
     location: "",
     isOnline: false,
     maxCapacity: 2,
@@ -38,11 +38,7 @@ export const CreateEventForm = ({
     { setSubmitting, setErrors }: FormikHelpers<CreateEventFormValues>
   ) => {
     try {
-      await axios.post("/api/events/create", values, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      await axiosInstance.post("/api/events/create", values);
 
       if (onSuccess) {
         onSuccess();
