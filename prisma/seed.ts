@@ -52,6 +52,7 @@ async function main() {
           isOnline: eventData.isOnline,
           maxCapacity: eventData.maxCapacity,
           creatorId: createdCreator.id,
+          webinar: eventData.webinar,
         },
       });
     })
