@@ -3,6 +3,7 @@
 A modern web application built with Next.js for managing and displaying global events with multilingual support.
 
 #### Development Status Legend:
+
 > ✅ Completed, ⬜ Not implemented, 🔄 In progress
 
 ## Features
@@ -54,6 +55,7 @@ A modern web application built with Next.js for managing and displaying global e
 </div>
 
 The dashboard provides users with a comprehensive overview of their event activities. Users can:
+
 - ⬜View upcoming events they're attending
 - ✅ See their event hosting schedule
 - ✅ Access quick actions for event management
@@ -68,6 +70,7 @@ The dashboard provides users with a comprehensive overview of their event activi
 </div>
 
 The Explore page serves as a central hub for discovering events:
+
 - 🔄 Browse all public events with advanced filtering options
 - 🔄 Search events by type: online/in-person (TODO: by location, date, or category)
 - ✅ View detailed event information
@@ -83,6 +86,7 @@ The Explore page serves as a central hub for discovering events:
 </div>
 
 The My Events page is a dedicated space for event management:
+
 - ✅ Create and publish new events
 - ✅ Edit existing event details
 - ⬜ Manage participant subscriptions
