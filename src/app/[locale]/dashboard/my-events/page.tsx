@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { getUserEvents } from "@/lib/events/utils";
@@ -20,11 +20,7 @@ export default function MyEventsPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("/api/events/my-events", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axiosInstance.get("/api/events/my-events");
       setEvents(response.data);
       setError("");
     } catch (err) {

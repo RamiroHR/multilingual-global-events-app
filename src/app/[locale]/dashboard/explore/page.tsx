@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { EventList } from "@/components/events/EventList";
-import axios from "axios";
+import axiosInstance from "@/lib/axios";
 import { Event, User } from "@prisma/client";
 
 type EventWithRelations = Event & {
@@ -24,11 +24,7 @@ export default function ExplorationPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get("/api/events/upcoming", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axiosInstance.get("/api/events/upcoming");
       setEvents(response.data);
     } catch (error) {
       setError(error instanceof Error ? error.message : "An error occurred");

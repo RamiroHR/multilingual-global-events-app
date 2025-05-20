@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import AuthForm from "../AuthForm";
 import { Link, useRouter } from "@/i18n/navigation";
 import axios from "axios";
+import axiosInstance from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
@@ -19,7 +20,10 @@ export default function LoginPage() {
     password: string;
   }) => {
     try {
-      const res = await axios.post("/api/auth/login", { email, password });
+      const res = await axiosInstance.post("/api/auth/login", {
+        email,
+        password,
+      });
 
       // change login app state
       login({ email });

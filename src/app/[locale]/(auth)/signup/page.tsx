@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import AuthForm from "../AuthForm";
 import { Link, useRouter } from "@/i18n/navigation";
 import axios from "axios";
+import axiosInstance from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 
 export default function SignupPage() {
@@ -21,14 +22,17 @@ export default function SignupPage() {
     username?: string;
   }) => {
     try {
-      await axios.post("/api/auth/signup", {
+      await axiosInstance.post("/api/auth/signup", {
         email,
         password,
         username,
       });
 
       // automatically login new user
-      const res = await axios.post("/api/auth/login", { email, password });
+      const res = await axiosInstance.post("/api/auth/login", {
+        email,
+        password,
+      });
 
       // update login app state
       login({ email: res.data.email, username: res.data.username });

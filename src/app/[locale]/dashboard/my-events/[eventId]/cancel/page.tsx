@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axiosInstance from "@/lib/axios";
 
 export default function CancelEvent({
   params,
@@ -22,11 +23,9 @@ export default function CancelEvent({
       setEventLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       try {
-        const response = await axios.get(`/api/events/${params.eventId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axiosInstance.get(
+          `/api/events/${params.eventId}`
+        );
         setEventTitle(response.data.title);
       } catch (err) {
         setEventTitle("");
@@ -43,15 +42,7 @@ export default function CancelEvent({
       setLoading(true);
       setError("");
 
-      await axios.patch(
-        `/api/events/${params.eventId}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await axiosInstance.patch(`/api/events/${params.eventId}/cancel`);
       router.push("/dashboard/my-events");
     } catch (err) {
       setError("Failed to cancel the event. Please try again later");
