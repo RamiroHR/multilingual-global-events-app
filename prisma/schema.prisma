@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,59 +8,49 @@ datasource db {
 }
 
 model User {
-  id           Int        @id @default(autoincrement())
-  email        String     @unique
-  username     String     @unique
-
-  // Relations
-  password             Password?           @relation("UserToPassword") // required as 'optional' for now
-  createdEvents        Event[]             @relation("EventCreator")
-  participatingEvents  EventParticipant[]  @relation("Participant")
-  }
-
+  id                  Int                @id @default(autoincrement())
+  email               String             @unique
+  username            String             @unique
+  createdEvents       Event[]            @relation("EventCreator")
+  participatingEvents EventParticipant[] @relation("Participant")
+  password            Password?          @relation("UserToPassword")
+}
 
 model Password {
-  id           Int        @id @default(autoincrement())
-  password     String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt()
-
-  // Relations
-  userId       Int        @unique       // Foreign key, unique to enforce 1:1 relation
-  user         User       @relation("UserToPassword", fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int      @unique
+  user      User     @relation("UserToPassword", fields: [userId], references: [id], onDelete: Cascade)
 }
-
 
 model Event {
-  id           Int        @id @default(autoincrement())
-  title        String     @default("Title")
-  description  String     @default("Description")
+  id           Int                @id @default(autoincrement())
+  title        String             @default("Title")
+  description  String             @default("Description")
   date         DateTime
-  location     String?    // Optional for virtual events
-  isOnline     Boolean    @default(false)
-  maxCapacity  Int        @default(2)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt()
-
-  // Relations
+  location     String?
+  isOnline     Boolean            @default(false)
+  maxCapacity  Int                @default(2)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
   creatorId    Int
-  creator      User       @relation("EventCreator", fields: [creatorId], references: [id])
-  participants EventParticipant[]  @relation("EventParticipants")
+  isCancelled  Boolean            @default(false)
+  webinar      String?            @default("")
+  creator      User               @relation("EventCreator", fields: [creatorId], references: [id])
+  participants EventParticipant[] @relation("EventParticipants")
 }
 
-
 model EventParticipant {
-  id           Int        @id @default(autoincrement())
-  status       String     @default("PENDING")     // PENDING, ACCEPTED, REJECTED
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt()
-
-  // Relations
-  eventId      Int
-  event        Event      @relation("EventParticipants", fields: [eventId], references: [id])
-  userId       Int
-  user         User       @relation("Participant", fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  eventId   Int
+  userId    Int
+  event     Event    @relation("EventParticipants", fields: [eventId], references: [id])
+  user      User     @relation("Participant", fields: [userId], references: [id])
 
   @@unique([eventId, userId])
 }
-

@@ -14,8 +14,15 @@ const createEventHandler: RouteHandler = async (
     if (validationResult instanceof NextResponse) return validationResult;
 
     // get event information from validated request
-    const { title, description, date, location, isOnline, maxCapacity } =
-      validationResult.body;
+    const {
+      title,
+      description,
+      date,
+      location,
+      isOnline,
+      maxCapacity,
+      webinar,
+    } = validationResult.body;
 
     // Create the event
     const event = await createEvent({
@@ -25,6 +32,7 @@ const createEventHandler: RouteHandler = async (
       location,
       isOnline,
       maxCapacity,
+      webinar,
       creatorId: Number(userData.userId),
     });
 
