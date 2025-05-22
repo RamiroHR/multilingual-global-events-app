@@ -1,9 +1,32 @@
 import { prisma } from "../prisma";
 import {
+  GetUserParticipationInput,
   CancelParticipationInput,
   UpdateParticipationStatusInput,
   ParticipationStatus,
 } from "./types";
+
+export async function getUserParticipations({
+  userId,
+}: GetUserParticipationInput) {
+  const userParticipations = await prisma.eventParticipant.findMany({
+    where: { userId: userId },
+    include: {
+      event: {
+        include: {
+          creator: true,
+          participants: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return userParticipations;
+}
 
 export async function cancelParticipation({
   participationId,

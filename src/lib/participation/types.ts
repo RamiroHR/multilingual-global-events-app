@@ -4,6 +4,10 @@ export type ParticipationStatus =
   | "REJECTED"
   | "CANCELLED";
 
+export interface GetUserParticipationInput {
+  userId: number;
+}
+
 export interface Participation {
   id: number;
   eventId: number;
