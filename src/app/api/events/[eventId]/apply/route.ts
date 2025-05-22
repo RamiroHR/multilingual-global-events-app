@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { applyToEvent } from "@/lib/events/index";
+import { applyToEvent } from "@/lib/participation/index";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 
 type ApplyEventParams = {
