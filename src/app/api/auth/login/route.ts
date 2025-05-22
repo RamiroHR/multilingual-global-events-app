@@ -34,7 +34,12 @@ export async function POST(req: NextRequest) {
     // Create JWT
     const token = await generateToken({ userId: user.id, email: user.email });
 
-    return NextResponse.json({ token });
+    return NextResponse.json({
+      token,
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
   } catch (error) {
     console.error("Error during login:", error);
     return NextResponse.json(

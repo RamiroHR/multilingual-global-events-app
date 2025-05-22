@@ -26,7 +26,11 @@ export default function LoginPage() {
       });
 
       // change login app state
-      login({ email });
+      login({
+        id: res.data.userId,
+        email: res.data.email,
+        username: res.data.username,
+      });
 
       // store jwt token in local storage
       const token = res.data.token;

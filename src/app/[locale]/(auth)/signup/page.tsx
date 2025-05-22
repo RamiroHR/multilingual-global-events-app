@@ -35,7 +35,11 @@ export default function SignupPage() {
       });
 
       // update login app state
-      login({ email: res.data.email, username: res.data.username });
+      login({
+        id: res.data.userId,
+        email: res.data.email,
+        username: res.data.username,
+      });
 
       // store jwt token in local storage
       const token = res.data.token;

@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const user = await createUser(email, username, hashedPassword);
 
     return NextResponse.json({
-      id: user.id,
+      userId: user.id,
       email: user.email,
       username: user.username,
     });
