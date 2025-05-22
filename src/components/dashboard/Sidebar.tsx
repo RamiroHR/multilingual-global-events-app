@@ -6,9 +6,10 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   HomeIcon,
   CompassIcon,
-  CalendarIcon,
   UserIcon,
   LogOutIcon,
+  Ticket,
+  Crown,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
@@ -21,7 +22,8 @@ interface NavItem {
 const navigation: NavItem[] = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
   { name: "Explore", href: "/dashboard/explore", icon: CompassIcon },
-  { name: "My Events", href: "/dashboard/my-events", icon: CalendarIcon },
+  { name: "Joining", href: "/dashboard/joining", icon: Ticket },
+  { name: "Hosting", href: "/dashboard/my-events", icon: Crown },
   { name: "Profile", href: "/dashboard/profile", icon: UserIcon },
 ];
 
