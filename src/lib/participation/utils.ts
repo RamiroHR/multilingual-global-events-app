@@ -6,6 +6,7 @@ import {
   ParticipationStatus,
 } from "./types";
 
+// Apply to an event as a participant
 export async function applyToEvent(eventId: string, userId: string) {
   // check if event exists
   const event = await prisma.event.findUnique({
@@ -60,6 +61,7 @@ export async function applyToEvent(eventId: string, userId: string) {
   return application;
 }
 
+// Get all participations of a specific user
 export async function getUserParticipations({
   userId,
 }: GetUserParticipationInput) {
@@ -82,6 +84,46 @@ export async function getUserParticipations({
   return userParticipations;
 }
 
+// Get all application of a specific event (creator rights)
+export async function getEventApplications({ eventId, creatorId } : {eventId: string, creatorId: string}) {
+  // Check if the event exists and belongs to the user
+  const existingEvent = await prisma.event.findUnique({
+    where: { id: Number(eventId) },
+  });
+
+  // handle issues
+  if (!existingEvent) {
+    throw new Error("Event not found");
+  }
+  if (existingEvent.creatorId !== Number(creatorId)) {
+    throw new Error("User not authorized to see applications of this event");
+  }
+
+  // get all application the event received (with status)
+  const eventApplications = await prisma.eventParticipant.findMany({
+    where: { eventId: Number(eventId)},
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+          email: true
+        }
+      },
+      event: {
+        select: {
+          id: true,
+          title: true,
+          maxCapacity: true,
+        }
+      }
+    }
+  })
+
+  return eventApplications;
+}
+
+// Cancel a participation to an event (as a participant)
 export async function cancelParticipation({
   participationId,
   userId,
@@ -123,6 +165,7 @@ export async function cancelParticipation({
   return updatedParticipation;
 }
 
+//review an application as the event creator
 export async function updateParticipationStatus({
   participationId,
   eventCreatorId,
@@ -172,3 +215,5 @@ export async function updateParticipationStatus({
 
   return updatedParticipation;
 }
+
+

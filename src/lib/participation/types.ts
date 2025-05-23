@@ -1,8 +1,4 @@
-export type ParticipationStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED"
-  | "CANCELLED";
+export type ParticipationStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
 export interface GetUserParticipationInput {
   userId: number;

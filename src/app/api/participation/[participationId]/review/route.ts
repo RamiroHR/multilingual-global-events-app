@@ -8,22 +8,19 @@ type UpdateParticipationStatusParams = {
   participationId: string;
 };
 
-const updateParticipationStatusHandler: RouteHandler<
-  UpdateParticipationStatusParams
-> = async (req: NextRequest, userData: DecodedToken, params) => {
+const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusParams> = async (
+  req: NextRequest,
+  userData: DecodedToken,
+  params
+) => {
   try {
     // Ensure participation ID is included
     if (!params?.participationId) {
-      return NextResponse.json(
-        { error: "Participation ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
     }
 
     // Validate request body and get the parsed body
-    const validationResult = await validateRequest(
-      updateParticipationStatusSchema
-    )(req);
+    const validationResult = await validateRequest(updateParticipationStatusSchema)(req);
     if (validationResult instanceof NextResponse) return validationResult;
 
     const { status } = validationResult.body;
@@ -44,14 +41,9 @@ const updateParticipationStatusHandler: RouteHandler<
     // Handle specific errors
     if (error instanceof Error) {
       if (error.message === "Participation not found") {
-        return NextResponse.json(
-          { error: "Participation not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Participation not found" }, { status: 404 });
       }
-      if (
-        error.message === "Not authorized to update this participation status"
-      ) {
+      if (error.message === "Not authorized to update this participation status") {
         return NextResponse.json(
           { error: "Not authorized to update this participation status" },
           { status: 403 }
@@ -62,13 +54,8 @@ const updateParticipationStatusHandler: RouteHandler<
       }
     }
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 
-export const PATCH = withAuth<UpdateParticipationStatusParams>(
-  updateParticipationStatusHandler
-);
+export const PATCH = withAuth<UpdateParticipationStatusParams>(updateParticipationStatusHandler);
