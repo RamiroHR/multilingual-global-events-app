@@ -10,10 +10,7 @@ export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date"> & {
 interface EventFormBaseProps {
   initialValues: EventFormValues;
   validationSchema: ObjectSchema<EventFormValues>;
-  onSubmit: (
-    values: EventFormValues,
-    helpers: FormikHelpers<EventFormValues>
-  ) => Promise<void>;
+  onSubmit: (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => Promise<void>;
   submitButtonText: string;
   title: string;
   onSuccess?: () => void;
@@ -29,10 +26,7 @@ export const EventFormBase = ({
   onSuccess,
   onCancel,
 }: EventFormBaseProps) => {
-  const handleSubmit = async (
-    values: EventFormValues,
-    helpers: FormikHelpers<EventFormValues>
-  ) => {
+  const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
     try {
       await onSubmit(values, helpers);
       onSuccess?.();
@@ -54,15 +48,10 @@ export const EventFormBase = ({
           <Form className="space-y-8">
             {/* Basic Information Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">
-                Basic Information
-              </h3>
+              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Basic Information</h3>
               <div className="space-y-6">
                 <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-terracotta-200"
-                  >
+                  <label htmlFor="title" className="block text-sm font-medium text-terracotta-200">
                     Title
                   </label>
                   <Field
@@ -103,17 +92,12 @@ export const EventFormBase = ({
 
             {/* Event Details Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">
-                Event Details
-              </h3>
+              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
               <div className="grid grid-cols-2 gap-6">
                 {/* Left panel */}
                 <div className="space-y-6">
                   <div>
-                    <label
-                      htmlFor="date"
-                      className="block text-sm font-medium text-terracotta-200"
-                    >
+                    <label htmlFor="date" className="block text-sm font-medium text-terracotta-200">
                       Date and Time
                     </label>
                     <Field
@@ -250,7 +234,7 @@ export const EventFormBase = ({
                   className="rounded-md border border-terracotta-500/30 px-4 py-2 text-sm font-medium
                     text-terracotta-200 transition-colors hover:bg-space-400/40"
                 >
-                  Cancel
+                  ← Back
                 </button>
               )}
               <button

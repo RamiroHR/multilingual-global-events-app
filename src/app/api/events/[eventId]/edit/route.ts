@@ -16,10 +16,7 @@ const editEventHandler: RouteHandler<EditEventParams> = async (
   try {
     // validate event Id exists in URL
     if (!params?.eventId) {
-      return NextResponse.json(
-        { error: "Event ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
     }
 
     // Validate request body
@@ -31,11 +28,7 @@ const editEventHandler: RouteHandler<EditEventParams> = async (
     const updateData = validationResult.body;
 
     // Update the event
-    const updatedEvent = await updateEvent(
-      eventId,
-      updateData,
-      userData.userId
-    );
+    const updatedEvent = await updateEvent(eventId, updateData, userData.userId);
 
     return NextResponse.json(updatedEvent);
   } catch (error) {
@@ -47,17 +40,11 @@ const editEventHandler: RouteHandler<EditEventParams> = async (
         return NextResponse.json({ error: "Event not found" }, { status: 404 });
       }
       if (error.message === "Not authorized to update this event") {
-        return NextResponse.json(
-          { error: "Not authorized to update this event" },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: "Not authorized to update this event" }, { status: 403 });
       }
     }
 
-    return NextResponse.json(
-      { error: "Failed to update event" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to update event" }, { status: 500 });
   }
 };
 

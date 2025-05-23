@@ -26,18 +26,12 @@ export const getMockEventsByType = (isOnline: boolean) => {
 };
 
 export const getMockEventsByDateRange = (startDate: Date, endDate: Date) => {
-  return mockEvents.filter(
-    (event) => event.date >= startDate && event.date <= endDate
-  );
+  return mockEvents.filter((event) => event.date >= startDate && event.date <= endDate);
 };
 
-export const getMockEventsByCapacity = (
-  minCapacity: number,
-  maxCapacity: number
-) => {
+export const getMockEventsByCapacity = (minCapacity: number, maxCapacity: number) => {
   return mockEvents.filter(
-    (event) =>
-      event.maxCapacity >= minCapacity && event.maxCapacity <= maxCapacity
+    (event) => event.maxCapacity >= minCapacity && event.maxCapacity <= maxCapacity
   );
 };
 

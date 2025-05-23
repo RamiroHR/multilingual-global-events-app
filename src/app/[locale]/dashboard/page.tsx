@@ -21,47 +21,29 @@ export default function DashboardHome() {
             <h2 className="mb-4 text-xl font-semibold text-terracotta-800">
               Upcoming event section
             </h2>
-            <p className="text-lunar-300">
-              Your upcoming events will appear here.
-            </p>
+            <p className="text-lunar-300">Your upcoming events will appear here.</p>
           </div>
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">
-              Activity Feed
-            </h2>
-            <p className="text-lunar-300">
-              Your recent activities will appear here.
-            </p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Activity Feed</h2>
+            <p className="text-lunar-300">Your recent activities will appear here.</p>
           </div>
         </section>
 
         {/* Right Column - Sidebar */}
         <section className="space-y-6">
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">
-              Calendar Preview
-            </h2>
-            <p className="text-lunar-300">
-              Your upcoming events calendar will appear here.
-            </p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
+            <p className="text-lunar-300">Your upcoming events calendar will appear here.</p>
           </div>
 
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">
-              Quick Stats
-            </h2>
-            <p className="text-lunar-300">
-              Your event statistics will be displayed here.
-            </p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Quick Stats</h2>
+            <p className="text-lunar-300">Your event statistics will be displayed here.</p>
           </div>
 
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">
-              Recent Activity
-            </h2>
-            <p className="text-lunar-300">
-              Your recent activities and updates will appear here.
-            </p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Recent Activity</h2>
+            <p className="text-lunar-300">Your recent activities and updates will appear here.</p>
           </div>
         </section>
       </div>

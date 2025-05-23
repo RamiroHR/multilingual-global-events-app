@@ -35,9 +35,7 @@ async function main() {
   const createdEvents = await Promise.all(
     mockEvents.map(async (event) => {
       const { creator, participants, ...eventData } = event;
-      const createdCreator = createdUsers.find(
-        (u) => u.email === creator.email
-      );
+      const createdCreator = createdUsers.find((u) => u.email === creator.email);
 
       if (!createdCreator) {
         throw new Error(`Creator with email ${creator.email} not found`);
@@ -62,14 +60,10 @@ async function main() {
   await Promise.all(
     mockEvents.flatMap((event, index) =>
       event.participants.map(async (participant) => {
-        const createdParticipant = createdUsers.find(
-          (u) => u.email === participant.user.email
-        );
+        const createdParticipant = createdUsers.find((u) => u.email === participant.user.email);
 
         if (!createdParticipant) {
-          throw new Error(
-            `Participant with email ${participant.user.email} not found`
-          );
+          throw new Error(`Participant with email ${participant.user.email} not found`);
         }
 
         return prisma.eventParticipant.create({

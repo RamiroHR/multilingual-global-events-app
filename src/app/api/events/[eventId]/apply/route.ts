@@ -14,10 +14,7 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
   try {
     // ensure event Id is included
     if (!params?.eventId) {
-      return NextResponse.json(
-        { error: "Event ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
     }
 
     // get event_id and participant_id from url
@@ -42,17 +39,11 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
         );
       }
       if (error.message === "Event has reached maximum capacity") {
-        return NextResponse.json(
-          { error: "Event has reached maximum capacity" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Event has reached maximum capacity" }, { status: 400 });
       }
     }
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 

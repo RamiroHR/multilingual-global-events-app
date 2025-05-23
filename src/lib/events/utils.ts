@@ -18,11 +18,7 @@ export async function createEvent(data: CreateEventInput) {
   return newEvent;
 }
 
-export async function updateEvent(
-  eventId: string,
-  data: UpdateEventInput,
-  creatorId: string
-) {
+export async function updateEvent(eventId: string, data: UpdateEventInput, creatorId: string) {
   // Check if the event exists and belongs to the user
   const existingEvent = await prisma.event.findUnique({
     where: { id: Number(eventId) },

@@ -6,16 +6,15 @@ type CancelParticipationParams = {
   participationId: string;
 };
 
-const cancelParticipationHandler: RouteHandler<
-  CancelParticipationParams
-> = async (req: NextRequest, userData: DecodedToken, params) => {
+const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = async (
+  req: NextRequest,
+  userData: DecodedToken,
+  params
+) => {
   try {
     // Ensure participation ID is included
     if (!params?.participationId) {
-      return NextResponse.json(
-        { error: "Participation ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
     }
 
     const participationId = params.participationId;
@@ -34,10 +33,7 @@ const cancelParticipationHandler: RouteHandler<
     // Handle specific errors
     if (error instanceof Error) {
       if (error.message === "Participation not found") {
-        return NextResponse.json(
-          { error: "Participation not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Participation not found" }, { status: 404 });
       }
       if (error.message === "Not authorized to cancel this participation") {
         return NextResponse.json(
@@ -47,13 +43,8 @@ const cancelParticipationHandler: RouteHandler<
       }
     }
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 
-export const DELETE = withAuth<CancelParticipationParams>(
-  cancelParticipationHandler
-);
+export const DELETE = withAuth<CancelParticipationParams>(cancelParticipationHandler);

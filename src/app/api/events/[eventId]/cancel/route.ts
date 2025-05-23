@@ -13,10 +13,7 @@ const cancelEventHandler: RouteHandler<CancelEventParams> = async (
 ) => {
   try {
     if (!params?.eventId) {
-      return NextResponse.json(
-        { error: "Event ID is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
     }
 
     const event = await cancelEvent(params.eventId, userData.userId);
@@ -29,17 +26,11 @@ const cancelEventHandler: RouteHandler<CancelEventParams> = async (
         return NextResponse.json({ error: "Event not found" }, { status: 404 });
       }
       if (error.message === "Not authorized to cancel this event") {
-        return NextResponse.json(
-          { error: "Not authorized to cancel this event" },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: "Not authorized to cancel this event" }, { status: 403 });
       }
     }
 
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 

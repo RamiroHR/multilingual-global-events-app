@@ -17,11 +17,7 @@ type EventWithRelations = Event & {
   }[];
 };
 
-export default function EventDetailsPage({
-  params,
-}: {
-  params: { eventId: string };
-}) {
+export default function EventDetailsPage({ params }: { params: { eventId: string } }) {
   const [event, setEvent] = useState<EventWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,15 +28,12 @@ export default function EventDetailsPage({
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/api/events/${params.eventId}`
-        );
+        const response = await axiosInstance.get(`/api/events/${params.eventId}`);
         setEvent(response.data);
 
         // Check if the current user has already applied
         const currentUser = response.data.participants.find(
-          (p: EventWithRelations["participants"][0]) =>
-            p.user.id === Number(user?.id)
+          (p: EventWithRelations["participants"][0]) => p.user.id === Number(user?.id)
         );
         setHasApplied(!!currentUser);
       } catch (error) {
@@ -105,17 +98,13 @@ export default function EventDetailsPage({
           <div className="p-8">
             {/* Header */}
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-space-100">
-                {event.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-space-100">{event.title}</h1>
               <p className="mt-2 text-lunar-500">by {event.creator.username}</p>
             </div>
 
             {/* Description */}
             <div className="mb-8">
-              <h2 className="mb-2 text-xl font-semibold text-space-200">
-                Description
-              </h2>
+              <h2 className="mb-2 text-xl font-semibold text-space-200">Description</h2>
               <p className="text-space-300">{event.description}</p>
             </div>
 
@@ -158,13 +147,9 @@ export default function EventDetailsPage({
                       ? "cursor-not-allowed bg-gray-400"
                       : "bg-cosmic-500 hover:bg-cosmic-600"
                   }`}
-                  disabled={
-                    event.participants.length >= event.maxCapacity || hasApplied
-                  }
+                  disabled={event.participants.length >= event.maxCapacity || hasApplied}
                 >
-                  {event.participants.length >= event.maxCapacity
-                    ? "Event Full"
-                    : "Join Event"}
+                  {event.participants.length >= event.maxCapacity ? "Event Full" : "Join Event"}
                 </button>
 
                 {hasApplied && (

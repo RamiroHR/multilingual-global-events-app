@@ -85,17 +85,11 @@ describe("POST /api/auth/login", () => {
     const testUser = await signupTestUser();
 
     //incomplete login data cases
-    const testCases = [
-      { email: testUser.email },
-      { password: testUser.password },
-      {},
-    ];
+    const testCases = [{ email: testUser.email }, { password: testUser.password }, {}];
 
     //test logic
     for (const testCase of testCases) {
-      const req = createMockLoginRequest(
-        testCase as unknown as LoginRequestBody
-      );
+      const req = createMockLoginRequest(testCase as unknown as LoginRequestBody);
 
       const response = await loginPOST(req);
       const data = await response.json();

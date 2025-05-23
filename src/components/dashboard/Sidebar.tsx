@@ -3,14 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  HomeIcon,
-  CompassIcon,
-  UserIcon,
-  LogOutIcon,
-  Ticket,
-  Crown,
-} from "lucide-react";
+import { HomeIcon, CompassIcon, UserIcon, LogOutIcon, Ticket, Crown } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 
 interface NavItem {
@@ -47,9 +40,7 @@ export default function Sidebar() {
         <nav className="space-y-1 px-2 py-4">
           {navigation.map((item) => {
             const isActive = pathname.endsWith(item.href);
-            console.log(
-              `Path: ${pathname}, Item: ${item.href}, IsActive: ${isActive}`
-            );
+            console.log(`Path: ${pathname}, Item: ${item.href}, IsActive: ${isActive}`);
             return (
               <Link
                 key={item.name}

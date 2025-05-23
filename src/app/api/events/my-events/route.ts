@@ -8,10 +8,7 @@ const getMyEventsHandler: RouteHandler = async (req, userData) => {
     return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching user events:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 

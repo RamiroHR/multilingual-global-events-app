@@ -22,12 +22,8 @@ export const EventCard = ({ event }: EventCardProps) => {
       <div className="flex h-full flex-col p-6">
         {/* Event Title and Creator */}
         <div className="mb-4 flex items-start justify-between">
-          <h3 className="text-xl font-semibold text-space-100">
-            {event.title}
-          </h3>
-          <span className="text-sm text-lunar-500">
-            by {event.creator.username}
-          </span>
+          <h3 className="text-xl font-semibold text-space-100">{event.title}</h3>
+          <span className="text-sm text-lunar-500">by {event.creator.username}</span>
         </div>
 
         {/* Event Description */}

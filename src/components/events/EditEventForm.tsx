@@ -12,11 +12,7 @@ interface EditEventFormProps {
   onCancel?: () => void;
 }
 
-export const EditEventForm = ({
-  event,
-  onSuccess,
-  onCancel,
-}: EditEventFormProps) => {
+export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps) => {
   const router = useRouter();
 
   const initialValues: EventFormValues = {
@@ -29,10 +25,7 @@ export const EditEventForm = ({
     webinar: event.webinar || "",
   };
 
-  const handleSubmit = async (
-    values: EventFormValues,
-    helpers: FormikHelpers<EventFormValues>
-  ) => {
+  const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
     try {
       await axiosInstance.put(`/api/events/${event.id}/edit`, {
         ...values,

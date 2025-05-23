@@ -24,6 +24,7 @@ export default function ExplorationPage() {
     try {
       setLoading(true);
       setError(null);
+      // get upcoming events
       const response = await axiosInstance.get("/api/events/upcoming");
       setEvents(response.data);
     } catch (error) {
@@ -37,18 +38,15 @@ export default function ExplorationPage() {
     fetchEvents();
   }, []);
 
-  const displayedEvents = showOnlineOnly
-    ? events.filter((event) => event.isOnline)
-    : events;
+  // Filter online events only
+  const displayedEvents = showOnlineOnly ? events.filter((event) => event.isOnline) : events;
 
   return (
     <div className="min-h-screen rounded bg-space-300">
       {/* Title Section */}
       <div className=" bg-space-300">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-terracotta-800">
-            Explore Events
-          </h1>
+          <h1 className="text-2xl font-bold text-terracotta-800">Explore Events</h1>
           <p className="mt-2 text-lunar-200">
             Discover and join exciting events from around the world
           </p>
@@ -82,9 +80,7 @@ export default function ExplorationPage() {
       {/* Error State */}
       {error && (
         <div className="container mx-auto p-4">
-          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">
-            {error}
-          </div>
+          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">{error}</div>
         </div>
       )}
 

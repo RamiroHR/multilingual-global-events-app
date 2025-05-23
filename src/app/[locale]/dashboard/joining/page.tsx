@@ -43,17 +43,11 @@ export default function JoiningPage() {
   // Group applications into active and inactive
   const activeApplications = applications
     .filter((app) => app.status === "ACCEPTED" || app.status === "PENDING")
-    .sort(
-      (a, b) =>
-        new Date(a.event.date).getTime() - new Date(b.event.date).getTime()
-    );
+    .sort((a, b) => new Date(a.event.date).getTime() - new Date(b.event.date).getTime());
 
   const inactiveApplications = applications
     .filter((app) => app.status === "REJECTED" || app.status === "CANCELLED")
-    .sort(
-      (a, b) =>
-        new Date(b.event.date).getTime() - new Date(a.event.date).getTime()
-    );
+    .sort((a, b) => new Date(b.event.date).getTime() - new Date(a.event.date).getTime());
 
   if (isLoading) {
     return (
@@ -77,9 +71,7 @@ export default function JoiningPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold text-terracotta-400">
-        My Applications
-      </h1>
+      <h1 className="mb-8 text-3xl font-bold text-terracotta-400">My Applications</h1>
 
       {applications.length === 0 ? (
         <div className="text-center text-white">

@@ -5,11 +5,7 @@ import { EditEventForm } from "@/components/events/EditEventForm";
 import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
 
-export default function EditEventPage({
-  params,
-}: {
-  params: { eventId: string };
-}) {
+export default function EditEventPage({ params }: { params: { eventId: string } }) {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -17,9 +13,7 @@ export default function EditEventPage({
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axiosInstance.get(
-          `/api/events/${params.eventId}`
-        );
+        const response = await axiosInstance.get(`/api/events/${params.eventId}`);
         setEvent(response.data);
       } catch (error) {
         console.error("Error fetching event:", error);

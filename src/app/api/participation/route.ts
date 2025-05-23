@@ -15,10 +15,7 @@ const getUserParticipationsHandler: RouteHandler = async (
   } catch (error) {
     // handle errors
     console.error("Error fetching user applications", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 

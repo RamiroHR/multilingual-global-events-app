@@ -15,10 +15,7 @@ interface ApplicationCardProps {
   applicationStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
 }
 
-export const ApplicationCard = ({
-  event,
-  applicationStatus,
-}: ApplicationCardProps) => {
+export const ApplicationCard = ({ event, applicationStatus }: ApplicationCardProps) => {
   const router = useRouter();
 
   const getStatusStyles = (status: string) => {
@@ -83,9 +80,7 @@ export const ApplicationCard = ({
       <div className="flex-1 space-y-2">
         <div className="flex items-start justify-between">
           {/* title */}
-          <h3 className={`text-lg font-semibold ${styles.text}`}>
-            {event.title}
-          </h3>
+          <h3 className={`text-lg font-semibold ${styles.text}`}>{event.title}</h3>
           {/* date */}
           <div className="flex flex-col items-end">
             <span className={`text-sm ${styles.detail}`}>
@@ -93,8 +88,7 @@ export const ApplicationCard = ({
             </span>
             {/* status */}
             <span className={`text-sm font-medium ${styles.text}`}>
-              {applicationStatus.charAt(0) +
-                applicationStatus.slice(1).toLowerCase()}
+              {applicationStatus.charAt(0) + applicationStatus.slice(1).toLowerCase()}
             </span>
           </div>
         </div>
@@ -126,13 +120,20 @@ export const ApplicationCard = ({
       </div>
 
       {/* Action Button */}
-      <div className="ml-4">
+      <div className="ml-4 flex flex-col gap-2">
         <button
           onClick={() => router.push(`/dashboard/explore/${event.id}`)}
           className="rounded-md bg-cosmic-500 px-4 py-2 text-white-50
             transition-colors hover:bg-cosmic-600"
         >
           View Details
+        </button>
+        <button
+          onClick={() => router.push(`/dashboard/explore/${event.id}`)}
+          className="rounded-md bg-terracotta-500 px-4 py-2 text-white-50
+            transition-colors hover:bg-cosmic-600"
+        >
+          Leave Event
         </button>
       </div>
     </div>

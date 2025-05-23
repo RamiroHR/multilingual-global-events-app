@@ -15,10 +15,7 @@ export async function POST(req: NextRequest) {
     // Check if user exists
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Email already in use" },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
     // Hash password
@@ -34,9 +31,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Error during signup:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
