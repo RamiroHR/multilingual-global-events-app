@@ -88,6 +88,7 @@ export default function JoiningPage() {
               {activeApplications.map((application) => (
                 <ApplicationCard
                   key={application.id}
+                  applicationId={application.id}
                   event={application.event}
                   applicationStatus={application.status}
                 />
@@ -119,6 +120,7 @@ export default function JoiningPage() {
                 {inactiveApplications.map((application) => (
                   <ApplicationCard
                     key={application.id}
+                    applicationId={application.id}
                     event={application.event}
                     applicationStatus={application.status}
                   />

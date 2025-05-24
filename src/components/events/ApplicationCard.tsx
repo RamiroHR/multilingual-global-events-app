@@ -4,6 +4,7 @@ import { MapPin, Users, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface ApplicationCardProps {
+  applicationId: number;
   event: Event & {
     creator: User;
     participants: {
@@ -15,7 +16,11 @@ interface ApplicationCardProps {
   applicationStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
 }
 
-export const ApplicationCard = ({ event, applicationStatus }: ApplicationCardProps) => {
+export const ApplicationCard = ({
+  applicationId,
+  event,
+  applicationStatus,
+}: ApplicationCardProps) => {
   const router = useRouter();
 
   const getStatusStyles = (status: string) => {
@@ -129,7 +134,7 @@ export const ApplicationCard = ({ event, applicationStatus }: ApplicationCardPro
           View Details
         </button>
         <button
-          onClick={() => router.push(`/dashboard/explore/${event.id}`)}
+          onClick={() => router.push(`/dashboard/joining/${applicationId}/cancel`)}
           className="rounded-md bg-terracotta-500 px-4 py-2 text-white-50
             transition-colors hover:bg-cosmic-600"
         >

@@ -31,7 +31,7 @@ export default function CancelParticipation({ params }: { params: { participatio
     try {
       setLoading(true);
       setError("");
-      await axiosInstance.patch(`/api/participation/${params.participationId}/cancel`);
+      await axiosInstance.delete(`/api/participation/${params.participationId}/cancel`);
       router.push("/dashboard/joining");
     } catch (err) {
       console.error("Error canceling participation:", err);
@@ -73,7 +73,7 @@ export default function CancelParticipation({ params }: { params: { participatio
 
           <div>
             <p className="text-center">
-              If you cancel your participation, you will no longer be able to attend this event.
+              By canceling your participation, you will not be able to attend this event.
             </p>
           </div>
 
@@ -86,7 +86,7 @@ export default function CancelParticipation({ params }: { params: { participatio
               onClick={handleCancel}
               disabled={loading}
             >
-              {loading ? "Canceling..." : "Yes, cancel my participation"}
+              {loading ? "Canceling..." : "Yes, cancel my spot"}
             </button>
             <button
               className="rounded-md bg-terracotta-500 px-6 py-2 text-sm font-medium text-space-100
@@ -95,7 +95,7 @@ export default function CancelParticipation({ params }: { params: { participatio
               onClick={handleKeep}
               disabled={loading}
             >
-              No, keep my participation
+              No, keep my spot!
             </button>
           </div>
         </div>
