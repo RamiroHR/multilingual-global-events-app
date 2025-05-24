@@ -32,10 +32,14 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
         setEvent(response.data);
 
         // Check if the current user has already applied
-        const currentUser = response.data.participants.find(
-          (p: EventWithRelations["participants"][0]) => p.user.id === Number(user?.id)
-        );
-        setHasApplied(!!currentUser);
+        if (user?.id) {
+          const currentUser = response.data.participants.find(
+            (p: EventWithRelations["participants"][0]) =>
+              p.user.id === Number(user?.id) &&
+              (p.status === "PENDING" || p.status === "ACCEPTED" || p.status === "REJECTED")
+          );
+          setHasApplied(!!currentUser);
+        }
       } catch (error) {
         setError(error instanceof Error ? error.message : "An error occurred");
       } finally {
@@ -43,10 +47,8 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
       }
     };
 
-    if (user?.id) {
-      fetchEvent();
-    }
-  }, [params.eventId, user]);
+    fetchEvent();
+  }, [params.eventId, user?.id]);
 
   const handleJoinEvent = async () => {
     try {
