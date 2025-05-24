@@ -1,5 +1,9 @@
 export type ParticipationStatus = "PENDING" | "APPROVED" | "REJECTED" | "CANCELLED";
 
+export interface GetSingleApplicationInput {
+  applicationId: string;
+}
+
 export interface GetUserParticipationInput {
   userId: number;
 }

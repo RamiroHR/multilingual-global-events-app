@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
-import { prisma } from "@/lib/prisma";
+import { getApplicationById } from "@/lib/participation/index";
 
 type GetParticipationParams = {
   participationId: string;
@@ -16,23 +16,7 @@ const getParticipationHandler: RouteHandler<GetParticipationParams> = async (
       return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
     }
 
-    const participation = await prisma.eventParticipant.findUnique({
-      where: { id: Number(params.participationId) },
-      include: {
-        event: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    if (!participation) {
-      return NextResponse.json({ error: "Participation not found" }, { status: 404 });
-    }
+    const participation = await getApplicationById({ applicationId: params.participationId });
 
     // Verify the user is authorized to view this participation
     if (participation.userId !== Number(userData.userId)) {
@@ -45,6 +29,14 @@ const getParticipationHandler: RouteHandler<GetParticipationParams> = async (
     return NextResponse.json(participation);
   } catch (error) {
     console.error("Error fetching participation:", error);
+
+    // Handle specific errors
+    if (error instanceof Error) {
+      if (error.message === "Participation not found") {
+        return NextResponse.json({ error: "Participation not found" }, { status: 404 });
+      }
+    }
+
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };

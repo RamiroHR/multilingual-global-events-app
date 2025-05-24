@@ -16,6 +16,7 @@ export default Object.freeze({
 
   // User Participations
   USER_PARTICIPATIONS: "/api/participation",
+  PARTICIPATION_ID: (participationId: string) => `/api/participation/${participationId}`,
   APPLY_EVENT: (eventId: string) => `/api/events/${eventId}/apply`,
   CANCEL_PARTICIPATION: (participationId: string) => `/api/participation/${participationId}/cancel`,
 
