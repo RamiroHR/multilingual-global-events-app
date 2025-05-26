@@ -3,6 +3,7 @@ export default Object.freeze({
   HOME: "/",
   LOGIN: "/api/auth/login",
   SIGNUP: "/api/auth/signup",
+  VERIFY: "/api/auth/verify",
 
   // Explore Events
   UPCOMING_EVENTS: "/api/events/upcoming",
