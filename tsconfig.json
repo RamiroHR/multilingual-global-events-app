@@ -28,5 +28,8 @@
     ".next/types/**/*.ts",
     "jest.config.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "prisma/seed.ts"
+  ]
 }
