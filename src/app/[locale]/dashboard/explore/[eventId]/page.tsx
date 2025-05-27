@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import axiosInstance from "@/lib/axios";
+import { AxiosError } from "axios";
 import { Event, User } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users, Globe } from "lucide-react";
@@ -58,8 +59,22 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
       await axiosInstance.post(`/api/events/${params.eventId}/apply`);
       setHasApplied(true);
     } catch (error) {
-      // handle errors
-      setError("Failed to join the event. Please try again later.");
+      if (error instanceof AxiosError) {
+        if (error.response?.status == 409) {
+          // handle concurrency error
+          setError(
+            "The event was modified by another user. Please refresh the page and try again."
+          );
+        } else if (error.response?.data?.error) {
+          // handle other api error
+          setError(error.response.data.error);
+        } else {
+          // unexpected errors
+          setError("Failed to join the event. Please try again later.");
+        }
+      } else {
+        setError("An unexpecte error ocurred. Please try again later.");
+      }
       console.error("Error joining the event: ", error);
     } finally {
       setLoading(false);
@@ -158,6 +173,12 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
                   <span className="text-red text-terracotta">
                     Your application was sent to the organizer!
                   </span>
+                )}
+
+                {error && (
+                  <div className="mt-4 rounded-md bg-red-500/10 p-4 text-center text-sm text-red-400">
+                    {error}
+                  </div>
                 )}
               </div>
 

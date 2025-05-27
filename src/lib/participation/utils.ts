@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../prisma";
 import {
   GetSingleApplicationInput,
@@ -7,90 +8,130 @@ import {
   ParticipationStatus,
 } from "./types";
 
-// Apply to an event as a participant
+// Apply to an event as a participant -  manage concurrency with atomic transactions
 export async function applyToEvent(eventId: string, userId: string) {
-  // check if event exists
-  const event = await prisma.event.findUnique({
-    where: { id: Number(eventId) },
-    include: {
-      participants: true,
-    },
-  });
-
-  if (!event) {
-    throw new Error("Event not found");
-  }
-
-  // check if user have an active application
-  const existingApplication = await prisma.eventParticipant.findFirst({
-    where: {
-      eventId: Number(eventId),
-      userId: Number(userId),
-      status: {
-        in: ["PENDING", "ACCEPTED"],
-      },
-    },
-  });
-
-  if (existingApplication) {
-    throw new Error("You have already applied to this event");
-  }
-
-  // check if user has a cancelled application
-  const cancelledApplication = await prisma.eventParticipant.findFirst({
-    where: {
-      eventId: Number(eventId),
-      userId: Number(userId),
-      status: "CANCELLED",
-    },
-  });
-
-  //check if event has reached its maximum capacity
-  if (event.participants.length >= event.maxCapacity) {
-    throw new Error("Event has reached is maximum capacity");
-  }
-
-  // If there's a cancelled application, update it to PENDING
-  if (cancelledApplication) {
-    const application = await prisma.eventParticipant.update({
-      where: { id: cancelledApplication.id },
-      data: {
-        status: "PENDING",
-      },
-      include: {
-        event: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
+  try {
+    // start a transaction - multi steps logic
+    const result = await prisma.$transaction(async (tx) => {
+      // 1- fetch event with participants
+      const event = await tx.event.findUnique({
+        where: { id: Number(eventId) },
+        include: {
+          participants: {
+            where: {
+              status: {
+                in: ["PENDING", "ACCEPTED"], // a seat is saved for these
+              },
+            },
           },
         },
-      },
-    });
-    return application;
-  }
+      });
 
-  // Create the application if no previous appication for this event and user exists
-  const application = await prisma.eventParticipant.create({
-    data: {
-      eventId: Number(eventId),
-      userId: Number(userId),
-      status: "PENDING",
-    },
-    include: {
-      event: true,
-      user: {
+      if (!event) {
+        throw new Error("Event not found");
+      }
+
+      // 2- check if there is an existing application
+      const existingApplication = await tx.eventParticipant.findFirst({
+        where: {
+          eventId: Number(eventId),
+          userId: Number(userId),
+          status: {
+            in: ["PENDING", "ACCEPTED", "REJECTED"],
+          },
+        },
+      });
+
+      if (existingApplication) {
+        throw new Error("You already have applied to this event");
+      }
+
+      //3- check the event current capacity
+      if (event.participants.length >= event.maxCapacity) {
+        throw new Error("Event has reached its maximum capacity");
+      }
+
+      //4- verify is there is cancelled application that can be updated
+      const cancelledApplication = await tx.eventParticipant.findFirst({
+        where: {
+          eventId: Number(eventId),
+          userId: Number(userId),
+          status: "CANCELLED",
+        },
+      });
+
+      //5- if there is a cancelled application, update it
+      if (cancelledApplication) {
+        const application = await tx.eventParticipant.update({
+          where: {
+            id: cancelledApplication.id,
+            version: cancelledApplication.version,
+          },
+          data: {
+            status: "PENDING",
+            version: cancelledApplication.version + 1,
+          },
+          select: {
+            id: true,
+            status: true,
+            version: true,
+            event: {
+              select: {
+                id: true,
+                title: true,
+                maxCapacity: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        });
+        return application;
+      }
+
+      //6- if there is no previous application, create a new one
+      const application = await tx.eventParticipant.create({
+        data: {
+          eventId: Number(eventId),
+          userId: Number(userId),
+          status: "PENDING",
+          version: 1,
+        },
         select: {
           id: true,
-          username: true,
-          email: true,
+          status: true,
+          version: true,
+          event: {
+            select: {
+              id: true,
+              title: true,
+              maxCapacity: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
+          },
         },
-      },
-    },
-  });
+      });
+      return application;
+    });
 
-  return application;
+    return result;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      throw new Error("The event was modificed by another user. Please refresh and try again.");
+    }
+    throw error;
+  }
 }
 
 // Get an application by id

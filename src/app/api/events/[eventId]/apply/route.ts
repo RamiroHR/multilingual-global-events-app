@@ -41,6 +41,14 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
       if (error.message === "Event has reached maximum capacity") {
         return NextResponse.json({ error: "Event has reached maximum capacity" }, { status: 400 });
       }
+      if (
+        error.message === "The event was modified by another user. Please refresh and try again."
+      ) {
+        return NextResponse.json(
+          { error: "The event was modified by another user. Please refresh and try again." },
+          { status: 409 }
+        );
+      }
     }
 
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
