@@ -52,6 +52,14 @@ const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusPa
       if (error.message.startsWith("Cannot update participation that is")) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+      if (
+        error.message == "The event was modified by another user. Please refresh and try again."
+      ) {
+        return NextResponse.json(
+          { error: "The event was modified by another user. Please refresh and try again." },
+          { status: 409 }
+        );
+      }
     }
 
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

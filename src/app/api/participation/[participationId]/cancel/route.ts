@@ -30,7 +30,7 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
   } catch (error) {
     console.error("Error cancelling participation:", error);
 
-    // Handle specific errors
+    // Handle specific errors:
     if (error instanceof Error) {
       if (error.message === "Participation not found") {
         return NextResponse.json({ error: "Participation not found" }, { status: 404 });
@@ -39,6 +39,14 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
         return NextResponse.json(
           { error: "Not authorized to cancel this participation" },
           { status: 403 }
+        );
+      }
+      if (
+        error.message == "The event was modified by another user. Please refresh and try again."
+      ) {
+        return NextResponse.json(
+          { error: "The event was modified by another user. Please refresh and try again." },
+          { status: 409 }
         );
       }
     }
