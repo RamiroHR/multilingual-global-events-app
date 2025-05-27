@@ -5,7 +5,7 @@ import { updateParticipationStatusSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
 
 type UpdateParticipationStatusParams = {
-  participationId: string;
+  participationId: number;
 };
 
 const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusParams> = async (
@@ -25,13 +25,13 @@ const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusPa
 
     const { status } = validationResult.body;
     const participationId = params.participationId;
-    const eventCreatorId = userData.userId;
+    const eventCreatorId = Number(userData.userId);
 
     // Update the participation status
     const updatedParticipation = await updateParticipationStatus({
       participationId,
       eventCreatorId,
-      newStatus: status as "APPROVED" | "REJECTED",
+      newStatus: status as "ACCEPTED" | "REJECTED",
     });
 
     return NextResponse.json(updatedParticipation);

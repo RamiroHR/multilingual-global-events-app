@@ -43,10 +43,8 @@ export default function MyEventsPage() {
     router.push(`/dashboard/my-events/${eventId}/cancel`);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManageSubscriptions = (eventId: number) => {
-    // TODO: Implement subscription management
-    // console.log("Manage subscriptions (TODO)", eventId);
+    router.push(`/dashboard/my-events/${eventId}/subscriptions`);
   };
 
   const handleCreateSuccess = () => {
