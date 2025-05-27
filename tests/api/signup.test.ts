@@ -54,7 +54,7 @@ describe("POST /api/auth/signup", () => {
 
     // response assertions
     expect(response.status).toBe(200);
-    expect(data).toHaveProperty("id");
+    expect(data).toHaveProperty("userId");
     expect(data.email).toBe(mockUserData.email);
     expect(data.username).toBe(mockUserData.username);
     expect(data).not.toHaveProperty("password");
@@ -77,7 +77,7 @@ describe("POST /api/auth/signup", () => {
 
     // test logic
     for (const testCase of testCases) {
-      const req = createMockRequest(testCase);
+      const req = createMockRequest(testCase as unknown as SignupRequestBody);
       const response = await POST(req);
       const data = await response.json();
 
