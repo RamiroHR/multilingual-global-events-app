@@ -40,7 +40,7 @@ export default function Sidebar() {
         <nav className="space-y-1 px-2 py-4">
           {navigation.map((item) => {
             const isActive = pathname.endsWith(item.href);
-            console.log(`Path: ${pathname}, Item: ${item.href}, IsActive: ${isActive}`);
+
             return (
               <Link
                 key={item.name}

@@ -16,7 +16,7 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
   useEffect(() => {
     async function fetchEvent() {
       setEventLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
       try {
         const response = await axiosInstance.get(`/api/events/${params.eventId}`);
         setEventTitle(response.data.title);

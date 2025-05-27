@@ -56,7 +56,7 @@ export const ApplicationCard = ({
         return {
           border: "border-lunar-200",
           bg: "bg-space-50",
-          text: "text-lunar-100",
+          text: "text-yellow-500/80",
           accent: "border-l-4 border-l-yellow-500",
           content: "text-lunar-100",
           detail: "text-lunar-100/50",
