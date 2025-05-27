@@ -1,5 +1,6 @@
 import { prisma } from "../prisma";
 import { Prisma } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { CreateEventInput, UpdateEventInput } from "./types";
 
 export async function createEvent(data: CreateEventInput) {
@@ -19,28 +20,39 @@ export async function createEvent(data: CreateEventInput) {
 }
 
 export async function updateEvent(eventId: string, data: UpdateEventInput, creatorId: string) {
-  // Check if the event exists and belongs to the user
-  const existingEvent = await prisma.event.findUnique({
-    where: { id: Number(eventId) },
-  });
+  try {
+    // Check if the event exists and belongs to the user
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: Number(eventId) },
+    });
 
-  if (!existingEvent) {
-    throw new Error("Event not found");
+    if (!existingEvent) {
+      throw new Error("Event not found");
+    }
+
+    if (existingEvent.creatorId !== Number(creatorId)) {
+      throw new Error("User not authorized to update this event");
+    }
+
+    // Update event information
+    const updatedEvent = await prisma.event.update({
+      where: {
+        id: Number(eventId),
+        version: existingEvent.version, // attempt to access the same version from where the event was fetched
+      },
+      data: {
+        ...data,
+        version: existingEvent.version + 1, // Increment version with update
+      },
+    });
+
+    return updatedEvent;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      throw new Error("The event was modified by another user. Please refresh and try again.");
+    }
+    throw error; // other errors
   }
-
-  if (existingEvent.creatorId !== Number(creatorId)) {
-    throw new Error("User not authorized to update this event");
-  }
-
-  // Update event information
-  const updatedEvent = await prisma.event.update({
-    where: { id: Number(eventId) },
-    data: {
-      ...data,
-    },
-  });
-
-  return updatedEvent;
 }
 
 export async function getUserEvents(userId: string) {
@@ -148,23 +160,36 @@ export async function getEvent(eventId: string) {
 }
 
 export async function cancelEvent(eventId: string, creatorId: string) {
-  // Check if the event exists and belongs to the user
-  const existingEvent = await prisma.event.findUnique({
-    where: { id: Number(eventId) },
-  });
+  try {
+    // Check if the event exists and belongs to the user
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: Number(eventId) },
+    });
 
-  if (!existingEvent) {
-    throw new Error("Event not found");
+    if (!existingEvent) {
+      throw new Error("Event not found");
+    }
+
+    if (existingEvent.creatorId !== Number(creatorId)) {
+      throw new Error("Not authorized to cancel this event");
+    }
+
+    const event = await prisma.event.update({
+      where: {
+        id: Number(eventId),
+        version: existingEvent.version, // verify it is the same version
+      },
+      data: {
+        isCancelled: true,
+        version: existingEvent.version + 1, // update version
+      } as Prisma.EventUpdateInput,
+    });
+
+    return event;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      throw new Error("The event was modified by another user. Please refresh and try again.");
+    }
+    throw error; // for other errors that may occur
   }
-
-  if (existingEvent.creatorId !== Number(creatorId)) {
-    throw new Error("Not authorized to cancel this event");
-  }
-
-  const event = await prisma.event.update({
-    where: { id: Number(eventId) },
-    data: { isCancelled: true } as Prisma.EventUpdateInput,
-  });
-
-  return event;
 }

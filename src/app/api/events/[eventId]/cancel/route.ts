@@ -28,9 +28,17 @@ const cancelEventHandler: RouteHandler<CancelEventParams> = async (
       if (error.message === "Not authorized to cancel this event") {
         return NextResponse.json({ error: "Not authorized to cancel this event" }, { status: 403 });
       }
+      if (
+        error.message === "The event was modified by another user. Please refresh and try again."
+      ) {
+        return NextResponse.json(
+          { error: "The event was modified by another user. Please refresh and try again." },
+          { status: 409 } // status code for concurrency conflicts
+        );
+      }
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to cancel event" }, { status: 500 });
   }
 };
 

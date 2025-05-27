@@ -5,14 +5,21 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
-import { getUserEvents } from "@/lib/events/utils";
+import { Event, User } from "@prisma/client";
+
+type EventWithRelations = Event & {
+  creator: User;
+  participants: Array<{
+    id: number;
+    status: string;
+    user: User;
+  }>;
+};
 
 export default function MyEventsPage() {
   const router = useRouter();
 
-  const [events, setEvents] = useState<
-    Awaited<ReturnType<typeof getUserEvents>> // define the exact type as of what getUserEvents returns
-  >([]);
+  const [events, setEvents] = useState<EventWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);

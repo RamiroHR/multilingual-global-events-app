@@ -42,6 +42,14 @@ const editEventHandler: RouteHandler<EditEventParams> = async (
       if (error.message === "Not authorized to update this event") {
         return NextResponse.json({ error: "Not authorized to update this event" }, { status: 403 });
       }
+      if (
+        error.message === "The event was modified by another user. Please refresh and try again."
+      ) {
+        return NextResponse.json(
+          { error: "The event was modified by another user. Please refresh and try again." },
+          { status: 409 } // 409 Conflict is the appropriate status code for concurrency conflicts
+        );
+      }
     }
 
     return NextResponse.json({ error: "Failed to update event" }, { status: 500 });

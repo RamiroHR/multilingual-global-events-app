@@ -1,13 +1,20 @@
 import { EventFormBase, EventFormValues } from "./EventFormBase";
 import { updateEventSchema } from "@/lib/validations/schemas";
-import { CreateEventInput } from "@/lib/events/types";
+import { Event, User } from "@prisma/client";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { FormikHelpers } from "formik";
 
 interface EditEventFormProps {
-  event: CreateEventInput & { id: string };
+  event: Event & {
+    creator: User;
+    participants: Array<{
+      id: number;
+      status: string;
+      user: User;
+    }>;
+  };
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -33,10 +40,19 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
       });
     } catch (error) {
       console.error("Update error:", error);
-      if (error instanceof AxiosError && error.response?.data?.errors) {
-        helpers.setErrors(error.response.data.errors);
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 409) {
+          helpers.setStatus({
+            error: "The event was modified by another user. Please refresh and try again.", // Handle concurrency conflict
+          });
+        } else if (error.response?.data?.errors) {
+          helpers.setErrors(error.response.data.errors); // Handle validation errors: form field specific in Formik
+        } else {
+          helpers.setStatus({
+            error: error.response?.data?.error || "An unexpected error occurred", // Handle any other API errors
+          });
+        }
       }
-      throw error;
     }
   };
 
