@@ -13,46 +13,61 @@ model User {
   id                  Int                @id @default(autoincrement())
   email               String             @unique
   username            String             @unique
+  firstName           String             @default("First Name")
+  lastName            String             @default("Last Name")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
   createdEvents       Event[]            @relation("EventCreator")
   participatingEvents EventParticipant[] @relation("Participant")
   password            Password?          @relation("UserToPassword")
+
+  @@index([email])    // for frequent searchs by email
 }
 
 model Password {
-  id        Int      @id @default(autoincrement())
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    Int      @unique
-  user      User     @relation("UserToPassword", fields: [userId], references: [id], onDelete: Cascade)
+  id                  Int                @id @default(autoincrement())
+  password            String             @default("")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  userId              Int                @unique
+  user                User               @relation("UserToPassword", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Event {
-  id           Int                @id @default(autoincrement())
-  title        String             @default("Title")
-  description  String             @default("Description")
-  date         DateTime
-  location     String?
-  isOnline     Boolean            @default(false)
-  maxCapacity  Int                @default(2)
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  creatorId    Int
-  isCancelled  Boolean            @default(false)
-  webinar      String?            @default("")
-  creator      User               @relation("EventCreator", fields: [creatorId], references: [id])
-  participants EventParticipant[] @relation("EventParticipants")
+  id                  Int                @id @default(autoincrement())
+  title               String             @default("Title")
+  description         String             @default("Description")
+  date                DateTime           @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '7 days'"))  //next week from the creation of event
+  endDate             DateTime           @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '8 days'"))  // default duration = 1 day
+  location            String             @default("")
+  isOnline            Boolean            @default(false)
+  maxCapacity         Int                @default(2)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  creatorId           Int
+  isCancelled         Boolean            @default(false)
+  webinar             String             @default("")
+  version             Int                @default(1)
+  creator             User               @relation("EventCreator", fields: [creatorId], references: [id])
+  participants        EventParticipant[] @relation("EventParticipants")
+
+  @@index([date])                        // for frequent searchs by date
+  @@index([creatorId])                   // for frequent searchs by creatorId
+  @@index([isOnline, isCancelled, date]) // for frequent searchs of upcoming events (online or in-person)
 }
 
 model EventParticipant {
-  id        Int      @id @default(autoincrement())
-  status    String   @default("PENDING")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  eventId   Int
-  userId    Int
-  event     Event    @relation("EventParticipants", fields: [eventId], references: [id])
-  user      User     @relation("Participant", fields: [userId], references: [id])
+  id                  Int                @id @default(autoincrement())
+  status              String             @default("PENDING")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  version             Int                @default(1)
+  eventId             Int
+  userId              Int
+  event               Event              @relation("EventParticipants", fields: [eventId], references: [id])
+  user                User               @relation("Participant", fields: [userId], references: [id])
 
   @@unique([eventId, userId])
+  @@index([userId, status])              // for frequent seacrh of applications by user
+  @@index([eventId, status])             // for frequent searchs of subscriptions to an event
 }
