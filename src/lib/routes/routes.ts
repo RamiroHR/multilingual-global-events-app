@@ -23,5 +23,5 @@ export default Object.freeze({
 
   // Applications management by creators
   EVENT_APPLICATIONS: (eventId: string) => `/api/events/my-events/${eventId}/applications`,
-  REVIEW_APPLICATION: (participationId: string) => `/api/participation/${participationId}/review`,
+  REVIEW_APPLICATION: (participationId: number) => `/api/participation/${participationId}/review`,
 });

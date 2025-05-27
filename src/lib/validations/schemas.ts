@@ -85,5 +85,5 @@ export const updateParticipationStatusSchema = yup.object({
   status: yup
     .string()
     .required("Status is required")
-    .oneOf(["APPROVED", "REJECTED"], "Status must be either APPROVED or REJECTED"),
+    .oneOf(["ACCEPTED", "REJECTED"], "Status must be either ACCEPTED or REJECTED"),
 });
