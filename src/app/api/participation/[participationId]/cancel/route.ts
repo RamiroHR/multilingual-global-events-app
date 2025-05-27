@@ -22,8 +22,8 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
 
     // Update participation status to CANCELLED
     const cancelledParticipation = await cancelParticipation({
-      participationId,
-      userId,
+      participationId: Number(participationId),
+      userId: Number(userId),
     });
 
     return NextResponse.json(cancelledParticipation);
