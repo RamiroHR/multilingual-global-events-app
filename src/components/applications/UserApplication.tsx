@@ -23,7 +23,7 @@ export const UserApplication = ({ application, onAccept, onReject }: UserApplica
   return (
     <div className="flex items-center p-4">
       {/* User information */}
-      <div className="flex-1 text-right">
+      <div className="w-[200px] text-right">
         <div>
           <p className="font-medium text-white">{application.user.username}</p>
           <p className="text-sm text-lunar-100">{application.user.email}</p>
@@ -31,7 +31,7 @@ export const UserApplication = ({ application, onAccept, onReject }: UserApplica
       </div>
 
       {/* application Status information */}
-      <div className="flex flex-1 justify-center">
+      <div className="flex w-[120px] justify-center">
         <span
           className={`rounded px-2 py-1 text-sm ${
             application.status === "PENDING"
@@ -46,7 +46,7 @@ export const UserApplication = ({ application, onAccept, onReject }: UserApplica
       </div>
 
       {/* Review action buttons */}
-      <div className="flex-1 text-right">
+      <div className="w-[200px] text-right">
         {application.status == "PENDING" && (
           <div className="flex items-center gap-1">
             <span className="mr-1 whitespace-nowrap p-1 text-sm"> ⟶ &nbsp; Allow ? </span>

@@ -118,7 +118,7 @@ export default function ManageSubscriptions({ params }: { params: { eventId: str
             <h3 className="mb-2 text-xl font-bold text-white">&quot;{event?.title}&quot;</h3>
           )}
 
-          {/* Indications */}
+          {/* Available Seats */}
           <p className="mb-4">{`Remaining seats: ${countSeats()}`}</p>
 
           {/* List of applications requests */}
