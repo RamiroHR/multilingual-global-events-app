@@ -11,10 +11,7 @@ export async function hashPassword(password: string) {
 }
 
 // compare raw password with hash version
-export async function comparePassword(
-  password: string,
-  hashedPassword: string
-) {
+export async function comparePassword(password: string, hashedPassword: string) {
   return bcrypt.compare(password, hashedPassword);
 }
 

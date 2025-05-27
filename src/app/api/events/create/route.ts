@@ -4,25 +4,15 @@ import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 import { createEventSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
 
-const createEventHandler: RouteHandler = async (
-  req: NextRequest,
-  userData: DecodedToken
-) => {
+const createEventHandler: RouteHandler = async (req: NextRequest, userData: DecodedToken) => {
   try {
     // Validate request body
     const validationResult = await validateRequest(createEventSchema)(req);
     if (validationResult instanceof NextResponse) return validationResult;
 
     // get event information from validated request
-    const {
-      title,
-      description,
-      date,
-      location,
-      isOnline,
-      maxCapacity,
-      webinar,
-    } = validationResult.body;
+    const { title, description, date, location, isOnline, maxCapacity, webinar } =
+      validationResult.body;
 
     // Create the event
     const event = await createEvent({
@@ -39,10 +29,7 @@ const createEventHandler: RouteHandler = async (
     return NextResponse.json(event);
   } catch (error) {
     console.error("Error Creating event:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 };
 

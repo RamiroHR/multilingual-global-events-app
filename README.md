@@ -315,6 +315,9 @@ Time:        4.608 s, estimated 5 s
 
    # Run tests
    npm run test:coverage
+
+   # Test build process
+   npm run build
    ```
 
 ## Mock Data

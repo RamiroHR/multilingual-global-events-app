@@ -16,30 +16,30 @@ export async function POST(req: NextRequest) {
     const user = await findUserByEmail(email);
 
     if (!user || !user.password) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Compare password
     const isValid = await comparePassword(password, user.password.password);
     if (!isValid) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
     // Create JWT
-    const token = await generateToken({ userId: user.id, email: user.email });
+    const token = await generateToken({
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
 
-    return NextResponse.json({ token });
+    return NextResponse.json({
+      token,
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+    });
   } catch (error) {
     console.error("Error during login:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

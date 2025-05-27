@@ -2,14 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-// import axios from "axios";
 import axiosInstance from "@/lib/axios";
 
-export default function CancelEvent({
-  params,
-}: {
-  params: { eventId: string };
-}) {
+export default function CancelEvent({ params }: { params: { eventId: string } }) {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -21,11 +16,9 @@ export default function CancelEvent({
   useEffect(() => {
     async function fetchEvent() {
       setEventLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await new Promise((resolve) => setTimeout(resolve, 2000));
       try {
-        const response = await axiosInstance.get(
-          `/api/events/${params.eventId}`
-        );
+        const response = await axiosInstance.get(`/api/events/${params.eventId}`);
         setEventTitle(response.data.title);
       } catch (err) {
         setEventTitle("");
@@ -89,8 +82,8 @@ export default function CancelEvent({
               If you cancel the event, all participants will be notified.
             </p>
             <p className="text-center">
-              The event will not be visible on your page and it will no longer
-              be displayed on the Explore page.
+              The event will not be visible on your page and it will no longer be displayed on the
+              Explore page.
             </p>
           </div>
 

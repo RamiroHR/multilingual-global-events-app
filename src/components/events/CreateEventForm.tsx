@@ -15,18 +15,13 @@ type CreateEventFormValues = Omit<CreateEventInput, "creatorId" | "date"> & {
   webinar?: string;
 };
 
-export const CreateEventForm = ({
-  onSuccess,
-  onCancel,
-}: CreateEventFormProps) => {
+export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) => {
   const router = useRouter();
 
   const initialValues: CreateEventFormValues = {
     title: "",
     description: "",
-    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 16), // Next week at current time
+    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16), // Next week at current time
     location: "",
     isOnline: false,
     maxCapacity: 2,
@@ -56,9 +51,7 @@ export const CreateEventForm = ({
 
   return (
     <div className="w-full max-w-4xl p-8">
-      <h2 className="mb-8 text-3xl font-bold text-terracotta-400">
-        Create New Event
-      </h2>
+      <h2 className="mb-8 text-3xl font-bold text-terracotta-400">Create New Event</h2>
 
       <Formik
         initialValues={initialValues}
@@ -69,15 +62,10 @@ export const CreateEventForm = ({
           <Form className="space-y-8">
             {/* Basic Information Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">
-                Basic Information
-              </h3>
+              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Basic Information</h3>
               <div className="space-y-6">
                 <div>
-                  <label
-                    htmlFor="title"
-                    className="block text-sm font-medium text-terracotta-200"
-                  >
+                  <label htmlFor="title" className="block text-sm font-medium text-terracotta-200">
                     Title
                   </label>
                   <Field
@@ -122,17 +110,12 @@ export const CreateEventForm = ({
 
             {/* Event Details Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">
-                Event Details
-              </h3>
+              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
               <div className="grid grid-cols-2 gap-6">
                 {/* Left panel */}
                 <div className="space-y-6">
                   <div>
-                    <label
-                      htmlFor="date"
-                      className="block text-sm font-medium text-terracotta-200"
-                    >
+                    <label htmlFor="date" className="block text-sm font-medium text-terracotta-200">
                       Date and Time
                     </label>
                     <Field

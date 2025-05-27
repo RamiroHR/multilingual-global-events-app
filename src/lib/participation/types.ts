@@ -1,8 +1,12 @@
-export type ParticipationStatus =
-  | "PENDING"
-  | "APPROVED"
-  | "REJECTED"
-  | "CANCELLED";
+export type ParticipationStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
+
+export interface GetSingleApplicationInput {
+  applicationId: number;
+}
+
+export interface GetUserParticipationInput {
+  userId: number;
+}
 
 export interface Participation {
   id: number;
@@ -14,12 +18,12 @@ export interface Participation {
 }
 
 export interface CancelParticipationInput {
-  participationId: string;
-  userId: string;
+  participationId: number;
+  userId: number;
 }
 
 export interface UpdateParticipationStatusInput {
-  participationId: string;
-  eventCreatorId: string;
-  newStatus: "APPROVED" | "REJECTED";
+  participationId: number;
+  eventCreatorId: number;
+  newStatus: "ACCEPTED" | "REJECTED";
 }

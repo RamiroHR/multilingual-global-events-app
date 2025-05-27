@@ -58,18 +58,12 @@ export function withAuth<TParams>(handler: RouteHandler<TParams>) {
 
     // Handle authentication failure
     if (!authResult.success) {
-      return NextResponse.json(
-        { error: authResult.error },
-        { status: authResult.status }
-      );
+      return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
     // Handle missing user data
     if (!authResult.userData) {
-      return NextResponse.json(
-        { error: "User data not found" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "User data not found" }, { status: 500 });
     }
 
     // Execute the original handler with authenticated user data

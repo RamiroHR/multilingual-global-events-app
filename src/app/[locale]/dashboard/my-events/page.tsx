@@ -43,10 +43,8 @@ export default function MyEventsPage() {
     router.push(`/dashboard/my-events/${eventId}/cancel`);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleManageSubscriptions = (eventId: number) => {
-    // TODO: Implement subscription management
-    // console.log("Manage subscriptions (TODO)", eventId);
+    router.push(`/dashboard/my-events/${eventId}/subscriptions`);
   };
 
   const handleCreateSuccess = () => {
@@ -73,15 +71,11 @@ export default function MyEventsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 items-center justify-between">
-        <h1 className="mb-2 text-2xl font-bold text-terracotta-800">
-          My Events
-        </h1>
-        <p className="mb-6 text-lunar-200">
-          Create and manage events that your are hosting!
-        </p>
+        <h1 className="mb-2 text-2xl font-bold text-terracotta-800">My Events</h1>
+        <p className="mb-6 text-lunar-200">Create and manage events that your are hosting!</p>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+          className="rounded bg-terracotta-700 px-4 py-2 text-white transition-colors hover:bg-blue-600"
         >
           Create New Event
         </button>

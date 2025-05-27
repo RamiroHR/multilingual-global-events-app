@@ -39,11 +39,7 @@ export default function LanguageSwitcher() {
               }}
             >
               <span className="mr-2 flex w-4 justify-center">
-                {locale === currentLocale ? (
-                  <FaCheck className="text-blue-500" />
-                ) : (
-                  <span />
-                )}
+                {locale === currentLocale ? <FaCheck className="text-blue-500" /> : <span />}
               </span>
               <span className="text-gray-400">{locale.toUpperCase()}</span>
             </li>

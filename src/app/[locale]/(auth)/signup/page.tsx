@@ -35,7 +35,11 @@ export default function SignupPage() {
       });
 
       // update login app state
-      login({ email: res.data.email, username: res.data.username });
+      login({
+        id: res.data.userId,
+        email: res.data.email,
+        username: res.data.username,
+      });
 
       // store jwt token in local storage
       const token = res.data.token;
@@ -55,10 +59,7 @@ export default function SignupPage() {
   return (
     <>
       <AuthForm type="signup" onSubmit={handleSignup} />
-      <Link
-        href="/login"
-        className="mt-4 block text-center text-blue-500 hover:underline"
-      >
+      <Link href="/login" className="mt-4 block text-center text-blue-500 hover:underline">
         {t("cta")}
       </Link>
     </>

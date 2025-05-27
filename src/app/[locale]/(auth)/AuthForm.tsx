@@ -5,11 +5,7 @@ import { useTranslations } from "next-intl";
 
 type AuthFormProps = {
   type: "login" | "signup";
-  onSubmit: (data: {
-    email: string;
-    password: string;
-    username?: string;
-  }) => Promise<void>;
+  onSubmit: (data: { email: string; password: string; username?: string }) => Promise<void>;
 };
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {

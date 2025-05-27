@@ -12,13 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const login = useAuthStore((state) => state.login);
 
-  const handleLogin = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
+  const handleLogin = async ({ email, password }: { email: string; password: string }) => {
     try {
       const res = await axiosInstance.post("/api/auth/login", {
         email,
@@ -26,7 +20,11 @@ export default function LoginPage() {
       });
 
       // change login app state
-      login({ email });
+      login({
+        id: res.data.userId,
+        email: res.data.email,
+        username: res.data.username,
+      });
 
       // store jwt token in local storage
       const token = res.data.token;
@@ -46,10 +44,7 @@ export default function LoginPage() {
   return (
     <>
       <AuthForm type="login" onSubmit={handleLogin} />
-      <Link
-        href="/signup"
-        className="mt-4 block text-center text-blue-500 hover:underline"
-      >
+      <Link href="/signup" className="mt-4 block text-center text-blue-500 hover:underline">
         {t("cta")}
       </Link>
     </>

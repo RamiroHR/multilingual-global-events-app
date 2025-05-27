@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useAuthStore } from "@/store/authStore";
+import axiosInstance from "@/lib/axios";
 import { Event, User } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users, Globe } from "lucide-react";
@@ -16,25 +17,29 @@ type EventWithRelations = Event & {
   }[];
 };
 
-export default function EventDetailsPage({
-  params,
-}: {
-  params: { eventId: string };
-}) {
+export default function EventDetailsPage({ params }: { params: { eventId: string } }) {
   const [event, setEvent] = useState<EventWithRelations | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasApplied, setHasApplied] = useState(false);
   const router = useRouter();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`/api/events/${params.eventId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await axiosInstance.get(`/api/events/${params.eventId}`);
         setEvent(response.data);
+
+        // Check if the current user has already applied
+        if (user?.id) {
+          const currentUser = response.data.participants.find(
+            (p: EventWithRelations["participants"][0]) =>
+              p.user.id === Number(user?.id) &&
+              (p.status === "PENDING" || p.status === "ACCEPTED" || p.status === "REJECTED")
+          );
+          setHasApplied(!!currentUser);
+        }
       } catch (error) {
         setError(error instanceof Error ? error.message : "An error occurred");
       } finally {
@@ -43,7 +48,23 @@ export default function EventDetailsPage({
     };
 
     fetchEvent();
-  }, [params.eventId]);
+  }, [params.eventId, user?.id]);
+
+  const handleJoinEvent = async () => {
+    try {
+      // apply to event logic
+      setLoading(true);
+      setError("");
+      await axiosInstance.post(`/api/events/${params.eventId}/apply`);
+      setHasApplied(true);
+    } catch (error) {
+      // handle errors
+      setError("Failed to join the event. Please try again later.");
+      console.error("Error joining the event: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -71,7 +92,7 @@ export default function EventDetailsPage({
           onClick={() => router.back()}
           className="mb-6 flex  text-terracotta-500 hover:text-terracotta-500/70"
         >
-          ← Back to Explore
+          ← Back
         </button>
 
         {/* Event Details Card */}
@@ -79,17 +100,13 @@ export default function EventDetailsPage({
           <div className="p-8">
             {/* Header */}
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-space-100">
-                {event.title}
-              </h1>
+              <h1 className="text-3xl font-bold text-space-100">{event.title}</h1>
               <p className="mt-2 text-lunar-500">by {event.creator.username}</p>
             </div>
 
             {/* Description */}
             <div className="mb-8">
-              <h2 className="mb-2 text-xl font-semibold text-space-200">
-                Description
-              </h2>
+              <h2 className="mb-2 text-xl font-semibold text-space-200">Description</h2>
               <p className="text-space-300">{event.description}</p>
             </div>
 
@@ -124,20 +141,26 @@ export default function EventDetailsPage({
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between">
-              <button
-                onClick={() => {
-                  //---------------------------------------------------------
-                  // ---> STILL TODO <---: Implement join event functionality
-                  console.log("Join event:", event.id);
-                  //---------------------------------------------------------
-                }}
-                className="rounded-md bg-cosmic-500 px-6 py-3 text-white-50 transition-colors hover:bg-cosmic-600"
-                disabled={event.participants.length >= event.maxCapacity}
-              >
-                {event.participants.length >= event.maxCapacity
-                  ? "Event Full"
-                  : "Join Event"}
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleJoinEvent}
+                  className={`rounded-md px-6 py-3 text-white-50 transition-colors ${
+                    event.participants.length >= event.maxCapacity || hasApplied
+                      ? "cursor-not-allowed bg-gray-400"
+                      : "bg-cosmic-500 hover:bg-cosmic-600"
+                  }`}
+                  disabled={event.participants.length >= event.maxCapacity || hasApplied}
+                >
+                  {event.participants.length >= event.maxCapacity ? "Event Full" : "Join Event"}
+                </button>
+
+                {hasApplied && (
+                  <span className="text-red text-terracotta">
+                    Your application was sent to the organizer!
+                  </span>
+                )}
+              </div>
+
               <span className="text-sm">
                 {event.participants.length === event.maxCapacity ? (
                   <span className="text-terracotta-500">Full</span>

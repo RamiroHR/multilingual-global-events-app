@@ -2,10 +2,7 @@ import * as yup from "yup";
 
 // Auth schemas
 export const signupSchema = yup.object({
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
   username: yup
     .string()
     .required("Username is required")
@@ -22,10 +19,7 @@ export const signupSchema = yup.object({
 });
 
 export const loginSchema = yup.object({
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
+  email: yup.string().email("Invalid email format").required("Email is required"),
   password: yup.string().required("Password is required"),
 });
 
@@ -41,14 +35,10 @@ export const createEventSchema = yup.object({
     .required("Description is required")
     .min(10, "Description must be at least 10 characters")
     .max(1000, "Description must not exceed 1000 characters"),
-  date: yup
-    .date()
-    .required("Date is required")
-    .min(new Date(), "Event date must be in the future"),
+  date: yup.date().required("Date is required").min(new Date(), "Event date must be in the future"),
   location: yup.string().when("isOnline", {
     is: false,
-    then: (schema) =>
-      schema.required("Location is required for in-person events"),
+    then: (schema) => schema.required("Location is required for in-person events"),
     otherwise: (schema) => schema.nullable(),
   }),
   isOnline: yup.boolean().required("isOnline status is required"),
@@ -59,8 +49,7 @@ export const createEventSchema = yup.object({
     .max(500, "Max capacity must not exceed 500"),
   webinar: yup.string().when("isOnline", {
     is: true,
-    then: (schema) =>
-      schema.required("Webinar link is required for online events"),
+    then: (schema) => schema.required("Webinar link is required for online events"),
     otherwise: (schema) => schema.nullable(),
   }),
 });
@@ -86,8 +75,7 @@ export const updateEventSchema = yup.object({
     .max(500, "Max capacity must not exceed 500"),
   webinar: yup.string().when("isOnline", {
     is: true,
-    then: (schema) =>
-      schema.required("Webinar link is required for online events"),
+    then: (schema) => schema.required("Webinar link is required for online events"),
     otherwise: (schema) => schema.nullable(),
   }),
 });
@@ -97,8 +85,5 @@ export const updateParticipationStatusSchema = yup.object({
   status: yup
     .string()
     .required("Status is required")
-    .oneOf(
-      ["APPROVED", "REJECTED"],
-      "Status must be either APPROVED or REJECTED"
-    ),
+    .oneOf(["ACCEPTED", "REJECTED"], "Status must be either ACCEPTED or REJECTED"),
 });
