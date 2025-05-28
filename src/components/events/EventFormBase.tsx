@@ -4,6 +4,8 @@ import { ObjectSchema } from "yup";
 
 export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date"> & {
   date: string;
+  endDate: string;
+  location: string;
   webinar?: string;
 };
 
@@ -99,13 +101,13 @@ export const EventFormBase = ({
 
             {/* Event Details Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
               <div className="grid grid-cols-2 gap-6">
                 {/* Left panel */}
                 <div className="space-y-6">
+                  <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
                   <div>
                     <label htmlFor="date" className="block text-sm font-medium text-terracotta-200">
-                      Date and Time
+                      Start Date
                     </label>
                     <Field
                       type="datetime-local"
@@ -125,10 +127,36 @@ export const EventFormBase = ({
 
                   <div>
                     <label
-                      htmlFor="maxCapacity"
+                      htmlFor="endDate"
                       className="block text-sm font-medium text-terracotta-200"
                     >
-                      Maximum Capacity
+                      End Date
+                    </label>
+                    <Field
+                      type="datetime-local"
+                      name="endDate"
+                      className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm
+                        focus:border-terracotta-400 focus:ring-terracotta-400
+                        [&::-webkit-calendar-picker-indicator]:opacity-50
+                        [&::-webkit-calendar-picker-indicator]:invert
+                        [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
+                    />
+                    <ErrorMessage
+                      name="endDate"
+                      component="div"
+                      className="mt-1 text-right text-sm italic text-terracotta-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Right panel */}
+                <div className="space-y-6">
+                  <div className="flex items-center">
+                    <label
+                      htmlFor="maxCapacity"
+                      className="block whitespace-nowrap text-sm font-medium text-terracotta-200"
+                    >
+                      Maximum Capacity :
                     </label>
                     <Field
                       type="number"
@@ -143,10 +171,7 @@ export const EventFormBase = ({
                       className="mt-1 text-right text-sm italic text-terracotta-300"
                     />
                   </div>
-                </div>
 
-                {/* Right panel */}
-                <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-terracotta-200">
                       Event Type
@@ -158,8 +183,8 @@ export const EventFormBase = ({
                           name="isOnline"
                           value="false"
                           checked={values.isOnline === false}
-                          onChange={() => {
-                            setFieldValue("isOnline", false);
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setFieldValue("isOnline", e.target.value === "true");
                           }}
                           className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
                         />
@@ -171,8 +196,8 @@ export const EventFormBase = ({
                           name="isOnline"
                           value="true"
                           checked={values.isOnline === true}
-                          onChange={() => {
-                            setFieldValue("isOnline", true);
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setFieldValue("isOnline", e.target.value === "true");
                           }}
                           className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
                         />

@@ -1,10 +1,12 @@
+import { FormikHelpers } from "formik";
 import { EventFormBase, EventFormValues } from "./EventFormBase";
 import { updateEventSchema } from "@/lib/validations/schemas";
-import { Event, User } from "@prisma/client";
+import { ObjectSchema } from "yup";
+import { Event, User } from "@/lib/types";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { FormikHelpers } from "formik";
+import ROUTES from "@/lib/routes/routes";
 
 interface EditEventFormProps {
   event: Event & {
@@ -26,6 +28,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
     title: event.title,
     description: event.description,
     date: new Date(event.date).toISOString().slice(0, 16),
+    endDate: new Date(event.endDate).toISOString().slice(0, 16),
     location: event.location || "",
     isOnline: event.isOnline,
     maxCapacity: event.maxCapacity,
@@ -34,9 +37,10 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
 
   const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
     try {
-      await axiosInstance.put(`/api/events/${event.id}/edit`, {
+      await axiosInstance.put(ROUTES.EDIT_EVENT(event.id.toString()), {
         ...values,
         date: new Date(values.date).toISOString(),
+        endDate: new Date(values.endDate).toISOString(),
       });
     } catch (error) {
       console.error("Update error:", error);
@@ -59,7 +63,8 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
   return (
     <EventFormBase
       initialValues={initialValues}
-      validationSchema={updateEventSchema}
+      //this schema validates an object with the shape of EventFormValues:
+      validationSchema={updateEventSchema as ObjectSchema<EventFormValues>}
       onSubmit={handleSubmit}
       submitButtonText="Save Changes"
       title="Edit Event"

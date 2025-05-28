@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
-import { Event, User } from "@prisma/client";
+import { Event, User } from "@/lib/types";
+import ROUTES from "@/lib/routes/routes";
 
 type EventWithRelations = Event & {
   creator: User;
@@ -27,7 +28,7 @@ export default function MyEventsPage() {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/events/my-events");
+      const response = await axiosInstance.get(ROUTES.USER_EVENTS);
       setEvents(response.data);
       setError("");
     } catch (err) {

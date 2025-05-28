@@ -11,7 +11,7 @@ const createEventHandler: RouteHandler = async (req: NextRequest, userData: Deco
     if (validationResult instanceof NextResponse) return validationResult;
 
     // get event information from validated request
-    const { title, description, date, location, isOnline, maxCapacity, webinar } =
+    const { title, description, date, endDate, location, isOnline, maxCapacity, webinar } =
       validationResult.body;
 
     // Create the event
@@ -19,11 +19,12 @@ const createEventHandler: RouteHandler = async (req: NextRequest, userData: Deco
       title,
       description,
       date: new Date(date),
+      endDate: new Date(endDate),
       location,
       isOnline,
       maxCapacity,
       webinar,
-      creatorId: Number(userData.userId),
+      creatorId: userData.userId,
     });
 
     return NextResponse.json(event);
