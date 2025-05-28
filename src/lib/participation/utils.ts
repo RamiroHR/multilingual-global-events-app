@@ -157,6 +157,10 @@ export async function getUserParticipations({ userId }: GetUserParticipationInpu
     },
   });
 
+  if (!userParticipations) {
+    throw new Error("User's participations not found.");
+  }
+
   return userParticipations;
 }
 
@@ -208,45 +212,48 @@ export async function getEventApplications({
 // Cancel a participation to an event (as a participant)
 export async function cancelParticipation({ participationId, userId }: CancelParticipationInput) {
   try {
-    // Check if participation exists and belongs to the user
-    const participation = await prisma.eventParticipant.findUnique({
-      where: { id: Number(participationId) },
-      include: {
-        event: true,
-      },
-    });
+    // start a transaction for read and update consistency
+    return await prisma.$transaction(async (tx) => {
+      // Check if participation exists and belongs to the user
+      const participation = await tx.eventParticipant.findUnique({
+        where: { id: Number(participationId) },
+        include: {
+          event: true,
+        },
+      });
 
-    if (!participation) {
-      throw new Error("Participation not found");
-    }
+      if (!participation) {
+        throw new Error("Participation not found");
+      }
 
-    if (participation.userId !== Number(userId)) {
-      throw new Error("Not authorized to cancel this participation");
-    }
+      if (participation.userId !== Number(userId)) {
+        throw new Error("Not authorized to cancel this participation");
+      }
 
-    // Update the participation status to CANCELLED
-    const updatedParticipation = await prisma.eventParticipant.update({
-      where: {
-        id: Number(participationId),
-        version: participation.version, // target correct version
-      },
-      data: {
-        status: "CANCELLED" as ParticipationStatus,
-        version: participation.version + 1, // update version
-      },
-      include: {
-        event: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
+      // Update the participation status to CANCELLED
+      const updatedParticipation = await tx.eventParticipant.update({
+        where: {
+          id: Number(participationId),
+          version: participation.version, // target correct version
+        },
+        data: {
+          status: "CANCELLED" as ParticipationStatus,
+          version: participation.version + 1, // update version
+        },
+        include: {
+          event: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return updatedParticipation;
+      return updatedParticipation;
+    });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       throw new Error("The event was modified by another user. Please refresh and try again.");
@@ -262,51 +269,56 @@ export async function updateParticipationStatus({
   newStatus,
 }: UpdateParticipationStatusInput) {
   try {
-    // Check if participation exists
-    const participation = await prisma.eventParticipant.findUnique({
-      where: { id: Number(participationId) },
-      include: {
-        event: true,
-      },
-    });
+    // use transaction for read and update consistency:
+    return await prisma.$transaction(async (tx) => {
+      // 1- Check if participation exists
+      const participation = await tx.eventParticipant.findUnique({
+        where: { id: Number(participationId) },
+        include: {
+          event: true,
+        },
+      });
 
-    if (!participation) {
-      throw new Error("Participation not found");
-    }
+      if (!participation) {
+        throw new Error("Participation not found");
+      }
 
-    // Verify the user is the event creator
-    if (participation.event.creatorId !== Number(eventCreatorId)) {
-      throw new Error("Not authorized to update this participation status");
-    }
+      // Verify the user is the event creator
+      if (participation.event.creatorId !== Number(eventCreatorId)) {
+        throw new Error("Not authorized to update this participation status");
+      }
 
-    // Verify the participation is in a valid state for update
-    if (participation.status !== "PENDING") {
-      throw new Error(`Cannot update participation that is ${participation.status.toLowerCase()}`);
-    }
+      // Verify the participation is in a valid state for update
+      if (participation.status !== "PENDING") {
+        throw new Error(
+          `Cannot update participation that is ${participation.status.toLowerCase()}`
+        );
+      }
 
-    // Update the participation status
-    const updatedParticipation = await prisma.eventParticipant.update({
-      where: {
-        id: Number(participationId),
-        version: participation.version,
-      },
-      data: {
-        status: newStatus as ParticipationStatus,
-        version: participation.version + 1,
-      },
-      include: {
-        event: true,
-        user: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
+      // 2- Update the participation status
+      const updatedParticipation = await tx.eventParticipant.update({
+        where: {
+          id: Number(participationId),
+          version: participation.version,
+        },
+        data: {
+          status: newStatus as ParticipationStatus,
+          version: participation.version + 1,
+        },
+        include: {
+          event: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return updatedParticipation;
+      return updatedParticipation;
+    });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
       throw new Error("The event was modified by another user. Please refresh and try again.");
