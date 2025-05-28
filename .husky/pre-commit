@@ -1,3 +1,6 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
 echo "⭐ Running pre-commit checks..."
 echo ""
 echo ""
@@ -6,7 +9,7 @@ echo ""
 echo "⭐ Checking code formatting..."
 npm run format:check || {
     echo "❌ Code formatting check failed. Please run 'npm run format' to fix formatting issues."
-    false
+    exit 1
 }
 echo "✅ Code formatting check passed!"
 echo ""
@@ -16,7 +19,7 @@ echo ""
 echo "⭐ Running linting checks..."
 npm run lint:check || {
     echo "❌ Linting check failed. Please fix the issues above."
-    false
+    exit 1
 }
 echo "✅ Linting check passed!"
 echo ""
@@ -26,7 +29,7 @@ echo ""
 echo "⭐ Running tests..."
 npm run test || {
     echo "❌ Tests failed. Please fix the failing tests."
-    false
+    exit 1
 }
 echo "✅ All tests passed!"
 echo ""
@@ -36,7 +39,7 @@ echo ""
 echo "⭐  Checking build..."
 npm run build || {
     echo "❌ Build failed. Please fix the build issues."
-    false
+    exit 1
 }
 echo "✅ Build check passed!"
 echo ""
