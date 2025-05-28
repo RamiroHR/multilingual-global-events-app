@@ -1,25 +1,23 @@
 import { prisma } from "../prisma";
 import { Prisma } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateEventInput, UpdateEventInput } from "./types";
+import { CreateEventInput, UpdateEventInput, Event, Id, EventWithRelations } from "@/lib/types";
 
-export async function createEvent(data: CreateEventInput) {
+export async function createEvent(data: CreateEventInput): Promise<Event> {
   const newEvent = prisma.event.create({
     data: {
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      location: data.location,
-      isOnline: data.isOnline,
-      maxCapacity: data.maxCapacity,
-      creatorId: data.creatorId,
-      webinar: data.webinar || "",
-    } as unknown as Prisma.EventCreateInput,
+      ...data,
+      creatorId: Number(data.creatorId), // convert string Id to number for Prisma
+    },
   });
   return newEvent;
 }
 
-export async function updateEvent(eventId: string, data: UpdateEventInput, creatorId: string) {
+export async function updateEvent(
+  eventId: Id,
+  data: UpdateEventInput,
+  creatorId: Id
+): Promise<Event> {
   try {
     // use transaction for read and update consistency.
     return await prisma.$transaction(async (tx) => {
@@ -58,7 +56,7 @@ export async function updateEvent(eventId: string, data: UpdateEventInput, creat
   }
 }
 
-export async function getUserEvents(userId: string) {
+export async function getEventsByCreator(userId: Id): Promise<EventWithRelations[]> {
   const events = await prisma.event.findMany({
     where: {
       creatorId: Number(userId),
@@ -92,7 +90,7 @@ export async function getUserEvents(userId: string) {
   return events;
 }
 
-export async function getUpcomingEvents(limit: number = 12) {
+export async function getUpcomingEvents(limit: number = 12): Promise<EventWithRelations[]> {
   const currentDate = new Date();
 
   const events = await prisma.event.findMany({
@@ -134,7 +132,7 @@ export async function getUpcomingEvents(limit: number = 12) {
   return events;
 }
 
-export async function getEvent(eventId: string) {
+export async function getEvent(eventId: Id): Promise<EventWithRelations> {
   const event = await prisma.event.findUnique({
     where: { id: Number(eventId) },
     include: {
@@ -166,7 +164,7 @@ export async function getEvent(eventId: string) {
   return event;
 }
 
-export async function cancelEvent(eventId: string, creatorId: string) {
+export async function cancelEvent(eventId: Id, creatorId: Id): Promise<Event> {
   try {
     // use transacion for read and update data consistency
     return await prisma.$transaction(async (tx) => {

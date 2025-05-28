@@ -1,15 +1,15 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../prisma";
 import {
-  GetSingleApplicationInput,
-  GetUserParticipationInput,
-  CancelParticipationInput,
-  UpdateParticipationStatusInput,
-  ParticipationStatus,
-} from "./types";
+  Id,
+  ApplicationWithRelations,
+  ApplicationWithParticipants,
+  ApplicationWithInfo,
+  ParticipationReviewStatus,
+} from "@/lib/types";
 
 // Apply to an event as a participant -  manage concurrency with atomic transactions
-export async function applyToEvent(eventId: string, userId: string) {
+export async function applyToEvent(eventId: Id, userId: Id): Promise<ApplicationWithRelations> {
   try {
     // start a transaction - multi steps logic
     const result = await prisma.$transaction(async (tx) => {
@@ -117,7 +117,7 @@ export async function applyToEvent(eventId: string, userId: string) {
 }
 
 // Get an application by id
-export async function getApplicationById({ applicationId }: GetSingleApplicationInput) {
+export async function getApplicationById(applicationId: Id): Promise<ApplicationWithRelations> {
   const participation = await prisma.eventParticipant.findUnique({
     where: { id: Number(applicationId) },
     include: {
@@ -140,9 +140,9 @@ export async function getApplicationById({ applicationId }: GetSingleApplication
 }
 
 // Get all participations of a specific user
-export async function getUserParticipations({ userId }: GetUserParticipationInput) {
+export async function getUserParticipations(userId: Id): Promise<ApplicationWithParticipants[]> {
   const userParticipations = await prisma.eventParticipant.findMany({
-    where: { userId: userId },
+    where: { userId: Number(userId) },
     include: {
       event: {
         include: {
@@ -165,13 +165,10 @@ export async function getUserParticipations({ userId }: GetUserParticipationInpu
 }
 
 // Get all application of a specific event (creator rights)
-export async function getEventApplications({
-  eventId,
-  creatorId,
-}: {
-  eventId: string;
-  creatorId: string;
-}) {
+export async function getEventApplications(
+  eventId: Id,
+  creatorId: Id
+): Promise<ApplicationWithInfo[]> {
   // Check if the event exists and belongs to the user
   const existingEvent = await prisma.event.findUnique({
     where: { id: Number(eventId) },
@@ -210,7 +207,10 @@ export async function getEventApplications({
 }
 
 // Cancel a participation to an event (as a participant)
-export async function cancelParticipation({ participationId, userId }: CancelParticipationInput) {
+export async function cancelParticipation(
+  participationId: Id,
+  userId: Id
+): Promise<ApplicationWithRelations> {
   try {
     // start a transaction for read and update consistency
     return await prisma.$transaction(async (tx) => {
@@ -237,7 +237,7 @@ export async function cancelParticipation({ participationId, userId }: CancelPar
           version: participation.version, // target correct version
         },
         data: {
-          status: "CANCELLED" as ParticipationStatus,
+          status: "CANCELLED",
           version: participation.version + 1, // update version
         },
         include: {
@@ -263,11 +263,11 @@ export async function cancelParticipation({ participationId, userId }: CancelPar
 }
 
 // Review an application as the event creator
-export async function updateParticipationStatus({
-  participationId,
-  eventCreatorId,
-  newStatus,
-}: UpdateParticipationStatusInput) {
+export async function updateParticipationStatus(
+  participationId: Id,
+  eventCreatorId: Id,
+  newStatus: ParticipationReviewStatus
+): Promise<ApplicationWithRelations> {
   try {
     // use transaction for read and update consistency:
     return await prisma.$transaction(async (tx) => {
@@ -302,7 +302,7 @@ export async function updateParticipationStatus({
           version: participation.version,
         },
         data: {
-          status: newStatus as ParticipationStatus,
+          status: newStatus,
           version: participation.version + 1,
         },
         include: {

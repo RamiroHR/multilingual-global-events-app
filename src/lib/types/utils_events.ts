@@ -1,4 +1,4 @@
-import { Id, Event } from "./database";
+import { Id, Event, UserInfo } from "./database";
 
 // Base type for creating an event
 type CreateEventBase = Pick<
@@ -14,4 +14,15 @@ export type CreateEventInput = CreateEventBase & {
 // Input type for updating an event (Partial --> fields are optional)
 export type UpdateEventInput = Partial<CreateEventBase> & {
   isCancelled?: boolean;
+};
+
+// Type for the participant info typically selected
+export type ParticipantWithUser = {
+  user: UserInfo;
+};
+
+// Type for the event with included relations
+export type EventWithRelations = Event & {
+  creator: UserInfo;
+  participants: ParticipantWithUser[];
 };
