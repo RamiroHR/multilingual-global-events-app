@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateEvent } from "@/lib/events/index";
+import { updateEvent } from "@/lib/events/utils";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 import { updateEventSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";

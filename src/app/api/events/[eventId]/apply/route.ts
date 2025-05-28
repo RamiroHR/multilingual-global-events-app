@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { applyToEvent } from "@/lib/participation/index";
+import { applyToEvent } from "@/lib/participation/utils";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { Id } from "@/lib/types";
 
 type ApplyEventParams = {
-  eventId: string;
+  eventId: Id;
 };
 
 const applyEventHandler: RouteHandler<ApplyEventParams> = async (

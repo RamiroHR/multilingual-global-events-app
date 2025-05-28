@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateParticipationStatus } from "@/lib/participation";
+import { updateParticipationStatus } from "@/lib/participation/utils";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 import { updateParticipationStatusSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
 
 type UpdateParticipationStatusParams = {
-  participationId: number;
+  participationId: string;
 };
 
 const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusParams> = async (
@@ -25,14 +25,14 @@ const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusPa
 
     const { status } = validationResult.body;
     const participationId = params.participationId;
-    const eventCreatorId = Number(userData.userId);
+    const eventCreatorId = userData.userId;
 
     // Update the participation status
-    const updatedParticipation = await updateParticipationStatus({
+    const updatedParticipation = await updateParticipationStatus(
       participationId,
       eventCreatorId,
-      newStatus: status as "ACCEPTED" | "REJECTED",
-    });
+      status
+    );
 
     return NextResponse.json(updatedParticipation);
   } catch (error) {

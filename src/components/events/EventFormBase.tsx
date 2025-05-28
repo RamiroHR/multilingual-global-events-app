@@ -1,8 +1,8 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import { CreateEventInput } from "@/lib/events/types";
+import { CreateEventInput } from "@/lib/types";
 import { ObjectSchema } from "yup";
 
-export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date"> & {
+export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date" | "endDate"> & {
   date: string;
   endDate: string;
   location: string;

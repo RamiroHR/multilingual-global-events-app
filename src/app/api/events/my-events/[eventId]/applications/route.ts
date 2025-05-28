@@ -1,4 +1,4 @@
-import { getEventApplications } from "@/lib/participation/index";
+import { getEventApplications } from "@/lib/participation/utils";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,7 +21,7 @@ const handleGetEventApplications: RouteHandler<EventApplicationsParams> = async 
     const creatorId = userData.userId;
 
     // get applications for the event
-    const eventApplications = await getEventApplications({ eventId, creatorId });
+    const eventApplications = await getEventApplications(eventId, creatorId);
     return NextResponse.json(eventApplications);
   } catch (error) {
     // handle errors

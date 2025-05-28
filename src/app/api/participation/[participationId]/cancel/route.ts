@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cancelParticipation } from "@/lib/participation";
+import { cancelParticipation } from "@/lib/participation/utils";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
 
 type CancelParticipationParams = {
@@ -21,10 +21,7 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
     const userId = userData.userId;
 
     // Update participation status to CANCELLED
-    const cancelledParticipation = await cancelParticipation({
-      participationId: Number(participationId),
-      userId: Number(userId),
-    });
+    const cancelledParticipation = await cancelParticipation(participationId, userId);
 
     return NextResponse.json(cancelledParticipation);
   } catch (error) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
-import { getUserParticipations } from "@/lib/participation/index";
+import { getUserParticipations } from "@/lib/participation/utils";
 
 const getUserParticipationsHandler: RouteHandler = async (
   req: NextRequest,
@@ -8,9 +8,7 @@ const getUserParticipationsHandler: RouteHandler = async (
 ) => {
   try {
     // logic
-    const applications = await getUserParticipations({
-      userId: Number(userData.userId),
-    });
+    const applications = await getUserParticipations(userData.userId);
     return NextResponse.json(applications);
   } catch (error) {
     // handle errors

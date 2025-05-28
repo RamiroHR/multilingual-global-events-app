@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
-import { getApplicationById } from "@/lib/participation/index";
+import { getApplicationById } from "@/lib/participation/utils";
 
 type GetParticipationParams = {
   participationId: string;
@@ -16,9 +16,7 @@ const getParticipationHandler: RouteHandler<GetParticipationParams> = async (
       return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
     }
 
-    const participation = await getApplicationById({
-      applicationId: Number(params.participationId),
-    });
+    const participation = await getApplicationById(params.participationId);
 
     // Verify the user is authorized to view this participation
     if (participation.userId !== Number(userData.userId)) {
