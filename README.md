@@ -306,8 +306,9 @@ Time:        4.608 s, estimated 5 s
 
 1. **Develop new features, fiw bugs, refactor, etc**
 
-2. **Before Committing**
+2. **Before Committing**  
    The project uses Husky to enforce code quality checks before each commit. The following checks will run automatically:
+
    - Code formatting (Prettier)
    - Linting (ESLint)
    - Tests
@@ -316,6 +317,7 @@ Time:        4.608 s, estimated 5 s
    If any check fails, the commit will be blocked until the issues are fixed.
 
    You can also run these checks manually:
+
    ```bash
    # Format the code
    npm run format
@@ -331,6 +333,7 @@ Time:        4.608 s, estimated 5 s
    ```
 
    To temporarily bypass the pre-commit hooks (not recommended):
+
    ```bash
    git commit -m "your message" --no-verify
    ```
@@ -340,7 +343,6 @@ Time:        4.608 s, estimated 5 s
    git add .
    git commit -m "your commit message"  # This command will run the husky verifications automatically
    ```
-
 
 ## Mock Data
 
