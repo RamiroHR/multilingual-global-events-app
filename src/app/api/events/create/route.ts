@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createEvent } from "@/lib/events/utils";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
 import { createEventSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
 

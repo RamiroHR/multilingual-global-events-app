@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
 import { getUserParticipations } from "@/lib/participation/utils";
 
 const getUserParticipationsHandler: RouteHandler = async (

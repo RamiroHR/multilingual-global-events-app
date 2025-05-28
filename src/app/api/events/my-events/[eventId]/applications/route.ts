@@ -1,5 +1,6 @@
 import { getEventApplications } from "@/lib/participation/utils";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 type EventApplicationsParams = {

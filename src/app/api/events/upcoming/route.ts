@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUpcomingEvents } from "@/lib/events/utils";
-import { RouteHandler, withAuth } from "@/lib/auth/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler } from "@/lib/types";
 
 const EVENTS_PER_PAGE = 12;
 

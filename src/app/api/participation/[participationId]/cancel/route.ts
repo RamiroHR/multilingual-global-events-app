@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cancelParticipation } from "@/lib/participation/utils";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
 
 type CancelParticipationParams = {
   participationId: string;
