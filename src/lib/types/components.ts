@@ -41,3 +41,13 @@ export interface ErrorDisplayProps {
   error: string;
   // className?: string;
 }
+
+export interface EventFilterProps {
+  showOnlineOnly: boolean;
+  onFilterChange: (showOnlineOnly: boolean) => void;
+}
+
+// Loading and Error states
+export interface LoadingSpinnerProps {
+  size?: "sm" | "md" | "lg";
+}

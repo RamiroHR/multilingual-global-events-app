@@ -7,6 +7,8 @@ import { EventWithRelations } from "@/lib/types/utils_events";
 import { ErrorResponse } from "@/lib/types/routes";
 import ROUTES from "@/lib/routes/routes";
 import axios, { AxiosError } from "axios";
+import { EventFilter } from "@/components/events/EventFilter";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
@@ -63,28 +65,10 @@ export default function ExplorationPage() {
       </div>
 
       {/* Filters Section */}
-      <div className="rounded bg-gradient-to-r from-space-300 to-terracotta-900 shadow-sm">
-        <div className="container mx-auto p-4">
-          <div className="flex items-center justify-end space-x-4">
-            <label className="flex items-center space-x-2 text-space-200">
-              <input
-                type="checkbox"
-                checked={showOnlineOnly}
-                onChange={(e) => handleFilterChange(e.target.checked)}
-                className="rounded border-lunar-300 text-cosmic-500 focus:ring-cosmic-500"
-              />
-              <span>Show online events only</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <EventFilter showOnlineOnly={showOnlineOnly} onFilterChange={handleFilterChange} />
 
       {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="size-8 animate-spin rounded-full border-b-2 border-cosmic-500"></div>
-        </div>
-      )}
+      {loading && <LoadingSpinner />}
 
       {/* Error State */}
       {error && (
