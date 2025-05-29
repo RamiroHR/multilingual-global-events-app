@@ -1,3 +1,5 @@
+import { EventWithRelations } from "./utils_events";
+
 // Common component props
 export interface BaseCardProps {
   className?: string;
@@ -22,4 +24,20 @@ export interface NavItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
+}
+
+// Event components
+export interface EventListProps {
+  events: EventWithRelations[];
+}
+
+export interface EventCardProps {
+  event: EventWithRelations;
+  // className?: string;
+  onViewDetails?: (eventId: number) => void;
+}
+
+export interface ErrorDisplayProps {
+  error: string;
+  // className?: string;
 }

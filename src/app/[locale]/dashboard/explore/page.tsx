@@ -1,18 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { EventList } from "@/components/events/EventList";
 import axiosInstance from "@/lib/axios";
-import { Event, User } from "@prisma/client";
-
-type EventWithRelations = Event & {
-  creator: User;
-  participants: {
-    id: number;
-    status: string;
-    user: User;
-  }[];
-};
+import { EventWithRelations } from "@/lib/types/utils_events";
+import { ErrorResponse } from "@/lib/types/routes";
+import ROUTES from "@/lib/routes/routes";
+import axios, { AxiosError } from "axios";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
@@ -20,26 +14,41 @@ export default function ExplorationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       // get upcoming events
-      const response = await axiosInstance.get("/api/events/upcoming");
+      const response = await axiosInstance.get<EventWithRelations[]>(ROUTES.UPCOMING_EVENTS);
       setEvents(response.data);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response?.data) {
+          setError(axiosError.response.data.message);
+        } else {
+          setError("Failed to fetch events");
+        }
+      } else {
+        setError("An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // nuild function only once at first render
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [fetchEvents]);
 
   // Filter online events only
-  const displayedEvents = showOnlineOnly ? events.filter((event) => event.isOnline) : events;
+  const handleFilterChange = useCallback((checked: boolean) => {
+    setShowOnlineOnly(checked);
+  }, []);
+
+  const displayedEvents = useMemo(() => {
+    return showOnlineOnly ? events.filter((event) => event.isOnline) : events;
+  }, [events, showOnlineOnly]);
 
   return (
     <div className="min-h-screen rounded bg-space-300">
@@ -61,7 +70,7 @@ export default function ExplorationPage() {
               <input
                 type="checkbox"
                 checked={showOnlineOnly}
-                onChange={(e) => setShowOnlineOnly(e.target.checked)}
+                onChange={(e) => handleFilterChange(e.target.checked)}
                 className="rounded border-lunar-300 text-cosmic-500 focus:ring-cosmic-500"
               />
               <span>Show online events only</span>

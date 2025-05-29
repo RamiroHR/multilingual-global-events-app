@@ -1,21 +1,19 @@
-import { Event, User } from "@prisma/client";
+import { memo, useCallback } from "react";
 import { format } from "date-fns";
 import { Calendar, MapPin, Users, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { EventCardProps } from "@/lib/types/components";
 
-interface EventCardProps {
-  event: Event & {
-    creator: User;
-    participants: {
-      id: number;
-      status: string;
-      user: User;
-    }[];
-  };
-}
-
-export const EventCard = ({ event }: EventCardProps) => {
+export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
   const router = useRouter();
+
+  const handleViewDetails = useCallback(() => {
+    if (onViewDetails) {
+      onViewDetails(event.id);
+    } else {
+      router.push(`/dashboard/explore/${event.id}`);
+    }
+  }, [event.id, onViewDetails, router]);
 
   return (
     <div className="overflow-hidden rounded-lg border border-lunar-200 bg-gray-50 shadow-md transition-shadow duration-300 hover:shadow-lg">
@@ -64,7 +62,7 @@ export const EventCard = ({ event }: EventCardProps) => {
         {/* Action Buttons */}
         <div className="mt-6 flex items-center justify-between">
           <button
-            onClick={() => router.push(`/dashboard/explore/${event.id}`)}
+            onClick={handleViewDetails}
             className="rounded-md bg-cosmic-500 px-4 py-2 text-white-50 transition-colors hover:bg-cosmic-600"
           >
             View Details
@@ -82,4 +80,6 @@ export const EventCard = ({ event }: EventCardProps) => {
       </div>
     </div>
   );
-};
+});
+
+EventCard.displayName = "EventCard";
