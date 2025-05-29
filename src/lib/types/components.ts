@@ -16,3 +16,10 @@ export interface AuthFormProps {
   type: AuthFormType;
   onSubmit: (data: AuthFormData) => Promise<void>;
 }
+
+// types for the Sidebar
+export interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
