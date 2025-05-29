@@ -58,6 +58,10 @@
   "overrides": [
     {
       "files": ["src/mocks/*.template.ts"],
+      "rules": {
+        "import/no-unresolved": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      },
       "parserOptions": {
         "project": null
       }

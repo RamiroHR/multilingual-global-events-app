@@ -1,3 +1,4 @@
+import { Id } from "./database";
 import { EventWithRelations } from "./utils_events";
 
 // Common component props
@@ -33,13 +34,11 @@ export interface EventListProps {
 
 export interface EventCardProps {
   event: EventWithRelations;
-  // className?: string;
   onViewDetails?: (eventId: number) => void;
 }
 
 export interface ErrorDisplayProps {
   error: string;
-  // className?: string;
 }
 
 export interface EventFilterProps {
@@ -50,4 +49,26 @@ export interface EventFilterProps {
 // Loading and Error states
 export interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
+}
+
+// Event Detail components
+export interface EventDetailsHeaderProps {
+  title: string;
+  creator: Id;
+}
+
+export interface EventDetailsInfoProps {
+  date: Date;
+  isOnline: boolean;
+  location?: string;
+  participantsCount: number;
+  maxCapacity: number;
+}
+
+export interface EventDetailsActionsProps {
+  hasApplied: boolean;
+  isFull: boolean;
+  spotsLeft: number;
+  onJoinEvent: () => Promise<void>;
+  error?: string;
 }
