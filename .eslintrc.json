@@ -54,5 +54,13 @@
     "import/resolver": {
       "typescript": {} // recognize '@/*' import statements
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/mocks/*.template.ts"],
+      "parserOptions": {
+        "project": null
+      }
+    }
+  ]
 }
