@@ -1,6 +1,7 @@
 import { Id, ParticipationStatus } from "./database";
 import { EventWithRelations } from "./utils_events";
 import { Application } from "./utils_applications";
+import { ReactNode } from "react";
 
 // Common component props
 export interface BaseCardProps {
@@ -47,11 +48,6 @@ export interface EventFilterProps {
   onFilterChange: (showOnlineOnly: boolean) => void;
 }
 
-// Loading and Error states
-export interface LoadingSpinnerProps {
-  size?: "sm" | "md" | "lg";
-}
-
 // Event Detail components
 export interface EventDetailsHeaderProps {
   title: string;
@@ -86,4 +82,27 @@ export interface ApplicationCardProps {
 export interface ApplicationListProps {
   applications: Application[];
   onApplicationUpdate?: () => Promise<void>;
+}
+
+// Loading and Error states
+export interface LoadingSpinnerProps {
+  size?: "sm" | "md" | "lg";
+}
+
+// type for ConfirmationModal component
+export interface ConfirmationModalProps {
+  title: string;
+  eventTitle: string;
+  isLoading: boolean;
+  error?: string | null;
+  children: ReactNode;
+  primaryAction?: {
+    label: string;
+    onClick: () => void;
+    isLoading?: boolean;
+  };
+  secondaryAction: {
+    label: string;
+    onClick: () => void;
+  };
 }
