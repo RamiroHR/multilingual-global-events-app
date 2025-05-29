@@ -54,10 +54,10 @@ describe("POST /api/auth/signup", () => {
 
     // response assertions
     expect(response.status).toBe(200);
-    expect(data).toHaveProperty("userId");
-    expect(data.email).toBe(mockUserData.email);
-    expect(data.username).toBe(mockUserData.username);
-    expect(data).not.toHaveProperty("password");
+    expect(data.user).toHaveProperty("id");
+    expect(data.user.email).toBe(mockUserData.email);
+    expect(data.user.username).toBe(mockUserData.username);
+    expect(data.user).not.toHaveProperty("password");
 
     // database verification
     const createdUser = await findUserByEmail(mockUserData.email);
@@ -83,7 +83,7 @@ describe("POST /api/auth/signup", () => {
 
       // response assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Validation failed");
+      expect(data.error).toBe("Validation error");
     }
   });
 
@@ -108,7 +108,7 @@ describe("POST /api/auth/signup", () => {
 
     // response assertions
     expect(response.status).toBe(409);
-    expect(data.error).toBe("Email already in use");
+    expect(data.error).toBe("Conflict");
   });
 
   it("should hash the password before storing", async () => {

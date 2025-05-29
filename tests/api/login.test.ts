@@ -96,11 +96,11 @@ describe("POST /api/auth/login", () => {
 
       // assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Validation failed");
+      expect(data.error).toBe("Validation error");
     }
   });
 
-  it("should return401 for invalid credentials", async () => {
+  it("should return 401 for invalid credentials", async () => {
     const testUser = await signupTestUser();
 
     // cases of invalid credentials
@@ -117,7 +117,7 @@ describe("POST /api/auth/login", () => {
 
       //assertions
       expect(response.status).toBe(401);
-      expect(data.error).toBe("Invalid credentials");
+      expect(data.error).toBe("Unauthorized");
     }
   });
 });

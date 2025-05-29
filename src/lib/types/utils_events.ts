@@ -1,7 +1,7 @@
 import { Id, Event, UserInfo } from "./database";
 
 // Base type for creating an event
-type CreateEventBase = Pick<
+export type CreateEventBase = Pick<
   Event,
   "title" | "description" | "date" | "endDate" | "location" | "isOnline" | "maxCapacity" | "webinar"
 >;

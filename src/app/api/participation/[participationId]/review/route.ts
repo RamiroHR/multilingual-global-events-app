@@ -4,32 +4,45 @@ import { withAuth } from "@/lib/auth/utils";
 import { RouteHandler, DecodedToken } from "@/lib/types";
 import { updateParticipationStatusSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
+import { Id, ApplicationResponse, ErrorResponse, ReviewApplicationRequest } from "@/lib/types";
 
 type UpdateParticipationStatusParams = {
-  participationId: string;
+  participationId: Id;
 };
 
 const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusParams> = async (
   req: NextRequest,
   userData: DecodedToken,
   params
-) => {
+): Promise<NextResponse<ApplicationResponse | ErrorResponse>> => {
   try {
     // Ensure participation ID is included
     if (!params?.participationId) {
-      return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
+      const errorResponse: ErrorResponse = {
+        error: "Bad Request",
+        message: "Participation ID is required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     // Validate request body and get the parsed body
     const validationResult = await validateRequest(updateParticipationStatusSchema)(req);
-    if (validationResult instanceof NextResponse) return validationResult;
+    if (validationResult instanceof NextResponse) {
+      const errorResponse: ErrorResponse = {
+        error: "Validation error",
+        message: "Invalid request data",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
 
-    const { status } = validationResult.body;
+    const { status } = validationResult.body as ReviewApplicationRequest;
     const participationId = params.participationId;
     const eventCreatorId = userData.userId;
 
     // Update the participation status
-    const updatedParticipation = await updateParticipationStatus(
+    const updatedParticipation: ApplicationResponse = await updateParticipationStatus(
       participationId,
       eventCreatorId,
       status
@@ -42,28 +55,47 @@ const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusPa
     // Handle specific errors
     if (error instanceof Error) {
       if (error.message === "Participation not found") {
-        return NextResponse.json({ error: "Participation not found" }, { status: 404 });
+        const errorResponse: ErrorResponse = {
+          error: "Not Found",
+          message: "Participation not found",
+          statusCode: 404,
+        };
+        return NextResponse.json(errorResponse, { status: 404 });
       }
       if (error.message === "Not authorized to update this participation status") {
-        return NextResponse.json(
-          { error: "Not authorized to update this participation status" },
-          { status: 403 }
-        );
+        const errorResponse: ErrorResponse = {
+          error: "Forbidden",
+          message: "Not authorized to update this participation status",
+          statusCode: 403,
+        };
+        return NextResponse.json(errorResponse, { status: 403 });
       }
       if (error.message.startsWith("Cannot update participation that is")) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        const errorResponse: ErrorResponse = {
+          error: "Bad Request",
+          message: error.message,
+          statusCode: 400,
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
       }
       if (
-        error.message == "The event was modified by another user. Please refresh and try again."
+        error.message === "The event was modified by another user. Please refresh and try again."
       ) {
-        return NextResponse.json(
-          { error: "The event was modified by another user. Please refresh and try again." },
-          { status: 409 }
-        );
+        const errorResponse: ErrorResponse = {
+          error: "Conflict",
+          message: "The event was modified by another user. Please refresh and try again.",
+          statusCode: 409,
+        };
+        return NextResponse.json(errorResponse, { status: 409 });
       }
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to update participation status",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 };
 

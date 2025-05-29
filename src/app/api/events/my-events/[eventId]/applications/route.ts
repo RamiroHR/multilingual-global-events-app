@@ -2,19 +2,25 @@ import { getEventApplications } from "@/lib/participation/utils";
 import { withAuth } from "@/lib/auth/utils";
 import { RouteHandler, DecodedToken } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
+import { Id, EventApplicationsResponse, ErrorResponse } from "@/lib/types";
 
 type EventApplicationsParams = {
-  eventId: string;
+  eventId: Id;
 };
 
 const handleGetEventApplications: RouteHandler<EventApplicationsParams> = async (
   req: NextRequest,
   userData: DecodedToken,
   params
-) => {
+): Promise<NextResponse<EventApplicationsResponse | ErrorResponse>> => {
   try {
     if (!params?.eventId) {
-      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
+      const errorResponse: ErrorResponse = {
+        error: "Bad request",
+        message: "Event ID ir required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     // set creator id and event id
@@ -22,7 +28,10 @@ const handleGetEventApplications: RouteHandler<EventApplicationsParams> = async 
     const creatorId = userData.userId;
 
     // get applications for the event
-    const eventApplications = await getEventApplications(eventId, creatorId);
+    const eventApplications: EventApplicationsResponse = await getEventApplications(
+      eventId,
+      creatorId
+    );
     return NextResponse.json(eventApplications);
   } catch (error) {
     // handle errors
@@ -30,16 +39,29 @@ const handleGetEventApplications: RouteHandler<EventApplicationsParams> = async 
 
     if (error instanceof Error) {
       if (error.message === "Event not found") {
-        return NextResponse.json({ error: "Event not found" }, { status: 404 });
+        const errorResponse: ErrorResponse = {
+          error: "Not Found",
+          message: "Event not found",
+          statusCode: 404,
+        };
+        return NextResponse.json(errorResponse, { status: 404 });
       }
       if (error.message === "User not authorized to see applications of this event") {
-        return NextResponse.json(
-          { error: "Not authorized to see applications for this event" },
-          { status: 403 }
-        );
+        const errorResponse: ErrorResponse = {
+          error: "Forbidden",
+          message: "Not authorized to see applications for this event",
+          statusCode: 403,
+        };
+        return NextResponse.json(errorResponse, { status: 403 });
       }
     }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to fetch event applications",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 };
 

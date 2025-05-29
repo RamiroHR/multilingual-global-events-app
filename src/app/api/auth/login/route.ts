@@ -3,26 +3,44 @@ import { findUserByEmail } from "@/lib/user";
 import { comparePassword, generateToken } from "@/lib/jwt";
 import { loginSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
+import { LoginRequest, AuthResponse, ErrorResponse } from "@/lib/types/routes";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse | ErrorResponse>> {
   try {
     // Validate request body and get the parsed body
     const validationResult = await validateRequest(loginSchema)(req);
-    if (validationResult instanceof NextResponse) return validationResult;
+    if (validationResult instanceof NextResponse) {
+      const errorResponse: ErrorResponse = {
+        error: "Validation error",
+        message: "Invalid request data",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
 
-    const { email, password } = validationResult.body;
+    const { email, password } = validationResult.body as LoginRequest;
 
     // Find if user exists and its stored hashedPassword
     const user = await findUserByEmail(email);
 
     if (!user || !user.password) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      const errorResponse: ErrorResponse = {
+        error: "Unauthorized",
+        message: "Invalid credentials",
+        statusCode: 401,
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
     }
 
     // Compare password
     const isValid = await comparePassword(password, user.password.password);
     if (!isValid) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      const errorResponse: ErrorResponse = {
+        error: "Unauthorized",
+        message: "Invalid credentials",
+        statusCode: 401,
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
     }
 
     // Create JWT
@@ -32,14 +50,23 @@ export async function POST(req: NextRequest) {
       username: user.username,
     });
 
-    return NextResponse.json({
+    const authResponse: AuthResponse = {
       token,
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
+      user: {
+        id: user.id.toString(),
+        email: user.email,
+        username: user.username,
+      },
+    };
+
+    return NextResponse.json(authResponse);
   } catch (error) {
     console.error("Error during login:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to login",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }
