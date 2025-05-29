@@ -1,18 +1,14 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-
-type AuthFormProps = {
-  type: "login" | "signup";
-  onSubmit: (data: { email: string; password: string; username?: string }) => Promise<void>;
-};
+import { AuthFormProps, AuthFormData } from "@/lib/types/components";
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState("");
 
   // set locale messages to use
@@ -20,23 +16,34 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   const tSignup = useTranslations("SignupPage");
   const t = type === "login" ? tLogin : tSignup;
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setError("");
+      setSuccess("");
 
-    try {
-      if (type === "login") await onSubmit({ email, password });
-      if (type === "signup") await onSubmit({ email, password, username });
-      setSuccess(t("success-message"));
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || t("error-message"));
-      } else {
-        setError(t("error-message"));
+      try {
+        const formData: AuthFormData = {
+          email,
+          password,
+          ...(type === "signup" && { username }),
+        };
+
+        await onSubmit(formData);
+        setSuccess(t("success-message"));
+      } catch (err: unknown) {
+        // handle any error thrown by the onSubmit handler
+        if (err instanceof Error) {
+          // use the generic error form the api
+          setError(err.message);
+        } else {
+          // fallback to generic error message
+          setError(t("error-message"));
+        }
       }
-    }
-  };
+    },
+    [email, password, username, type, onSubmit, t]
+  );
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -73,8 +80,16 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
       >
         {t("button")}
       </button>
-      {error && <p className="text-center text-red-500">{error}</p>}
-      {success && <p className="text-center text-green-500">{success}</p>}
+      {error && (
+        <p className="text-center text-red-500" role="alert">
+          {error}
+        </p>
+      )}
+      {success && (
+        <p className="text-center text-green-500" role="status">
+          {success}
+        </p>
+      )}
     </form>
   );
 }
