@@ -1,5 +1,6 @@
-import { Id } from "./database";
+import { Id, ParticipationStatus } from "./database";
 import { EventWithRelations } from "./utils_events";
+import { Application } from "./utils_applications";
 
 // Common component props
 export interface BaseCardProps {
@@ -71,4 +72,18 @@ export interface EventDetailsActionsProps {
   spotsLeft: number;
   onJoinEvent: () => Promise<void>;
   error?: string;
+}
+
+// Type for the application in the joining page
+export type ApplicationStatus = ParticipationStatus;
+
+export interface ApplicationCardProps {
+  applicationId: number;
+  event: EventWithRelations;
+  applicationStatus: ApplicationStatus;
+}
+
+export interface ApplicationListProps {
+  applications: Application[];
+  onApplicationUpdate?: () => Promise<void>;
 }

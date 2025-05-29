@@ -1,5 +1,12 @@
-import { User, Event, EventParticipant, UserInfo, EventInfo } from "./database";
-import { ParticipantWithUser } from "./utils_events";
+import {
+  User,
+  Event,
+  EventParticipant,
+  UserInfo,
+  EventInfo,
+  ParticipationStatus,
+} from "./database";
+import { ParticipantWithUser, EventWithRelations } from "./utils_events";
 
 // Type for the application with included relations
 export type ApplicationWithRelations = EventParticipant & {
@@ -25,3 +32,10 @@ export type ApplicationWithInfo = EventParticipant & {
 
 // type for possible application status review response by creator
 export type ParticipationReviewStatus = "ACCEPTED" | "REJECTED";
+
+// Type for the application in the joining page
+export type Application = {
+  id: number;
+  status: ParticipationStatus;
+  event: EventWithRelations;
+};

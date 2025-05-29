@@ -1,20 +1,8 @@
-import { Event, User } from "@prisma/client";
+import { useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import { MapPin, Users, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-interface ApplicationCardProps {
-  applicationId: number;
-  event: Event & {
-    creator: User;
-    participants: {
-      id: number;
-      status: string;
-      user: User;
-    }[];
-  };
-  applicationStatus: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
-}
+import { ApplicationCardProps, ApplicationStatus } from "@/lib/types";
 
 export const ApplicationCard = ({
   applicationId,
@@ -23,57 +11,56 @@ export const ApplicationCard = ({
 }: ApplicationCardProps) => {
   const router = useRouter();
 
-  const getStatusStyles = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return {
-          border: "border-lunar-200",
-          bg: "bg-lunar-50",
-          text: "text-cosmic-500",
-          accent: "border-l-4 border-l-cosmic-500",
-          content: "text-space-100",
-          detail: "text-space-100/50",
-        };
-      case "ACCEPTED":
-        return {
-          border: "border-lunar-200",
-          bg: "bg-white-50",
-          text: "text-terracotta-100",
-          accent: "border-l-4 border-l-terracotta-500",
-          content: "text-space-100",
-          detail: "text-space-100/50",
-        };
-      case "REJECTED":
-        return {
-          border: "border-lunar-200",
-          bg: "bg-space-50",
-          text: "text-lunar-100",
-          accent: "border-l-4 border-l-white-500",
-          content: "text-lunar-100",
-          detail: "text-lunar-100/50",
-        };
-      case "CANCELLED":
-        return {
-          border: "border-lunar-200",
-          bg: "bg-space-50",
-          text: "text-yellow-500/80",
-          accent: "border-l-4 border-l-yellow-500",
-          content: "text-lunar-100",
-          detail: "text-lunar-100/50",
-        };
-      default:
-        return {
-          border: "border-lunar-200",
-          bg: "bg-space-50",
-          text: "text-lunar-100",
-          accent: "",
-          content: "text-space-100",
-          detail: "text-space-100/50",
-        };
-    }
-  };
+  const getStatusStyles = useCallback((status: ApplicationStatus) => {
+    const styles = {
+      PENDING: {
+        border: "border-lunar-200",
+        bg: "bg-lunar-50",
+        text: "text-cosmic-500",
+        accent: "border-l-4 border-l-cosmic-500",
+        content: "text-space-100",
+        detail: "text-space-100/50",
+      },
+      ACCEPTED: {
+        border: "border-lunar-200",
+        bg: "bg-white-50",
+        text: "text-terracotta-100",
+        accent: "border-l-4 border-l-terracotta-500",
+        content: "text-space-100",
+        detail: "text-space-100/50",
+      },
+      REJECTED: {
+        border: "border-lunar-200",
+        bg: "bg-space-50",
+        text: "text-lunar-100",
+        accent: "border-l-4 border-l-white-500",
+        content: "text-lunar-100",
+        detail: "text-lunar-100/50",
+      },
+      CANCELLED: {
+        border: "border-lunar-200",
+        bg: "bg-space-50",
+        text: "text-yellow-500/80",
+        accent: "border-l-4 border-l-yellow-500",
+        content: "text-lunar-100",
+        detail: "text-lunar-100/50",
+      },
+    };
+    return styles[status];
+  }, []);
 
-  const styles = getStatusStyles(applicationStatus);
+  const styles = useMemo(
+    () => getStatusStyles(applicationStatus),
+    [applicationStatus, getStatusStyles]
+  );
+
+  const handleViewDetails = useCallback(() => {
+    router.push(`/dashboard/explore/${event.id}`);
+  }, [router, event.id]);
+
+  const handleLeaveEvent = useCallback(() => {
+    router.push(`/dashboard/joining/${applicationId}/cancel`);
+  }, [router, applicationId]);
 
   return (
     <div
@@ -127,14 +114,14 @@ export const ApplicationCard = ({
       {/* Action Button */}
       <div className="ml-4 flex flex-col gap-2">
         <button
-          onClick={() => router.push(`/dashboard/explore/${event.id}`)}
+          onClick={handleViewDetails}
           className="rounded-md bg-cosmic-500 px-4 py-2 text-white-50
             transition-colors hover:bg-cosmic-600"
         >
           View Details
         </button>
         <button
-          onClick={() => router.push(`/dashboard/joining/${applicationId}/cancel`)}
+          onClick={handleLeaveEvent}
           className="rounded-md bg-terracotta-500 px-4 py-2 text-white-50
             transition-colors hover:bg-cosmic-600"
         >
