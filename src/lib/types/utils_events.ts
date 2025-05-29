@@ -18,6 +18,8 @@ export type UpdateEventInput = Partial<CreateEventBase> & {
 
 // Type for the participant info typically selected
 export type ParticipantWithUser = {
+  id: number;
+  status: string;
   user: UserInfo;
 };
 

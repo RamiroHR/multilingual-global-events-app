@@ -144,7 +144,9 @@ export async function getEvent(eventId: Id): Promise<EventWithRelations> {
         },
       },
       participants: {
-        include: {
+        select: {
+          id: true,
+          status: true,
           user: {
             select: {
               id: true,
