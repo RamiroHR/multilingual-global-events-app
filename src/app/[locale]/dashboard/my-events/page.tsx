@@ -1,71 +1,78 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/lib/axios";
+import axios, { AxiosError } from "axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
-import { Event, User } from "@/lib/types";
 import ROUTES from "@/lib/routes/routes";
-
-type EventWithRelations = Event & {
-  creator: User;
-  participants: Array<{
-    id: number;
-    status: string;
-    user: User;
-  }>;
-};
+import { EventWithRelations, ErrorResponse } from "@/lib/types";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 export default function MyEventsPage() {
   const router = useRouter();
 
   const [events, setEvents] = useState<EventWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(ROUTES.USER_EVENTS);
+      const response = await axiosInstance.get<EventWithRelations[]>(ROUTES.USER_EVENTS);
       setEvents(response.data);
-      setError("");
-    } catch (err) {
-      setError("Failed to load events. Please try again later.");
-      console.error("Error fetching events:", err);
+      setError(null);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response?.data) {
+          setError(axiosError.response.data.message);
+        } else {
+          setError("Failed to fetch user events.");
+        }
+      } else {
+        setError("An unexpected error occurred while fetching the events.");
+      }
+      console.error("Error while fetching events", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [fetchEvents]);
 
-  const handleEdit = (eventId: number) => {
-    router.push(`/dashboard/my-events/${eventId}/edit`);
-  };
+  const handleEdit = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/edit`);
+    },
+    [router]
+  );
 
-  const handleCancel = (eventId: number) => {
-    router.push(`/dashboard/my-events/${eventId}/cancel`);
-  };
+  const handleCancel = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/cancel`);
+    },
+    [router]
+  );
 
-  const handleManageSubscriptions = (eventId: number) => {
-    router.push(`/dashboard/my-events/${eventId}/subscriptions`);
-  };
+  const handleManageSubscriptions = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/subscriptions`);
+    },
+    [router]
+  );
 
-  const handleCreateSuccess = () => {
+  const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
     fetchEvents(); // Refresh the events list
-  };
+  }, [fetchEvents]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="size-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-      </div>
-    );
+    <LoadingSpinner />;
   }
 
   if (error) {

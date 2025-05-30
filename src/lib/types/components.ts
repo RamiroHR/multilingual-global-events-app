@@ -1,7 +1,9 @@
 import { Id, ParticipationStatus } from "./database";
-import { EventWithRelations } from "./utils_events";
+import { EventWithRelations, CreateEventInput } from "./utils_events";
 import { Application } from "./utils_applications";
 import { ReactNode } from "react";
+import { ObjectSchema } from "yup";
+import { FormikHelpers } from "formik";
 
 // Common component props
 export interface BaseCardProps {
@@ -105,4 +107,37 @@ export interface ConfirmationModalProps {
     label: string;
     onClick: () => void;
   };
+}
+
+// type for EventOwnerCard
+export interface EventOwnerCardProps {
+  event: EventWithRelations;
+  onEdit: (eventId: number) => void;
+  onCancel: (eventId: number) => void;
+  onManageSubscriptions: (eventId: number) => void;
+}
+
+// types for the edit event form
+export interface EditEventFormProps {
+  event: EventWithRelations;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+// types ofr the EventFormBase
+export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date" | "endDate"> & {
+  date: string;
+  endDate: string;
+  location: string;
+  webinar?: string;
+};
+
+export interface EventFormBaseProps {
+  initialValues: EventFormValues;
+  validationSchema: ObjectSchema<EventFormValues>;
+  onSubmit: (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => Promise<void>;
+  submitButtonText: string;
+  title: string;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
