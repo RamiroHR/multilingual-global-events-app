@@ -32,12 +32,12 @@ export default function CancelParticipation({ params }: { params: { participatio
         if (axiosError.response?.data) {
           setError(axiosError.response.data.message);
         } else {
-          setError("Failed to load event");
+          setError("Failed to load the participation");
         }
       } else {
-        setError("An unexpected error occurred");
+        setError("An unexpected error occurred while fetching the participation");
       }
-      console.error("Error fetching participationor:", error);
+      console.error("Error fetching participation:", error);
     } finally {
       setEventLoading(false);
     }

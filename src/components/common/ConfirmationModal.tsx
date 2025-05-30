@@ -12,7 +12,7 @@ export const ConfirmationModal = ({
 }: ConfirmationModalProps) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="max-h-[90vh] w-1/2 max-w-4xl overflow-y-auto rounded-lg bg-space-200 shadow-xl">
+      <div className="max-h-[90vh] w-[600px] max-w-4xl overflow-y-auto rounded-lg bg-space-200 shadow-xl">
         <div className="w-full max-w-2xl p-8">
           {/* Modal Title Section */}
           <h2
@@ -22,8 +22,8 @@ export const ConfirmationModal = ({
             {title}
           </h2>
 
-          {/* Event title section */}
-          <div className="mb-8 flex h-8 items-center justify-center">
+          {/* Event title & detail section */}
+          <div className="mb-4 flex h-8 items-center justify-center">
             {isLoading ? (
               <LoadingSpinner />
             ) : (
@@ -51,7 +51,7 @@ export const ConfirmationModal = ({
                 onClick={primaryAction.onClick}
                 disabled={primaryAction.isLoading}
               >
-                {primaryAction.isLoading ? "Loading..." : primaryAction.label}
+                {primaryAction.isLoading ? "Processing..." : primaryAction.label}
               </button>
             )}
 

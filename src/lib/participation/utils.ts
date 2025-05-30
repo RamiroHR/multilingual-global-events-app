@@ -164,7 +164,7 @@ export async function getUserParticipations(userId: Id): Promise<ApplicationWith
   return userParticipations;
 }
 
-// Get all application of a specific event (creator rights)
+// Get all applications of a specific event (creator rights)
 export async function getEventApplications(
   eventId: Id,
   creatorId: Id
@@ -200,6 +200,9 @@ export async function getEventApplications(
           maxCapacity: true,
         },
       },
+    },
+    orderBy: {
+      updatedAt: "desc",
     },
   });
 
