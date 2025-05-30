@@ -1,6 +1,7 @@
 import { FormikHelpers } from "formik";
-import { EventFormBase, EventFormValues } from "./EventFormBase";
+import { EventFormBase } from "./EventFormBase";
 import { createEventSchema } from "@/lib/validations/schemas";
+import { EventFormValues } from "@/lib/types";
 import { ObjectSchema } from "yup";
 import { AxiosError } from "axios";
 import axiosInstance from "@/lib/axios";

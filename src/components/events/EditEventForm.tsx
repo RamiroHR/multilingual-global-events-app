@@ -1,29 +1,13 @@
 import { FormikHelpers } from "formik";
-import { EventFormBase, EventFormValues } from "./EventFormBase";
+import { EventFormBase } from "./EventFormBase";
 import { updateEventSchema } from "@/lib/validations/schemas";
 import { ObjectSchema } from "yup";
-import { Event, User } from "@/lib/types";
+import { EditEventFormProps, EventFormValues } from "@/lib/types";
 import axiosInstance from "@/lib/axios";
 import { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
 import ROUTES from "@/lib/routes/routes";
 
-interface EditEventFormProps {
-  event: Event & {
-    creator: User;
-    participants: Array<{
-      id: number;
-      status: string;
-      user: User;
-    }>;
-  };
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}
-
 export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps) => {
-  const router = useRouter();
-
   const initialValues: EventFormValues = {
     title: event.title,
     description: event.description,
@@ -68,8 +52,8 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
       onSubmit={handleSubmit}
       submitButtonText="Save Changes"
       title="Edit Event"
-      onSuccess={onSuccess || (() => router.push("/dashboard/my-events"))}
-      onCancel={onCancel || (() => router.back())}
+      onSuccess={onSuccess}
+      onCancel={onCancel}
     />
   );
 };

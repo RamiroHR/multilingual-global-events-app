@@ -1,23 +1,5 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
-import { CreateEventInput } from "@/lib/types";
-import { ObjectSchema } from "yup";
-
-export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date" | "endDate"> & {
-  date: string;
-  endDate: string;
-  location: string;
-  webinar?: string;
-};
-
-interface EventFormBaseProps {
-  initialValues: EventFormValues;
-  validationSchema: ObjectSchema<EventFormValues>;
-  onSubmit: (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => Promise<void>;
-  submitButtonText: string;
-  title: string;
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}
+import { EventFormBaseProps, EventFormValues } from "@/lib/types";
 
 export const EventFormBase = ({
   initialValues,
@@ -36,6 +18,19 @@ export const EventFormBase = ({
       throw error;
     }
   };
+
+  const errorStyle = "mt-1 text-right text-sm italic text-red-500";
+  const labelStyle = "block text-sm font-medium text-terracotta-200";
+
+  const inputFieldStyle =
+    "mt-1 block w-full rounded-md border-terracotta-500/30 " +
+    "bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm " +
+    "focus:border-terracotta-400 focus:ring-terracotta-400";
+
+  const calendarStyle =
+    "[&::-webkit-calendar-picker-indicator]:opacity-50 " +
+    "[&::-webkit-calendar-picker-indicator]:invert " +
+    "[&::-webkit-calendar-picker-indicator]:hover:opacity-100";
 
   return (
     <div className="w-full max-w-4xl p-8">
@@ -60,27 +55,20 @@ export const EventFormBase = ({
               <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Basic Information</h3>
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-terracotta-200">
+                  <label htmlFor="title" className={labelStyle}>
                     Title
                   </label>
                   <Field
                     type="text"
                     name="title"
                     placeholder="Enter event title"
-                    className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm placeholder:text-lunar-300 focus:border-terracotta-400 focus:ring-terracotta-400"
+                    className={inputFieldStyle}
                   />
-                  <ErrorMessage
-                    name="title"
-                    component="div"
-                    className="mt-1 text-right text-sm italic text-terracotta-300"
-                  />
+                  <ErrorMessage name="title" component="div" className={errorStyle} />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-terracotta-200"
-                  >
+                  <label htmlFor="description" className={labelStyle}>
                     Description
                   </label>
                   <Field
@@ -88,13 +76,9 @@ export const EventFormBase = ({
                     name="description"
                     rows={4}
                     placeholder="Describe your event..."
-                    className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm placeholder:text-lunar-300 focus:border-terracotta-400 focus:ring-terracotta-400"
+                    className={inputFieldStyle}
                   />
-                  <ErrorMessage
-                    name="description"
-                    component="div"
-                    className="mt-1 text-right text-sm italic text-terracotta-300"
-                  />
+                  <ErrorMessage name="description" component="div" className={errorStyle} />
                 </div>
               </div>
             </div>
@@ -106,56 +90,34 @@ export const EventFormBase = ({
                 <div className="space-y-6">
                   <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
                   <div>
-                    <label htmlFor="date" className="block text-sm font-medium text-terracotta-200">
+                    <label htmlFor="date" className={labelStyle}>
                       Start Date
                     </label>
                     <Field
                       type="datetime-local"
                       name="date"
-                      className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm
-                        focus:border-terracotta-400 focus:ring-terracotta-400
-                        [&::-webkit-calendar-picker-indicator]:opacity-50
-                        [&::-webkit-calendar-picker-indicator]:invert
-                        [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
+                      className={`${inputFieldStyle} ${calendarStyle}`}
                     />
-                    <ErrorMessage
-                      name="date"
-                      component="div"
-                      className="mt-1 text-right text-sm italic text-terracotta-300"
-                    />
+                    <ErrorMessage name="date" component="div" className={errorStyle} />
                   </div>
 
                   <div>
-                    <label
-                      htmlFor="endDate"
-                      className="block text-sm font-medium text-terracotta-200"
-                    >
+                    <label htmlFor="endDate" className={labelStyle}>
                       End Date
                     </label>
                     <Field
                       type="datetime-local"
                       name="endDate"
-                      className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm
-                        focus:border-terracotta-400 focus:ring-terracotta-400
-                        [&::-webkit-calendar-picker-indicator]:opacity-50
-                        [&::-webkit-calendar-picker-indicator]:invert
-                        [&::-webkit-calendar-picker-indicator]:hover:opacity-100"
+                      className={`${inputFieldStyle} ${calendarStyle}`}
                     />
-                    <ErrorMessage
-                      name="endDate"
-                      component="div"
-                      className="mt-1 text-right text-sm italic text-terracotta-300"
-                    />
+                    <ErrorMessage name="endDate" component="div" className={errorStyle} />
                   </div>
                 </div>
 
                 {/* Right panel */}
                 <div className="space-y-6">
                   <div className="flex items-center">
-                    <label
-                      htmlFor="maxCapacity"
-                      className="block whitespace-nowrap text-sm font-medium text-terracotta-200"
-                    >
+                    <label htmlFor="maxCapacity" className={labelStyle}>
                       Maximum Capacity :
                     </label>
                     <Field
@@ -163,19 +125,13 @@ export const EventFormBase = ({
                       name="maxCapacity"
                       min="2"
                       max="500"
-                      className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2 text-lunar-300 shadow-sm focus:border-terracotta-400 focus:ring-terracotta-400"
+                      className={inputFieldStyle}
                     />
-                    <ErrorMessage
-                      name="maxCapacity"
-                      component="div"
-                      className="mt-1 text-right text-sm italic text-terracotta-300"
-                    />
+                    <ErrorMessage name="maxCapacity" component="div" className={errorStyle} />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-terracotta-200">
-                      Event Type
-                    </label>
+                    <label className={labelStyle}>Event Type</label>
                     <div className="mt-2 flex space-x-6">
                       <label className="inline-flex items-center">
                         <Field
@@ -208,49 +164,31 @@ export const EventFormBase = ({
 
                   {!values.isOnline && (
                     <div>
-                      <label
-                        htmlFor="location"
-                        className="block text-sm font-medium text-terracotta-200"
-                      >
+                      <label htmlFor="location" className={labelStyle}>
                         Location
                       </label>
                       <Field
                         type="text"
                         name="location"
                         placeholder="Enter event location"
-                        className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2
-                          text-lunar-300 shadow-sm placeholder:text-lunar-300 focus:border-terracotta-400
-                          focus:ring-terracotta-400"
+                        className={inputFieldStyle}
                       />
-                      <ErrorMessage
-                        name="location"
-                        component="div"
-                        className="mt-1 text-right text-sm italic text-terracotta-300"
-                      />
+                      <ErrorMessage name="location" component="div" className={errorStyle} />
                     </div>
                   )}
 
                   {values.isOnline && (
                     <div>
-                      <label
-                        htmlFor="webinar"
-                        className="block text-sm font-medium text-terracotta-200"
-                      >
+                      <label htmlFor="webinar" className={labelStyle}>
                         Meeting Link
                       </label>
                       <Field
                         type="text"
                         name="webinar"
                         placeholder="https://..."
-                        className="mt-1 block w-full rounded-md border-terracotta-500/30 bg-space-400/40 px-4 py-2
-                          text-lunar-300 shadow-sm placeholder:text-lunar-300 focus:border-terracotta-400
-                          focus:ring-terracotta-400"
+                        className={inputFieldStyle}
                       />
-                      <ErrorMessage
-                        name="webinar"
-                        component="div"
-                        className="mt-1 text-right text-sm italic text-terracotta-300"
-                      />
+                      <ErrorMessage name="webinar" component="div" className={errorStyle} />
                     </div>
                   )}
                 </div>
