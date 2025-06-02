@@ -2,14 +2,18 @@ import { NextResponse } from "next/server";
 import { getEventsByCreator } from "@/lib/events/utils";
 import { withAuth } from "@/lib/auth/utils";
 import { RouteHandler } from "@/lib/types";
-import { EventsResponse, ErrorResponse } from "@/lib/types/routes";
+import { EventsResponse, ErrorResponse, MyEventsParams } from "@/lib/types/routes";
 
-const getMyEventsHandler: RouteHandler = async (
+const getMyEventsHandler: RouteHandler<MyEventsParams> = async (
   req,
-  userData
+  userData,
+  params
 ): Promise<NextResponse<EventsResponse | ErrorResponse>> => {
   try {
-    const events = await getEventsByCreator(userData.userId);
+    const events = await getEventsByCreator(userData.userId, {
+      timeFilter: params?.timeFilter || "all",
+      orderBy: params?.orderBy || "asc",
+    });
     return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching user events:", error);

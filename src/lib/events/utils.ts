@@ -56,14 +56,32 @@ export async function updateEvent(
   }
 }
 
-export async function getEventsByCreator(userId: Id): Promise<EventWithRelations[]> {
+export async function getEventsByCreator(
+  userId: Id,
+  options?: {
+    timeFilter?: "all" | "future" | "past"; // More explicit option
+    orderBy?: "asc" | "desc";
+  }
+): Promise<EventWithRelations[]> {
+  const now = new Date();
   const events = await prisma.event.findMany({
     where: {
       creatorId: Number(userId),
       isCancelled: false,
-    } as Prisma.EventWhereInput,
+      // TimeFilter. If 'all' or undefined, no date filter is applied
+      ...(options?.timeFilter === "future" && {
+        date: {
+          gt: now,
+        },
+      }),
+      ...(options?.timeFilter === "past" && {
+        date: {
+          lt: now,
+        },
+      }),
+    }, // as Prisma.EventWhereInput,
     orderBy: {
-      date: "asc",
+      date: options?.orderBy || "asc",
     },
     include: {
       creator: {

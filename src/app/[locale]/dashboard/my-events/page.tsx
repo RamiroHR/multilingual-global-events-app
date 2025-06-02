@@ -21,7 +21,9 @@ export default function MyEventsPage() {
   const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get<EventWithRelations[]>(ROUTES.USER_EVENTS);
+      const response = await axiosInstance.get<EventWithRelations[]>(
+        ROUTES.USER_EVENTS({ timeFilter: "future", orderBy: "asc" })
+      );
       setEvents(response.data);
       setError(null);
     } catch (error) {

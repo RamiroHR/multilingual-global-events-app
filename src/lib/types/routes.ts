@@ -33,6 +33,12 @@ export type AuthResponse = {
   };
 };
 
+// Define the params type
+export type MyEventsParams = {
+  timeFilter?: "all" | "future" | "past";
+  orderBy?: "asc" | "desc";
+};
+
 // Request body types for routes
 export type CreateEventRequest = CreateEventBase;
 export type UpdateEventRequest = UpdateEventInput;

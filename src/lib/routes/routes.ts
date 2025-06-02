@@ -10,7 +10,12 @@ export default Object.freeze({
   DETAIL_EVENT: (eventId: string) => `/api/events/${eventId}`,
 
   // Creator events
-  USER_EVENTS: "/api/events/my-events",
+  USER_EVENTS: (params?: { timeFilter?: string; orderBy?: string }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.timeFilter) queryParams.append("timeFilter", params.timeFilter);
+    if (params?.orderBy) queryParams.append("orderBy", params.orderBy);
+    return `/api/events/my-events${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+  },
   CREATE_EVENT: "/api/events/create",
   EDIT_EVENT: (eventId: string) => `/api/events/${eventId}/edit`,
   CANCEL_EVENT: (eventId: string) => `/api/events/${eventId}/cancel`,
