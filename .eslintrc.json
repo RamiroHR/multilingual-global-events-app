@@ -43,6 +43,7 @@
     ],
     "react/react-in-jsx-scope": "off", // Not needed for Next.js / React 17+ (no need to import React in every file)
     "node/no-unsupported-features/es-syntax": "off", // Allow ES modules in Node.js (import/export in backend)
+    "node/no-unsupported-features/node-builtins": "off",
     "tailwindcss/no-custom-classname": "off", // Allow custom Tailwind class names
     "import/no-unresolved": "error", //
     "node/no-missing-import": "off" // Don't flag as error TypeScript import aliases like '@/*'
