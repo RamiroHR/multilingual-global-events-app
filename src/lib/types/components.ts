@@ -143,3 +143,14 @@ export interface EventFormBaseProps {
   onSuccess?: () => void;
   onCancel?: () => void;
 }
+
+// types for calendar component
+export interface CalendarProps {
+  futureHostedEvents: EventWithRelations[];
+  futureActivities: Application[];
+}
+
+export type CalendarTile = {
+  date: Date;
+  view: string;
+};

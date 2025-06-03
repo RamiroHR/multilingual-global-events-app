@@ -11,6 +11,7 @@ import { ApplicationCard } from "@/components/events/ApplicationCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useAuthStore } from "@/store/authStore";
 import { CalendarCheck, Sparkles, Users } from "lucide-react";
+import { CalendarPreview } from "@/components/dashboard/CalendarPreview";
 
 export default function DashboardHome() {
   const { user } = useAuthStore();
@@ -91,6 +92,10 @@ export default function DashboardHome() {
       pastHostedCount: pastHostedEvents.length,
       totalParticipantsHosted: pastHostedEvents.reduce(
         (acc, event) => acc + event.participants.filter((p) => p.status === "ACCEPTED").length,
+        0
+      ),
+      totalPendingApplications: futureHostedEvents.reduce(
+        (acc, event) => acc + event.participants.filter((p) => p.status === "PENDING").length,
         0
       ),
       futureActivitiesCount: futureActivities.length,
@@ -196,13 +201,22 @@ export default function DashboardHome() {
           </div>
 
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
-            <p className="text-lunar-300">Your upcoming events calendar will appear here.</p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Pending Reviews</h2>
+            <p className="text-lunar-300">
+              Your have {stats.totalPendingApplications} users awaiting for your reply.
+            </p>
           </div>
 
+          {/* <div className="rounded-lg bg-space-200 p-6">
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
+            <p className="text-lunar-300">Your upcoming events calendar will appear here.</p>
+          </div> */}
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Recent Activity</h2>
-            <p className="text-lunar-300">Your recent activities and updates will appear here.</p>
+            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
+            <CalendarPreview
+              futureHostedEvents={futureHostedEvents}
+              futureActivities={futureActivities}
+            />
           </div>
         </section>
       </div>
