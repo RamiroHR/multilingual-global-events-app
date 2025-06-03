@@ -3,7 +3,7 @@ import { CreateEventBase, UpdateEventInput, EventWithRelations } from "./utils_e
 import {
   ApplicationWithRelations,
   ApplicationWithInfo,
-  ApplicationWithParticipants,
+  Application,
   ParticipationReviewStatus,
 } from "./utils_applications";
 
@@ -50,7 +50,7 @@ export type ReviewApplicationRequest = {
 export type EventResponse = Event;
 export type EventsResponse = EventWithRelations[];
 export type ApplicationResponse = ApplicationWithRelations;
-export type ApplicationsResponse = ApplicationWithParticipants[];
+export type ApplicationsResponse = Application[];
 export type EventApplicationsResponse = ApplicationWithInfo[];
 
 // Error response type

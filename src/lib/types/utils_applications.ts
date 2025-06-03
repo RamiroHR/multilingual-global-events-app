@@ -20,10 +20,6 @@ export type EventPeople = {
   participants: ParticipantWithUser[];
 };
 
-export type ApplicationWithParticipants = EventParticipant & {
-  event: EventPeople;
-};
-
 // type for Application with minimal info about user aplying and event
 export type ApplicationWithInfo = EventParticipant & {
   user: UserInfo;

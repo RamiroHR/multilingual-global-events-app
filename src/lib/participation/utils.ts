@@ -3,9 +3,10 @@ import { prisma } from "../prisma";
 import {
   Id,
   ApplicationWithRelations,
-  ApplicationWithParticipants,
+  Application,
   ApplicationWithInfo,
   ParticipationReviewStatus,
+  ParticipationStatus,
 } from "@/lib/types";
 
 // Apply to an event as a participant -  manage concurrency with atomic transactions
@@ -140,9 +141,11 @@ export async function getApplicationById(applicationId: Id): Promise<Application
 }
 
 // Get all participations of a specific user
-export async function getUserParticipations(userId: Id): Promise<ApplicationWithParticipants[]> {
+export async function getUserParticipations(userId: Id): Promise<Application[]> {
   const userParticipations = await prisma.eventParticipant.findMany({
-    where: { userId: Number(userId) },
+    where: {
+      userId: Number(userId),
+    },
     include: {
       event: {
         include: {
@@ -161,7 +164,10 @@ export async function getUserParticipations(userId: Id): Promise<ApplicationWith
     throw new Error("User's participations not found.");
   }
 
-  return userParticipations;
+  return userParticipations.map((participation) => ({
+    ...participation,
+    status: participation.status as ParticipationStatus,
+  }));
 }
 
 // Get all applications of a specific event (creator rights)
