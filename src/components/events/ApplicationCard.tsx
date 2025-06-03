@@ -23,7 +23,7 @@ export const ApplicationCard = ({
       },
       ACCEPTED: {
         border: "border-lunar-200",
-        bg: "bg-white-50",
+        bg: "bg-gray-50",
         text: "text-terracotta-100",
         accent: "border-l-4 border-l-terracotta-500",
         content: "text-space-100",
@@ -63,6 +63,7 @@ export const ApplicationCard = ({
   }, [router, applicationId]);
 
   return (
+    // <div className="flex items-center justify-between rounded-lg border border-lunar-200 bg-gray-50 p-4 shadow-sm transition-shadow hover:shadow-md"></div>
     <div
       className={`flex items-center justify-between rounded-lg
         border ${styles.border} ${styles.bg} ${styles.accent}

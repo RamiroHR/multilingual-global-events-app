@@ -50,7 +50,8 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
       setLoading(true);
       setError(null);
       await axiosInstance.patch<Event>(ROUTES.CANCEL_EVENT(params.eventId));
-      router.push("/dashboard/my-events");
+      // router.push("/dashboard/my-events");
+      router.back();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
@@ -69,7 +70,8 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
   }, [params.eventId, router]);
 
   const handleKeep = useCallback(() => {
-    router.push("/dashboard/my-events");
+    // router.push("/dashboard/my-events");
+    router.back();
   }, [router]);
 
   return (

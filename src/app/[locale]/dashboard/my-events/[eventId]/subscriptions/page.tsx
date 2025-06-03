@@ -158,7 +158,8 @@ export default function ManageSubscriptions({ params }: { params: { eventId: str
   );
 
   const handleContinue = useCallback(() => {
-    router.push("/dashboard/my-events");
+    // router.push("/dashboard/my-events");
+    router.back();
   }, [router]);
 
   return (

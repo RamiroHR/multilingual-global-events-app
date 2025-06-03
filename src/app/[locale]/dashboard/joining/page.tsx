@@ -42,7 +42,10 @@ export default function JoiningPage() {
 
   // Group applications into active and inactive
   const { activeApplications, inactiveApplications } = useMemo(() => {
-    const active = applications
+    const now = new Date();
+    const futureActivities = applications.filter((app) => new Date(app.event.date) > now);
+
+    const active = futureActivities
       .filter((app) => app.status === "ACCEPTED" || app.status === "PENDING")
       .sort((a, b) => new Date(a.event.date).getTime() - new Date(b.event.date).getTime());
 
