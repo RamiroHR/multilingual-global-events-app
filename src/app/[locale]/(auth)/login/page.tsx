@@ -29,6 +29,8 @@ export default function LoginPage() {
           id: res.data.user.id,
           email: res.data.user.email,
           username: res.data.user.username,
+          firstName: res.data.user.firstName,
+          lastName: res.data.user.lastName,
         });
 
         // store jwt token in local storage & redirect user

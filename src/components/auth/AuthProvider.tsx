@@ -21,6 +21,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: response.data.user.id,
           email: response.data.user.email,
           username: response.data.user.username,
+          firstName: response.data.user.firstName,
+          lastName: response.data.user.lastName,
         });
       } catch (error: unknown) {
         // Handle API errors

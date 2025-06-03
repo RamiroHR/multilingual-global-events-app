@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AuthState } from "./authStore.types";
+import { AuthState } from "@/lib/types/authStore";
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,

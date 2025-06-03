@@ -12,6 +12,8 @@ export type SignupRequest = {
   username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
 };
 
 export type LoginRequest = {
@@ -30,6 +32,8 @@ export type AuthResponse = {
     id: string;
     username: string;
     email: string;
+    firstName: string;
+    lastName: string;
   };
 };
 

@@ -9,11 +9,11 @@ import { EventWithRelations, Application, ErrorResponse } from "@/lib/types";
 import { NextEventCard } from "@/components/events/NextEventCard";
 import { ApplicationCard } from "@/components/events/ApplicationCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-// import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/authStore";
 import { CalendarCheck, Sparkles, Users } from "lucide-react";
 
 export default function DashboardHome() {
-  // const { user } = useAuthStore();
+  const { user } = useAuthStore();
 
   const [events, setEvents] = useState<EventWithRelations[]>([]);
   const [activities, setActivities] = useState<Application[]>([]);
@@ -117,7 +117,9 @@ export default function DashboardHome() {
     <div className="space-y-6">
       {/* Welcome Section */}
       <section className="rounded-lg bg-gradient-to-r from-space-300 to-terracotta-900 p-6">
-        <h1 className="text-2xl font-bold text-white">Welcome back [username]!</h1>
+        <h1 className="text-2xl font-bold text-white">
+          Welcome back {user?.firstName || "there"}!
+        </h1>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
           <QuickStatsCard
             title="Activities Joined"

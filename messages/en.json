@@ -23,6 +23,8 @@
     "email": "Email",
     "username": "Username",
     "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "button": "Signup",
     "cta": "Already have an account? Log In",
     "error-message": "Signup failed. Please try again.",

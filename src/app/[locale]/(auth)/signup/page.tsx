@@ -23,6 +23,8 @@ export default function SignupPage() {
           email: data.email,
           password: data.password,
           username: data.username,
+          firstName: data.firstName,
+          lastName: data.lastName,
         });
 
         // automatically login new user
@@ -36,6 +38,8 @@ export default function SignupPage() {
           id: res.data.user.id,
           email: res.data.user.email,
           username: res.data.user.username,
+          firstName: res.data.user.firstName,
+          lastName: res.data.user.lastName,
         });
 
         // store jwt token in local storage & redirect

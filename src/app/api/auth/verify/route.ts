@@ -20,7 +20,9 @@ export async function GET(req: NextRequest): Promise<NextResponse<AuthResponse |
       user: {
         id: authResult.userData!.userId,
         email: authResult.userData!.email,
-        username: authResult.userData!.username || "",
+        username: authResult.userData!.username,
+        firstName: authResult.userData!.firstName,
+        lastName: authResult.userData!.lastName,
       },
     };
 

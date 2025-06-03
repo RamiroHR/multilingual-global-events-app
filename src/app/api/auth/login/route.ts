@@ -48,6 +48,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse 
       userId: user.id,
       email: user.email,
       username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
     });
 
     const authResponse: AuthResponse = {
@@ -56,6 +58,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse 
         id: user.id.toString(),
         email: user.email,
         username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
       },
     };
 

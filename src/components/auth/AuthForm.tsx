@@ -8,6 +8,8 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [error, setError] = useState<string>("");
   const [success, setSuccess] = useState("");
 
@@ -27,6 +29,8 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
           email,
           password,
           ...(type === "signup" && { username }),
+          firstName,
+          lastName,
         };
 
         await onSubmit(formData);
@@ -42,12 +46,40 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
         }
       }
     },
-    [email, password, username, type, onSubmit, t]
+    [email, password, username, firstName, lastName, type, onSubmit, t]
   );
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <h2 className="text-center text-xl font-semibold">{t("title")}</h2>
+      {type === "signup" && (
+        <>
+          <input
+            type="firstName"
+            placeholder={t("firstName")}
+            onChange={(e) => setFirstName(e.target.value)}
+            value={firstName}
+            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="lastName"
+            placeholder={t("lastName")}
+            onChange={(e) => setLastName(e.target.value)}
+            value={lastName}
+            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+          <input
+            type="username"
+            placeholder={t("username")}
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
+            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </>
+      )}
       <input
         type="email"
         placeholder={t("email")}
@@ -56,16 +88,6 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
         className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
-      {type === "signup" && (
-        <input
-          type="username"
-          placeholder={t("username")}
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-          className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
-      )}
       <input
         type="password"
         placeholder={t("password")}

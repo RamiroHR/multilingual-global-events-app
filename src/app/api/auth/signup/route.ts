@@ -18,7 +18,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse 
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    const { email, username, password } = validationResult.body as SignupRequest;
+    const { email, username, password, firstName, lastName } =
+      validationResult.body as SignupRequest;
 
     // Check if user exists
     const existingUser = await findUserByEmail(email);
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse 
     const hashedPassword = await hashPassword(password);
 
     // Create user and password
-    const user = await createUser(email, username, hashedPassword);
+    const user = await createUser(email, username, hashedPassword, firstName, lastName);
 
     const authResponse: AuthResponse = {
       token: "", // No token on signup, user needs to login
@@ -43,6 +44,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse 
         id: user.id.toString(),
         email: user.email,
         username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
       },
     };
 

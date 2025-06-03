@@ -16,6 +16,16 @@ export const signupSchema = yup.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
       "Password must contain at least one uppercase letter, one lowercase letter, and one number"
     ),
+  firstName: yup
+    .string()
+    .required("User firstname is required")
+    .min(2, "firstname must be at least 2 characters")
+    .max(50, "firstname must not exceed 50 characters"),
+  lastName: yup
+    .string()
+    .required("User lastname is required")
+    .min(2, "lastName must be at least 2 characters")
+    .max(50, "lastName must not exceed 50 characters"),
 });
 
 export const loginSchema = yup.object({
