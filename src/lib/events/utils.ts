@@ -1,7 +1,14 @@
 import { prisma } from "../prisma";
 import { Prisma } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { CreateEventInput, UpdateEventInput, Event, Id, EventWithRelations } from "@/lib/types";
+import {
+  CreateEventInput,
+  UpdateEventInput,
+  Event,
+  Id,
+  EventWithRelations,
+  Countries,
+} from "@/lib/types";
 
 export async function createEvent(data: CreateEventInput): Promise<Event> {
   const newEvent = prisma.event.create({
@@ -110,7 +117,11 @@ export async function getEventsByCreator(
 
 export async function getUpcomingEvents(
   page: number = 1,
-  limit: number = 9
+  limit: number = 9,
+  filters?: {
+    onlineOnly?: boolean;
+    country?: string;
+  }
 ): Promise<{ events: EventWithRelations[]; hasMore: boolean }> {
   const currentDate = new Date();
   const skip = (page - 1) * limit;
@@ -120,6 +131,8 @@ export async function getUpcomingEvents(
       date: {
         gte: currentDate,
       },
+      ...(filters?.onlineOnly && { isOnline: true }),
+      ...(filters?.country && { country: filters.country }),
     },
     orderBy: {
       date: "asc",
@@ -229,4 +242,21 @@ export async function cancelEvent(eventId: Id, creatorId: Id): Promise<Event> {
     }
     throw error; // for other errors that may occur
   }
+}
+
+// to get all avavilable countries from the database
+export async function getAllCountries(): Promise<Countries> {
+  const countries = await prisma.event.findMany({
+    select: {
+      country: true,
+    },
+    where: {
+      country: {
+        not: "", // exclude empty string - online events
+      },
+    },
+    distinct: ["country"],
+  });
+
+  return countries.map((c) => c.country).sort();
 }

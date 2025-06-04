@@ -28,3 +28,5 @@ export type EventWithRelations = Event & {
   creator: UserInfo;
   participants: ParticipantWithUser[];
 };
+
+export type Countries = string[];

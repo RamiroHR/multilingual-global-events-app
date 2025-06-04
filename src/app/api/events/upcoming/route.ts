@@ -8,11 +8,16 @@ const getUpcomingEventsHandler: RouteHandler = async (
   req
 ): Promise<NextResponse<EventsResponse | ErrorResponse>> => {
   try {
-    //Get page from query params
+    //Get page and filters from query params
     const { searchParams } = new URL(req.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
+    const onlineOnly = searchParams.get("onlineOnly") == "true";
+    const country = searchParams.get("country") || undefined;
 
-    const { events, hasMore }: EventsResponse = await getUpcomingEvents(page);
+    const { events, hasMore }: EventsResponse = await getUpcomingEvents(page, 9, {
+      onlineOnly,
+      country,
+    });
     return NextResponse.json({ events, hasMore });
   } catch (error) {
     console.error("Error fetching upcoming events:", error);

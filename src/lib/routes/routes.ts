@@ -5,8 +5,17 @@ export default Object.freeze({
   SIGNUP: "/api/auth/signup",
   VERIFY: "/api/auth/verify",
 
+  // Countries
+  ALL_COUNTRIES: "/api/events/countries",
+
   // Explore Events
-  UPCOMING_EVENTS: (page: number) => `/api/events/upcoming?page=${page}`,
+  UPCOMING_EVENTS: (page: number, filters?: { onlineOnly?: boolean; country?: string }) => {
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page.toString());
+    if (filters?.onlineOnly) queryParams.append("onlineOnly", "true");
+    if (filters?.country) queryParams.append("country", filters.country);
+    return `/api/events/upcoming?${queryParams.toString()}`;
+  },
   DETAIL_EVENT: (eventId: string) => `/api/events/${eventId}`,
 
   // Creator events
