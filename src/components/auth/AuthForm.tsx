@@ -1,117 +1,129 @@
 "use client";
+
 import React from "react";
-import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { loginSchema, signupSchema } from "@/lib/validations/schemas";
 import { AuthFormProps, AuthFormData } from "@/lib/types/components";
+import { Loader2 } from "lucide-react";
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState("");
-
-  // set locale messages to use
   const tLogin = useTranslations("LoginPage");
   const tSignup = useTranslations("SignupPage");
   const t = type === "login" ? tLogin : tSignup;
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setError("");
-      setSuccess("");
+  // validation schema and intial values
+  const validationSchema = type === "login" ? loginSchema : signupSchema;
+  const initialValues: AuthFormData = {
+    email: "",
+    password: "",
+    ...(type === "signup" && {
+      username: "",
+      firstName: "",
+      lastName: "",
+    }),
+  };
 
-      try {
-        const formData: AuthFormData = {
-          email,
-          password,
-          ...(type === "signup" && { username }),
-          firstName,
-          lastName,
-        };
+  const fieldStyle =
+    "w-full rounded border bg-blue-100 p-2 text-gray-500" +
+    " focus:outline-none focus:ring-2 focus:ring-blue-400";
 
-        await onSubmit(formData);
-        setSuccess(t("success-message"));
-      } catch (err: unknown) {
-        // handle any error thrown by the onSubmit handler
-        if (err instanceof Error) {
-          // use the generic error form the api
-          setError(err.message);
-        } else {
-          // fallback to generic error message
-          setError(t("error-message"));
-        }
-      }
-    },
-    [email, password, username, firstName, lastName, type, onSubmit, t]
-  );
+  const errorStyle = "text-sm text-red-500 mt-1 break-words whitespace-pre-wrap max-w-full";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <h2 className="text-center text-xl font-semibold">{t("title")}</h2>
-      {type === "signup" && (
-        <>
-          <input
-            type="firstName"
-            placeholder={t("firstName")}
-            onChange={(e) => setFirstName(e.target.value)}
-            value={firstName}
-            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-          <input
-            type="lastName"
-            placeholder={t("lastName")}
-            onChange={(e) => setLastName(e.target.value)}
-            value={lastName}
-            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-          <input
-            type="username"
-            placeholder={t("username")}
-            onChange={(e) => setUsername(e.target.value)}
-            value={username}
-            className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-        </>
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      validateOnMount={false}
+      validateOnChange={false}
+      onSubmit={async (values, { setSubmitting, setStatus }) => {
+        try {
+          await onSubmit(values);
+          setStatus({ sucess: t("success-message") });
+        } catch (error) {
+          if (error instanceof Error) {
+            setStatus({ error: error.message });
+          } else {
+            setStatus({ error: t("error-message") });
+          }
+        } finally {
+          setSubmitting(false);
+        }
+      }}
+    >
+      {({ isSubmitting, status }) => (
+        <Form className="flex flex-col gap-4">
+          <h2 className="text-center text-xl font-semibold">{t("title")}</h2>
+
+          {/* Fomr fiels exclusive of Signup */}
+          {type === "signup" && (
+            <>
+              <div>
+                <Field
+                  type="text"
+                  name="firstName"
+                  placeholder={t("firstName")}
+                  className={fieldStyle}
+                />
+                <ErrorMessage name="firstName" component="div" className={errorStyle} />
+              </div>
+              <div>
+                <Field
+                  type="text"
+                  name="lastName"
+                  placeholder={t("lastName")}
+                  className={fieldStyle}
+                />
+                <ErrorMessage name="lastName" component="div" className={errorStyle} />
+              </div>
+              <div>
+                <Field
+                  type="text"
+                  name="username"
+                  placeholder={t("username")}
+                  className={fieldStyle}
+                />
+                <ErrorMessage name="username" component="div" className={errorStyle} />
+              </div>
+            </>
+          )}
+
+          {/* Form field common to Signup et Login */}
+          <div>
+            <Field type="email" name="email" placeholder={t("email")} className={fieldStyle} />
+            <ErrorMessage name="email" component="div" className={errorStyle} />
+          </div>
+
+          <div>
+            <Field
+              type="password"
+              name="password"
+              placeholder={t("password")}
+              className={fieldStyle}
+            />
+            <ErrorMessage name="password" component="div" className={errorStyle} />
+          </div>
+
+          {status?.error && <div className={errorStyle}>{status.error}</div>}
+
+          {status?.success && <div className="text-sm text-green-500">{status.success}</div>}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="rounded bg-blue-500 p-2 font-semibold text-gray-100 hover:bg-blue-600 disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="size-5 animate-spin" />
+                <span>{t("submitting")}</span>
+              </div>
+            ) : (
+              t("button")
+            )}
+          </button>
+        </Form>
       )}
-      <input
-        type="email"
-        placeholder={t("email")}
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        required
-      />
-      <input
-        type="password"
-        placeholder={t("password")}
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        className="rounded border bg-blue-100 p-2 text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-        required
-      />
-      <button
-        type="submit"
-        className="rounded bg-blue-500 p-2 font-semibold text-gray-100 hover:bg-blue-600"
-      >
-        {t("button")}
-      </button>
-      {error && (
-        <p className="text-center text-red-500" role="alert">
-          {error}
-        </p>
-      )}
-      {success && (
-        <p className="text-center text-green-500" role="status">
-          {success}
-        </p>
-      )}
-    </form>
+    </Formik>
   );
 }
