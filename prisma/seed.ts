@@ -52,11 +52,13 @@ async function main() {
           date: eventData.date,
           endDate: eventData.endDate,
           location: eventData.location,
+          city: eventData.city,
+          country: eventData.country,
           isOnline: eventData.isOnline,
           maxCapacity: eventData.maxCapacity,
+          webinar: eventData.webinar,
           version: eventData.version,
           creatorId: createdCreator.id,
-          webinar: eventData.webinar,
         },
       });
     })

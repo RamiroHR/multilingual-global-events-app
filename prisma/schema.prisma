@@ -39,6 +39,8 @@ model Event {
   date                DateTime           @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '7 days'"))  //next week from the creation of event
   endDate             DateTime           @default(dbgenerated("CURRENT_TIMESTAMP + INTERVAL '8 days'"))  // default duration = 1 day
   location            String             @default("")
+  city                String             @default("")
+  country             String             @default("")
   isOnline            Boolean            @default(false)
   maxCapacity         Int                @default(2)
   createdAt           DateTime           @default(now())
