@@ -1,5 +1,5 @@
 import { Event } from "./database";
-import { CreateEventBase, UpdateEventInput, EventWithRelations } from "./utils_events";
+import { CreateEventBase, UpdateEventInput, EventWithRelations, Countries } from "./utils_events";
 import {
   ApplicationWithRelations,
   ApplicationWithInfo,
@@ -67,3 +67,6 @@ export type ErrorResponse = {
   message: string;
   statusCode: number;
 };
+
+// type for the get all countries endpoint
+export type AllCountriesResponse = Countries;

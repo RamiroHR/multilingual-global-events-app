@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { EventList } from "@/components/events/EventList";
 import axiosInstance from "@/lib/axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
@@ -18,29 +18,16 @@ export default function ExplorationPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
 
   const isFetching = useRef(false);
 
-  const fetchEvents = useCallback(async (pageNum = 1) => {
+  // fetch all countries available in database
+  const fetchCountries = useCallback(async () => {
     try {
-      if (pageNum === 1) {
-        setLoading(true);
-      } else {
-        setLoadingMore(true); // Set loadingMore true when fetching additional pages
-      }
-      setError(null);
-      isFetching.current = true;
-
-      // get upcoming events - paginated
-      const response = await axiosInstance.get<EventsResponse>(ROUTES.UPCOMING_EVENTS(pageNum));
-
-      if (pageNum === 1) {
-        setEvents(response.data.events);
-      } else {
-        setEvents((prev) => [...prev, ...response.data.events]);
-      }
-
-      setHasMore(response.data.hasMore);
+      const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
+      setAvailableCountries(response.data);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
@@ -52,41 +39,83 @@ export default function ExplorationPage() {
       } else {
         setError("An unexpected error occurred");
       }
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-      isFetching.current = false;
     }
-  }, []); // build function only once at first render
+  }, []);
 
+  // fetch event with filters
+  const fetchEvents = useCallback(
+    async (pageNum = 1) => {
+      try {
+        if (pageNum === 1) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true); // Set loadingMore true when fetching additional pages
+        }
+        setError(null);
+        isFetching.current = true;
+
+        // get upcoming events - paginated
+        // const response = await axiosInstance.get<EventsResponse>(ROUTES.UPCOMING_EVENTS(pageNum));
+        const response = await axiosInstance.get<EventsResponse>(
+          ROUTES.UPCOMING_EVENTS(pageNum, {
+            onlineOnly: showOnlineOnly,
+            country: selectedCountry || undefined,
+          })
+        );
+
+        if (pageNum === 1) {
+          setEvents(response.data.events);
+        } else {
+          setEvents((prev) => [...prev, ...response.data.events]);
+        }
+
+        setHasMore(response.data.hasMore);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          const axiosError = error as AxiosError<ErrorResponse>;
+          if (axiosError.response?.data) {
+            setError(axiosError.response.data.message);
+          } else {
+            setError("Failed to fetch events");
+          }
+        } else {
+          setError("An unexpected error occurred");
+        }
+      } finally {
+        setLoading(false);
+        setLoadingMore(false);
+        isFetching.current = false;
+      }
+    },
+    [showOnlineOnly, selectedCountry]
+  );
+
+  // Fetch countries on mount
   useEffect(() => {
-    fetchEvents();
-    setPage(1);
-  }, [fetchEvents]);
+    fetchCountries();
+  }, [fetchCountries]);
 
+  // Reset & fetch events when filters change
+  useEffect(() => {
+    setPage(1);
+    fetchEvents(1);
+  }, [showOnlineOnly, selectedCountry, fetchEvents]);
+
+  // Load more events
   useEffect(() => {
     if (page > 1) {
       fetchEvents(page);
     }
-  }, [page, fetchEvents]); //, loading, hasMore, loadingMore
+  }, [page, fetchEvents]);
 
-  // Reset effect when the component unmounts
-  useEffect(() => {
-    return () => {
-      setPage(1);
-      setEvents([]);
-      setHasMore(true);
-    };
-  }, []);
-
-  // Filter online events only
+  // Filter handlers
   const handleFilterChange = useCallback((checked: boolean) => {
     setShowOnlineOnly(checked);
   }, []);
 
-  const displayedEvents = useMemo(() => {
-    return showOnlineOnly ? events.filter((event) => event.isOnline) : events;
-  }, [events, showOnlineOnly]);
+  const handleCountryChange = useCallback((country: string | null) => {
+    setSelectedCountry(country);
+  }, []);
 
   return (
     <div className="min-h-screen rounded bg-space-300">
@@ -101,7 +130,13 @@ export default function ExplorationPage() {
       </div>
 
       {/* Filters Section */}
-      <EventFilter showOnlineOnly={showOnlineOnly} onFilterChange={handleFilterChange} />
+      <EventFilter
+        showOnlineOnly={showOnlineOnly}
+        onFilterChange={handleFilterChange}
+        selectedCountry={selectedCountry}
+        onCountryChange={handleCountryChange}
+        availableCountries={availableCountries}
+      />
 
       {/* Loading State */}
       {loading && <LoadingSpinner />}
@@ -114,7 +149,7 @@ export default function ExplorationPage() {
       )}
 
       {/* Events List */}
-      {!loading && !error && <EventList events={displayedEvents} />}
+      {!loading && !error && <EventList events={events} />}
 
       {/* Load More Button */}
       {!loading && !error && (
@@ -135,7 +170,7 @@ export default function ExplorationPage() {
               )}
             </button>
           ) : (
-            <p className="text-lunar-200">No more events to load</p>
+            <p className="text-lunar-200">No more upcoming events to load</p>
           )}
         </div>
       )}

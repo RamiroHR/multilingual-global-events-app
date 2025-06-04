@@ -50,6 +50,9 @@ export interface ErrorDisplayProps {
 export interface EventFilterProps {
   showOnlineOnly: boolean;
   onFilterChange: (showOnlineOnly: boolean) => void;
+  selectedCountry: string | null;
+  onCountryChange: (country: string | null) => void;
+  availableCountries: string[];
 }
 
 // Event Detail components
