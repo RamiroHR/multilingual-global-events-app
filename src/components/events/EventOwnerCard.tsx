@@ -18,7 +18,7 @@ export const EventOwnerCard = ({
     <div className="flex items-center justify-between rounded-lg border border-lunar-200 bg-gray-50 p-4 shadow-sm transition-shadow hover:shadow-md">
       {/* Event Info Section */}
       <div className="flex-1 space-y-2">
-        <div className="flex items-start justify-between">
+        <div className="flex items-baseline justify-between">
           <h3 className="text-lg font-semibold text-space-100">{event.title}</h3>
           <span className="text-sm text-lunar-500">{format(new Date(event.date), "PPP")}</span>
         </div>

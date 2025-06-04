@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { HomeIcon, CompassIcon, UserIcon, LogOutIcon, Ticket, Crown } from "lucide-react";
+import { HomeIcon, CompassIcon, LogOutIcon, Ticket, Crown } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { NavItem } from "@/lib/types/components";
 import { useCallback, useMemo } from "react";
@@ -13,7 +13,7 @@ const navigation: NavItem[] = [
   { name: "Explore", href: "/dashboard/explore", icon: CompassIcon },
   { name: "Joining", href: "/dashboard/joining", icon: Ticket },
   { name: "Hosting", href: "/dashboard/my-events", icon: Crown },
-  { name: "Profile", href: "/dashboard/profile", icon: UserIcon },
+  // { name: "Profile", href: "/dashboard/profile", icon: UserIcon },
 ];
 
 export default function Sidebar() {
