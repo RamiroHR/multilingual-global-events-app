@@ -6,7 +6,7 @@ export default Object.freeze({
   VERIFY: "/api/auth/verify",
 
   // Explore Events
-  UPCOMING_EVENTS: "/api/events/upcoming",
+  UPCOMING_EVENTS: (page: number) => `/api/events/upcoming?page=${page}`,
   DETAIL_EVENT: (eventId: string) => `/api/events/${eventId}`,
 
   // Creator events

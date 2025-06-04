@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { EventList } from "@/components/events/EventList";
 import axiosInstance from "@/lib/axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
-import { ErrorResponse } from "@/lib/types/routes";
+import { ErrorResponse, EventsResponse } from "@/lib/types/routes";
 import ROUTES from "@/lib/routes/routes";
 import axios, { AxiosError } from "axios";
 import { EventFilter } from "@/components/events/EventFilter";
@@ -14,15 +14,33 @@ export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
   const [events, setEvents] = useState<EventWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false); // state for pagination loading
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
-  const fetchEvents = useCallback(async () => {
+  const isFetching = useRef(false);
+
+  const fetchEvents = useCallback(async (pageNum = 1) => {
     try {
-      setLoading(true);
+      if (pageNum === 1) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true); // Set loadingMore true when fetching additional pages
+      }
       setError(null);
-      // get upcoming events
-      const response = await axiosInstance.get<EventWithRelations[]>(ROUTES.UPCOMING_EVENTS);
-      setEvents(response.data);
+      isFetching.current = true;
+
+      // get upcoming events - paginated
+      const response = await axiosInstance.get<EventsResponse>(ROUTES.UPCOMING_EVENTS(pageNum));
+
+      if (pageNum === 1) {
+        setEvents(response.data.events);
+      } else {
+        setEvents((prev) => [...prev, ...response.data.events]);
+      }
+
+      setHasMore(response.data.hasMore);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
@@ -36,12 +54,30 @@ export default function ExplorationPage() {
       }
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+      isFetching.current = false;
     }
-  }, []); // nuild function only once at first render
+  }, []); // build function only once at first render
 
   useEffect(() => {
     fetchEvents();
+    setPage(1);
   }, [fetchEvents]);
+
+  useEffect(() => {
+    if (page > 1) {
+      fetchEvents(page);
+    }
+  }, [page, fetchEvents]); //, loading, hasMore, loadingMore
+
+  // Reset effect when the component unmounts
+  useEffect(() => {
+    return () => {
+      setPage(1);
+      setEvents([]);
+      setHasMore(true);
+    };
+  }, []);
 
   // Filter online events only
   const handleFilterChange = useCallback((checked: boolean) => {
@@ -79,6 +115,30 @@ export default function ExplorationPage() {
 
       {/* Events List */}
       {!loading && !error && <EventList events={displayedEvents} />}
+
+      {/* Load More Button */}
+      {!loading && !error && (
+        <div className="container mx-auto p-4 text-center">
+          {hasMore ? (
+            <button
+              onClick={() => setPage((prev) => prev + 1)}
+              disabled={loadingMore}
+              className="rounded bg-terracotta-600 px-6 py-2 text-white hover:bg-terracotta-700 disabled:opacity-50"
+            >
+              {loadingMore ? (
+                <span className="flex items-center">
+                  <LoadingSpinner />
+                  <span className="ml-2">Loading...</span>
+                </span>
+              ) : (
+                "Load More Events"
+              )}
+            </button>
+          ) : (
+            <p className="text-lunar-200">No more events to load</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

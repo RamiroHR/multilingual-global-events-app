@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { getEventsByCreator } from "@/lib/events/utils";
 import { withAuth } from "@/lib/auth/utils";
 import { RouteHandler } from "@/lib/types";
-import { EventsResponse, ErrorResponse, MyEventsParams } from "@/lib/types/routes";
+import { MyEventsResponse, ErrorResponse, MyEventsParams } from "@/lib/types/routes";
 
 const getMyEventsHandler: RouteHandler<MyEventsParams> = async (
   req,
   userData,
   params
-): Promise<NextResponse<EventsResponse | ErrorResponse>> => {
+): Promise<NextResponse<MyEventsResponse | ErrorResponse>> => {
   try {
     const events = await getEventsByCreator(userData.userId, {
       timeFilter: params?.timeFilter || "all",

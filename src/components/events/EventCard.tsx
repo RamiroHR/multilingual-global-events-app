@@ -19,7 +19,7 @@ export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
     <div className="overflow-hidden rounded-lg border border-lunar-200 bg-gray-50 shadow-md transition-shadow duration-300 hover:shadow-lg">
       <div className="flex h-full flex-col p-6">
         {/* Event Title and Creator */}
-        <div className="mb-4 flex items-start justify-between">
+        <div className="mb-4 flex items-baseline justify-between gap-4">
           <h3 className="text-xl font-semibold text-space-100">{event.title}</h3>
           <span className="text-sm text-lunar-500">by {event.creator.username}</span>
         </div>

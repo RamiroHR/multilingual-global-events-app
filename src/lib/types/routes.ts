@@ -52,7 +52,11 @@ export type ReviewApplicationRequest = {
 
 // Response types for routes
 export type EventResponse = Event;
-export type EventsResponse = EventWithRelations[];
+export type EventsResponse = {
+  events: EventWithRelations[];
+  hasMore: boolean;
+};
+export type MyEventsResponse = EventWithRelations[];
 export type ApplicationResponse = ApplicationWithRelations;
 export type ApplicationsResponse = Application[];
 export type EventApplicationsResponse = ApplicationWithInfo[];

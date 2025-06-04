@@ -108,8 +108,12 @@ export async function getEventsByCreator(
   return events;
 }
 
-export async function getUpcomingEvents(limit: number = 12): Promise<EventWithRelations[]> {
+export async function getUpcomingEvents(
+  page: number = 1,
+  limit: number = 9
+): Promise<{ events: EventWithRelations[]; hasMore: boolean }> {
   const currentDate = new Date();
+  const skip = (page - 1) * limit;
 
   const events = await prisma.event.findMany({
     where: {
@@ -120,7 +124,8 @@ export async function getUpcomingEvents(limit: number = 12): Promise<EventWithRe
     orderBy: {
       date: "asc",
     },
-    take: limit,
+    skip: skip,
+    take: limit + 1, //one extra to verify if there are more
     include: {
       creator: {
         select: {
@@ -147,7 +152,11 @@ export async function getUpcomingEvents(limit: number = 12): Promise<EventWithRe
     throw new Error("Upcoming events not found.");
   }
 
-  return events;
+  // verify if there are more in DB, but prepare to retunr only up to 'limit'
+  const hasMore = events.length > limit;
+  const paginatedEvents = hasMore ? events.slice(0, limit) : events;
+
+  return { events: paginatedEvents, hasMore: hasMore };
 }
 
 export async function getEvent(eventId: Id): Promise<EventWithRelations> {
