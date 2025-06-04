@@ -2,9 +2,9 @@ import { memo } from "react";
 import { EventDetailsActionsProps } from "@/lib/types/components";
 
 export const EventDetailsActions = memo(
-  ({ hasApplied, isFull, spotsLeft, onJoinEvent, error }: EventDetailsActionsProps) => {
+  ({ hasApplied, status, isFull, onJoinEvent, error }: EventDetailsActionsProps) => {
     return (
-      <div className="flex items-center justify-between">
+      <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={onJoinEvent}
@@ -15,12 +15,24 @@ export const EventDetailsActions = memo(
             }`}
             disabled={isFull || hasApplied}
           >
-            {isFull ? "Event Full" : "Join Event"}
+            {isFull ? "Event is Full" : "Join Event"}
           </button>
 
-          {hasApplied && (
+          {status === "PENDING" && (
             <span className="text-red text-terracotta">
-              Your application was sent to the organizer!
+              Your application was sent to the organizer! Await his reply.
+            </span>
+          )}
+
+          {status === "ACCEPTED" && (
+            <span className="text-red text-terracotta">
+              You already applied. You have secured your spot! :)
+            </span>
+          )}
+
+          {status === "REJECTED" && (
+            <span className="text-red text-terracotta">
+              You already applied. The organizer rejected your application! :(
             </span>
           )}
 
@@ -32,10 +44,10 @@ export const EventDetailsActions = memo(
         </div>
 
         <span className="text-sm">
-          {isFull ? (
-            <span className="text-terracotta-500">Full</span>
+          {status === "ACCEPTED" ? (
+            <span className="text-terracotta-500">Event details unlocked</span>
           ) : (
-            <span className="text-cosmic-500">{spotsLeft} spots left</span>
+            <span className="text-cosmic-500">Join to access meeting info</span>
           )}
         </span>
       </div>

@@ -60,18 +60,26 @@ export interface EventDetailsHeaderProps {
 
 export interface EventDetailsInfoProps {
   date: Date;
+  endDate: Date;
   isOnline: boolean;
+  webinar?: string;
   location?: string;
+  city?: string;
+  country?: string;
   participantsCount: number;
   maxCapacity: number;
+  status?: ApplicationStatus | undefined;
+  showParticipants?: boolean;
+  textClassName?: string;
 }
 
 export interface EventDetailsActionsProps {
   hasApplied: boolean;
+  status?: ApplicationStatus | undefined;
   isFull: boolean;
   spotsLeft: number;
   onJoinEvent: () => Promise<void>;
-  error?: string;
+  error?: string | null;
 }
 
 // Type for the application in the joining page

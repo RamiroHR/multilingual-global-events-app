@@ -1,6 +1,6 @@
 import { memo, useCallback } from "react";
 import { format } from "date-fns";
-import { Calendar, MapPin, Users, Globe } from "lucide-react";
+import { Calendar, MapPin, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EventCardProps } from "@/lib/types/components";
 
@@ -32,7 +32,7 @@ export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
           {/* Date */}
           <div className="flex items-center text-space-300">
             <Calendar className="mr-2 size-5 text-cosmic-500" />
-            <span>{format(new Date(event.date), "PPP p")}</span>
+            <span>{format(new Date(event.date), "PPP")}</span>
           </div>
 
           {/* Location or Online Status */}
@@ -45,17 +45,11 @@ export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
             ) : (
               <>
                 <MapPin className="mr-2 size-5 text-cosmic-500" />
-                <span>{event.location}</span>
+                <span>
+                  {event.city}, {event.country}
+                </span>
               </>
             )}
-          </div>
-
-          {/* Capacity */}
-          <div className="flex items-center text-space-300">
-            <Users className="mr-2 size-5 text-cosmic-500" />
-            <span>
-              {event.participants.length} / {event.maxCapacity} participants
-            </span>
           </div>
         </div>
 
