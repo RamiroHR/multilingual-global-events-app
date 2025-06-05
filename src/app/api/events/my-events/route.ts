@@ -6,8 +6,7 @@ import { MyEventsResponse, ErrorResponse, MyEventsParams } from "@/lib/types/rou
 
 const getMyEventsHandler: RouteHandler<MyEventsParams> = async (
   req,
-  userData,
-  params
+  userData
 ): Promise<NextResponse<MyEventsResponse | ErrorResponse>> => {
   try {
     // Extract query parameters from the URL

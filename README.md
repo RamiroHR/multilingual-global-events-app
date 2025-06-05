@@ -19,7 +19,7 @@ A modern web application built with Next.js for managing and displaying global e
 
 ### Application Screenshots
 
-#### Home Page 
+#### Home Page
 
 <div align="center">
   <img src="./public/screenshots/home.png" alt="Login Page" width="420"/>
@@ -47,7 +47,8 @@ A modern web application built with Next.js for managing and displaying global e
 </div>
 
 #### User Dashboard
-The dashboard provides users with a comprehensive overview of their event activities. 
+
+The dashboard provides users with a comprehensive overview of their event activities.
 
 <div align="center">
   <img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800"/>
@@ -61,7 +62,7 @@ Here users can:
 - ✅ View the upcoming confirmed activity in have applied.
 - ✅ View the next events they are organizing.
 - ✅ Access quick actions for the next activity or event management.
-- ✅ See their event hosting and activities schedule in calendar. 
+- ✅ See their event hosting and activities schedule in calendar.
 - ✅ Get a quick reminder of the number of future activities and events scheduled
 - ✅ Get notifications about people waiting for their confirmation.
 
@@ -160,10 +161,10 @@ The Hosting page is a dedicated space for event management the user has created:
 │   ├── components/         # React components
 │   ├── i18n/               # Internationalization setup
 │   ├── lib/                # Utility functions
-│   │   ├── types/          # central place for Types  
+│   │   ├── types/          # central place for Types
 │   │   ├── validations/    # yup validation schemas
 │   │   ├── ...             # other utility functions ...
-│   │   └── routes/         # Central endpoint strings variables 
+│   │   └── routes/         # Central endpoint strings variables
 │   │
 │   ├── hooks/              # Custom hooks
 │   ├── metadata/           # App metadata for SEO
