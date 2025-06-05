@@ -1,47 +1,31 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import axiosInstance from "@/lib/axios";
-import axios, { AxiosError } from "axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
-import ROUTES from "@/lib/routes/routes";
-import { EventWithRelations, ErrorResponse } from "@/lib/types";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useEvents } from "@/hooks/useEvents";
+import { EventWithRelations, EventOptions } from "@/lib/types";
 
 export default function MyEventsPage() {
   const router = useRouter();
-
-  const [events, setEvents] = useState<EventWithRelations[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get<EventWithRelations[]>(
-        ROUTES.USER_EVENTS({ timeFilter: "future", orderBy: "asc" })
-      );
-      setEvents(response.data);
-      setError(null);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to fetch user events.");
-        }
-      } else {
-        setError("An unexpected error occurred while fetching the events.");
-      }
-      console.error("Error while fetching events", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  // memoize to fetch event only in mount and when this changes
+  const config = useMemo<EventOptions>(
+    () => ({
+      type: "created",
+      options: {
+        timeFilter: "future",
+        orderBy: "asc",
+        onError: (err: string) => console.error(err),
+      },
+    }),
+    []
+  );
+
+  const { data: events, loading, error, fetchEvents } = useEvents(config);
 
   useEffect(() => {
     fetchEvents();
@@ -110,15 +94,19 @@ export default function MyEventsPage() {
       )}
 
       <div className="space-y-4">
-        {events.map((event) => (
-          <EventOwnerCard
-            key={event.id}
-            event={event}
-            onEdit={handleEdit}
-            onCancel={handleCancel}
-            onManageSubscriptions={handleManageSubscriptions}
-          />
-        ))}
+        {Array.isArray(events) && events.length > 0 ? (
+          events.map((event) => (
+            <EventOwnerCard
+              key={event.id}
+              event={event as EventWithRelations}
+              onEdit={handleEdit}
+              onCancel={handleCancel}
+              onManageSubscriptions={handleManageSubscriptions}
+            />
+          ))
+        ) : (
+          <div className="text-center text-lunar-200">No events found.</div>
+        )}
       </div>
     </div>
   );

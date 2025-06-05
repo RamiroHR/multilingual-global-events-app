@@ -1,29 +1,42 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { EventList } from "@/components/events/EventList";
 import axiosInstance from "@/lib/axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
-import { ErrorResponse, EventsResponse } from "@/lib/types/routes";
+import { ErrorResponse } from "@/lib/types/routes";
 import ROUTES from "@/lib/routes/routes";
 import axios, { AxiosError } from "axios";
 import { EventFilter } from "@/components/events/EventFilter";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useEvents } from "@/hooks/useEvents";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const [events, setEvents] = useState<EventWithRelations[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false); // state for pagination loading
-  const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [countryError, setCountryError] = useState<string | null>(null);
 
-  const isFetching = useRef(false);
+  const [page, setPage] = useState(1);
+  const [events, setEvents] = useState<EventWithRelations[]>([]);
 
-  // fetch all countries available in database
+  const {
+    data: fetchedEvents,
+    loading,
+    error,
+    fetchEvents,
+    hasMore,
+  } = useEvents({
+    type: "upcoming",
+    options: {
+      onlineOnly: showOnlineOnly,
+      country: selectedCountry,
+      page,
+      onError: (err) => console.error(err),
+    },
+  });
+
+  // fetch all countries available in database - on mount !
   const fetchCountries = useCallback(async () => {
     try {
       const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
@@ -32,81 +45,44 @@ export default function ExplorationPage() {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
         if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
+          setCountryError(axiosError.response.data.message);
         } else {
-          setError("Failed to fetch events");
+          setCountryError("Failed to fetch events");
         }
       } else {
-        setError("An unexpected error occurred");
+        setCountryError("An unexpected error occurred");
       }
     }
   }, []);
 
-  // fetch event with filters
-  const fetchEvents = useCallback(
-    async (pageNum = 1) => {
-      try {
-        if (pageNum === 1) {
-          setLoading(true);
-        } else {
-          setLoadingMore(true); // Set loadingMore true when fetching additional pages
-        }
-        setError(null);
-        isFetching.current = true;
-
-        // get upcoming events - paginated
-        // const response = await axiosInstance.get<EventsResponse>(ROUTES.UPCOMING_EVENTS(pageNum));
-        const response = await axiosInstance.get<EventsResponse>(
-          ROUTES.UPCOMING_EVENTS(pageNum, {
-            onlineOnly: showOnlineOnly,
-            country: selectedCountry || undefined,
-          })
-        );
-
-        if (pageNum === 1) {
-          setEvents(response.data.events);
-        } else {
-          setEvents((prev) => [...prev, ...response.data.events]);
-        }
-
-        setHasMore(response.data.hasMore);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          const axiosError = error as AxiosError<ErrorResponse>;
-          if (axiosError.response?.data) {
-            setError(axiosError.response.data.message);
-          } else {
-            setError("Failed to fetch events");
-          }
-        } else {
-          setError("An unexpected error occurred");
-        }
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-        isFetching.current = false;
-      }
-    },
-    [showOnlineOnly, selectedCountry]
-  );
-
-  // Fetch countries on mount
   useEffect(() => {
     fetchCountries();
   }, [fetchCountries]);
 
-  // Reset & fetch events when filters change
+  // when filter change, reset page and events, then fetch first page
   useEffect(() => {
     setPage(1);
-    fetchEvents(1);
-  }, [showOnlineOnly, selectedCountry, fetchEvents]);
+    setEvents([]); // clear accumulated events
+    fetchEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showOnlineOnly, selectedCountry]);
 
-  // Load more events
+  // When page or fetchedEvents change, update accumulated events
   useEffect(() => {
-    if (page > 1) {
-      fetchEvents(page);
+    if (page === 1) {
+      setEvents(fetchedEvents as EventWithRelations[]);
+    } else if (fetchedEvents && Array.isArray(fetchedEvents)) {
+      setEvents((prev) => [...prev, ...(fetchedEvents as EventWithRelations[])]);
     }
-  }, [page, fetchEvents]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchedEvents, page]);
+
+  // handler load More
+  const handleLoadMore = () => {
+    if (hasMore && !loading) {
+      setPage((prev) => prev + 1);
+    }
+  };
 
   // Filter handlers
   const handleFilterChange = useCallback((checked: boolean) => {
@@ -141,10 +117,15 @@ export default function ExplorationPage() {
       {/* Loading State */}
       {loading && <LoadingSpinner />}
 
-      {/* Error State */}
+      {/* Error States */}
       {error && (
         <div className="container mx-auto p-4">
           <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">{error}</div>
+        </div>
+      )}
+      {countryError && (
+        <div className="container mx-auto p-4">
+          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">{countryError}</div>
         </div>
       )}
 
@@ -156,11 +137,11 @@ export default function ExplorationPage() {
         <div className="container mx-auto p-4 text-center">
           {hasMore ? (
             <button
-              onClick={() => setPage((prev) => prev + 1)}
-              disabled={loadingMore}
+              onClick={handleLoadMore}
+              disabled={loading}
               className="rounded bg-terracotta-600 px-6 py-2 text-white hover:bg-terracotta-700 disabled:opacity-50"
             >
-              {loadingMore ? (
+              {loading ? (
                 <span className="flex items-center">
                   <LoadingSpinner />
                   <span className="ml-2">Loading...</span>

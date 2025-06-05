@@ -1,44 +1,29 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
-import axiosInstance from "@/lib/axios";
-import axios, { AxiosError } from "axios";
-import ROUTES from "@/lib/routes/routes";
+import { useEffect, useMemo } from "react";
 import { ApplicationCard } from "@/components/events/ApplicationCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { Application } from "@/lib/types";
-import { ErrorResponse } from "@/lib/types/routes";
+import { useEvents } from "@/hooks/useEvents";
+import { EventOptions, Application } from "@/lib/types";
 
 export default function JoiningPage() {
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | undefined>(undefined);
+  // memoize to fetch event only in mount and when this changes
+  const config = useMemo<EventOptions>(
+    () => ({
+      type: "joined",
+      options: {
+        onError: (err) => console.error(err),
+      },
+    }),
+    []
+  );
 
-  const fetchApplications = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get<Application[]>(ROUTES.USER_PARTICIPATIONS);
-      setApplications(response.data);
-      setError(undefined);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to fetch applications");
-        }
-      } else {
-        setError("An unexpected error occurred");
-      }
-      console.error("Error fetching applications:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const { data, loading, error, fetchEvents } = useEvents(config);
+  const applications = data as Application[];
 
   useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
+    fetchEvents();
+  }, [fetchEvents]);
 
   // Group applications into active and inactive
   const { activeApplications, inactiveApplications } = useMemo(() => {
@@ -56,8 +41,8 @@ export default function JoiningPage() {
     return { activeApplications: active, inactiveApplications: inactive };
   }, [applications]);
 
-  if (isLoading) {
-    <LoadingSpinner />;
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   if (error) {
