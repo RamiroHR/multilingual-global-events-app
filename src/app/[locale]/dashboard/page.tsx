@@ -212,7 +212,7 @@ export default function DashboardHome() {
             <p className="text-lunar-300">Your upcoming events calendar will appear here.</p>
           </div> */}
           <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
+            {/* <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2> */}
             <CalendarPreview
               futureHostedEvents={futureHostedEvents}
               futureActivities={futureActivities}

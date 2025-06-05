@@ -10,10 +10,16 @@ const getMyEventsHandler: RouteHandler<MyEventsParams> = async (
   params
 ): Promise<NextResponse<MyEventsResponse | ErrorResponse>> => {
   try {
+    // Extract query parameters from the URL
+    const { searchParams } = new URL(req.url);
+    const timeFilter = searchParams.get("timeFilter") as "all" | "future" | "past" | null;
+    const orderBy = searchParams.get("orderBy") as "asc" | "desc" | null;
+
     const events = await getEventsByCreator(userData.userId, {
-      timeFilter: params?.timeFilter || "all",
-      orderBy: params?.orderBy || "asc",
+      timeFilter: timeFilter || "all",
+      orderBy: orderBy || "asc",
     });
+
     return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching user events:", error);
