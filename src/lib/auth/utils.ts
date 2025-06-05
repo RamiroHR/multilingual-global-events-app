@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "../jwt";
-import { DecodedToken, RouteHandler } from "./types";
+import { DecodedToken, RouteHandler } from "@/lib/types";
 
 export async function verifyAuth(req: NextRequest) {
   try {

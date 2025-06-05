@@ -1,31 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
-import { getApplicationById } from "@/lib/participation/index";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
+import { getApplicationById } from "@/lib/participation/utils";
+import { Id, ApplicationResponse, ErrorResponse } from "@/lib/types";
 
 type GetParticipationParams = {
-  participationId: string;
+  participationId: Id;
 };
 
 const getParticipationHandler: RouteHandler<GetParticipationParams> = async (
   req: NextRequest,
   userData: DecodedToken,
   params
-) => {
+): Promise<NextResponse<ApplicationResponse | ErrorResponse>> => {
   try {
     if (!params?.participationId) {
-      return NextResponse.json({ error: "Participation ID is required" }, { status: 400 });
+      const errorResponse: ErrorResponse = {
+        error: "Bad Request",
+        message: "Participation ID is required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    const participation = await getApplicationById({
-      applicationId: Number(params.participationId),
-    });
+    const participation: ApplicationResponse = await getApplicationById(params.participationId);
 
     // Verify the user is authorized to view this participation
     if (participation.userId !== Number(userData.userId)) {
-      return NextResponse.json(
-        { error: "Not authorized to view this participation" },
-        { status: 403 }
-      );
+      const errorResponse: ErrorResponse = {
+        error: "Forbidden",
+        message: "Not authorized to view this participation",
+        statusCode: 403,
+      };
+      return NextResponse.json(errorResponse, { status: 403 });
     }
 
     return NextResponse.json(participation);
@@ -35,11 +42,21 @@ const getParticipationHandler: RouteHandler<GetParticipationParams> = async (
     // Handle specific errors
     if (error instanceof Error) {
       if (error.message === "Participation not found") {
-        return NextResponse.json({ error: "Participation not found" }, { status: 404 });
+        const errorResponse: ErrorResponse = {
+          error: "Not Found",
+          message: "Participation not found",
+          statusCode: 404,
+        };
+        return NextResponse.json(errorResponse, { status: 404 });
       }
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to fetch participation",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 };
 

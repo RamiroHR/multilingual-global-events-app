@@ -10,7 +10,13 @@ export async function findUserByEmail(email: string) {
 }
 
 // Create a new user in the database, set its password
-export async function createUser(email: string, username: string, hashedPassword: string) {
+export async function createUser(
+  email: string,
+  username: string,
+  hashedPassword: string,
+  firstName: string,
+  lastName: string
+) {
   const newUser = prisma.user.create({
     data: {
       email,
@@ -18,6 +24,8 @@ export async function createUser(email: string, username: string, hashedPassword
       password: {
         create: { password: hashedPassword },
       },
+      firstName,
+      lastName,
     },
     include: { password: true },
   });

@@ -1,20 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { applyToEvent } from "@/lib/participation/index";
-import { RouteHandler, DecodedToken, withAuth } from "@/lib/auth/index";
+import { applyToEvent } from "@/lib/participation/utils";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler, DecodedToken } from "@/lib/types";
+import { Id, ApplicationResponse, ErrorResponse } from "@/lib/types";
 
 type ApplyEventParams = {
-  eventId: string;
+  eventId: Id;
 };
 
 const applyEventHandler: RouteHandler<ApplyEventParams> = async (
   req: NextRequest,
   userData: DecodedToken,
   params
-) => {
+): Promise<NextResponse<ApplicationResponse | ErrorResponse>> => {
   try {
     // ensure event Id is included
     if (!params?.eventId) {
-      return NextResponse.json({ error: "Event ID is required" }, { status: 400 });
+      const errorResponse: ErrorResponse = {
+        error: "Bad Request",
+        message: "Event ID is required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
     }
 
     // get event_id and participant_id from url
@@ -22,7 +29,7 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
     const userId = userData.userId;
 
     // create application to event
-    const application = await applyToEvent(eventId, userId);
+    const application: ApplicationResponse = await applyToEvent(eventId, userId);
     return NextResponse.json(application);
   } catch (error) {
     console.error("Error applying to event:", error);
@@ -30,20 +37,47 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
     // Handle specific errors
     if (error instanceof Error) {
       if (error.message === "Event not found") {
-        return NextResponse.json({ error: "Event not found" }, { status: 404 });
+        const errorResponse: ErrorResponse = {
+          error: "Not Found",
+          message: "Event not found",
+          statusCode: 404,
+        };
+        return NextResponse.json(errorResponse, { status: 404 });
       }
       if (error.message === "You have already applied to this event") {
-        return NextResponse.json(
-          { error: "You have already applied to this event" },
-          { status: 400 }
-        );
+        const errorResponse: ErrorResponse = {
+          error: "Bad Request",
+          message: "You have already applied to this event",
+          statusCode: 400,
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
       }
       if (error.message === "Event has reached maximum capacity") {
-        return NextResponse.json({ error: "Event has reached maximum capacity" }, { status: 400 });
+        const errorResponse: ErrorResponse = {
+          error: "Bad Request",
+          message: "Event has reached maximum capacity",
+          statusCode: 400,
+        };
+        return NextResponse.json(errorResponse, { status: 400 });
+      }
+      if (
+        error.message === "The event was modified by another user. Please refresh and try again."
+      ) {
+        const errorResponse: ErrorResponse = {
+          error: "Conflict",
+          message: "The event was modified by another user. Please refresh and try again.",
+          statusCode: 409,
+        };
+        return NextResponse.json(errorResponse, { status: 409 });
       }
     }
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to apply to event",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 };
 

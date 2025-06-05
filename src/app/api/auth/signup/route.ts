@@ -3,34 +3,60 @@ import { findUserByEmail, createUser } from "@/lib/user";
 import { hashPassword } from "@/lib/jwt";
 import { signupSchema } from "@/lib/validations/schemas";
 import { validateRequest } from "@/lib/validations/validate";
+import { SignupRequest, AuthResponse, ErrorResponse } from "@/lib/types/routes";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<AuthResponse | ErrorResponse>> {
   try {
     // Validate request body and get the parsed body
     const validationResult = await validateRequest(signupSchema)(req);
-    if (validationResult instanceof NextResponse) return validationResult;
+    if (validationResult instanceof NextResponse) {
+      const errorResponse: ErrorResponse = {
+        error: "Validation error",
+        message: "Invalid request data",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
 
-    const { email, username, password } = validationResult.body;
+    const { email, username, password, firstName, lastName } =
+      validationResult.body as SignupRequest;
 
     // Check if user exists
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 409 });
+      const errorResponse: ErrorResponse = {
+        error: "Conflict",
+        message: "Email already in use",
+        statusCode: 409,
+      };
+      return NextResponse.json(errorResponse, { status: 409 });
     }
 
     // Hash password
     const hashedPassword = await hashPassword(password);
 
     // Create user and password
-    const user = await createUser(email, username, hashedPassword);
+    const user = await createUser(email, username, hashedPassword, firstName, lastName);
 
-    return NextResponse.json({
-      userId: user.id,
-      email: user.email,
-      username: user.username,
-    });
+    const authResponse: AuthResponse = {
+      token: "", // No token on signup, user needs to login
+      user: {
+        id: user.id.toString(),
+        email: user.email,
+        username: user.username,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+    };
+
+    return NextResponse.json(authResponse);
   } catch (error) {
     console.error("Error during signup:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to create user",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

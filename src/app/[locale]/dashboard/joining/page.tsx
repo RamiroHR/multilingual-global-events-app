@@ -1,62 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axiosInstance from "@/lib/axios";
-import { Event, User } from "@prisma/client";
+import { useEffect, useMemo } from "react";
 import { ApplicationCard } from "@/components/events/ApplicationCard";
-
-// Define the type for our application data
-type Application = {
-  id: number;
-  status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED";
-  event: Event & {
-    creator: User;
-    participants: {
-      id: number;
-      status: string;
-      user: User;
-    }[];
-  };
-};
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useEvents } from "@/hooks/useEvents";
+import { EventOptions, Application } from "@/lib/types";
 
 export default function JoiningPage() {
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // memoize to fetch event only in mount and when this changes
+  const config = useMemo<EventOptions>(
+    () => ({
+      type: "joined",
+      options: {
+        onError: (err) => console.error(err),
+      },
+    }),
+    []
+  );
+
+  const { data, loading, error, fetchEvents } = useEvents(config);
+  const applications = data as Application[];
 
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const response = await axiosInstance.get("/api/participation");
-        setApplications(response.data);
-      } catch (err) {
-        setError("Failed to fetch applications");
-        console.error("Error fetching applications:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchApplications();
-  }, []);
+    fetchEvents();
+  }, [fetchEvents]);
 
   // Group applications into active and inactive
-  const activeApplications = applications
-    .filter((app) => app.status === "ACCEPTED" || app.status === "PENDING")
-    .sort((a, b) => new Date(a.event.date).getTime() - new Date(b.event.date).getTime());
+  const { activeApplications, inactiveApplications } = useMemo(() => {
+    const now = new Date();
+    const futureActivities = applications.filter((app) => new Date(app.event.date) > now);
 
-  const inactiveApplications = applications
-    .filter((app) => app.status === "REJECTED" || app.status === "CANCELLED")
-    .sort((a, b) => new Date(b.event.date).getTime() - new Date(a.event.date).getTime());
+    const active = futureActivities
+      .filter((app) => app.status === "ACCEPTED" || app.status === "PENDING")
+      .sort((a, b) => new Date(a.event.date).getTime() - new Date(b.event.date).getTime());
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-space-300">
-          <p>Loading your applications...</p>
-        </div>
-      </div>
-    );
+    const inactive = applications
+      .filter((app) => app.status === "REJECTED" || app.status === "CANCELLED")
+      .sort((a, b) => new Date(b.event.date).getTime() - new Date(a.event.date).getTime());
+
+    return { activeApplications: active, inactiveApplications: inactive };
+  }, [applications]);
+
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   if (error) {

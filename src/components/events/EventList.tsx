@@ -1,18 +1,8 @@
-import { Event, User } from "@prisma/client";
+import { memo } from "react";
 import { EventCard } from "./EventCard";
+import { EventListProps } from "@/lib/types/components";
 
-interface EventListProps {
-  events: (Event & {
-    creator: User;
-    participants: {
-      id: number;
-      status: string;
-      user: User;
-    }[];
-  })[];
-}
-
-export const EventList = ({ events }: EventListProps) => {
+export const EventList = memo(({ events }: EventListProps) => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -22,4 +12,6 @@ export const EventList = ({ events }: EventListProps) => {
       </div>
     </div>
   );
-};
+});
+
+EventList.displayName = "EventList";

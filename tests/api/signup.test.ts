@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { findUserByEmail } from "@/lib/user";
 import dotenv from "dotenv";
 import path from "path";
+import { SignupRequest, LoginRequest } from "@/lib/types/routes";
 
 const testEnvPath = path.resolve(process.cwd(), ".env.test");
 console.log("Test file loading env from:", testEnvPath);
@@ -16,13 +17,7 @@ if (result.error) {
 }
 
 // helper function to simulate the request body to send to the endpoint
-type SignupRequestBody = {
-  email: string;
-  username: string;
-  password: string;
-};
-
-const createMockRequest = (body: SignupRequestBody) =>
+const createMockRequest = (body: SignupRequest) =>
   ({ json: async () => body }) as unknown as NextRequest;
 
 // test suite
@@ -45,6 +40,8 @@ describe("POST /api/auth/signup", () => {
       email: "test@example.com",
       username: "testuser",
       password: "Pasword123",
+      firstName: "userFirstName",
+      lastName: "userLastName",
     };
 
     // test logic
@@ -54,36 +51,67 @@ describe("POST /api/auth/signup", () => {
 
     // response assertions
     expect(response.status).toBe(200);
-    expect(data).toHaveProperty("userId");
-    expect(data.email).toBe(mockUserData.email);
-    expect(data.username).toBe(mockUserData.username);
-    expect(data).not.toHaveProperty("password");
+    expect(data.user).toHaveProperty("id");
+    expect(data.user.email).toBe(mockUserData.email);
+    expect(data.user.username).toBe(mockUserData.username);
+    expect(data.user.firstName).toBe(mockUserData.firstName);
+    expect(data.user.lastName).toBe(mockUserData.lastName);
+    expect(data.user).not.toHaveProperty("password");
 
     // database verification
     const createdUser = await findUserByEmail(mockUserData.email);
     expect(createdUser).toBeTruthy();
     expect(createdUser?.email).toBe(mockUserData.email);
     expect(createdUser?.username).toBe(mockUserData.username);
+    expect(createdUser?.firstName).toBe(mockUserData.firstName);
+    expect(createdUser?.lastName).toBe(mockUserData.lastName);
   });
 
   it("should return 400 for missing fields", async () => {
     // mosck data
     const testCases = [
-      { email: "test@example.com", username: "testuser" },
-      { email: "test@example.com", password: "Password123" },
-      { username: "testuser", password: "Password123" },
+      {
+        email: "test@example.com",
+        username: "testuser",
+        firstName: "userFirstName",
+        lastName: "userLastName",
+      },
+      {
+        email: "test@example.com",
+        password: "Password123",
+        firstName: "userFirstName",
+        lastName: "userLastName",
+      },
+      {
+        username: "testuser",
+        password: "Password123",
+        firstName: "userFirstName",
+        lastName: "userLastName",
+      },
+      {
+        email: "test@example.com",
+        username: "testuser",
+        password: "Password123",
+        firstName: "userFirstName",
+      },
+      {
+        email: "test@example.com",
+        username: "testuser",
+        password: "Password123",
+        lastName: "userLastName",
+      },
       {}, // missing all fields
     ];
 
     // test logic
     for (const testCase of testCases) {
-      const req = createMockRequest(testCase as unknown as SignupRequestBody);
+      const req = createMockRequest(testCase as unknown as SignupRequest);
       const response = await POST(req);
       const data = await response.json();
 
       // response assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Validation failed");
+      expect(data.error).toBe("Validation error");
     }
   });
 
@@ -93,6 +121,8 @@ describe("POST /api/auth/signup", () => {
       email: "test@example.com",
       username: "testuser",
       password: "Pasword123",
+      firstName: "userFirstName",
+      lastName: "userLastName",
     };
 
     // test logic
@@ -108,7 +138,7 @@ describe("POST /api/auth/signup", () => {
 
     // response assertions
     expect(response.status).toBe(409);
-    expect(data.error).toBe("Email already in use");
+    expect(data.error).toBe("Conflict");
   });
 
   it("should hash the password before storing", async () => {
@@ -117,6 +147,8 @@ describe("POST /api/auth/signup", () => {
       email: "test@example.com",
       username: "testuser",
       password: "Password123",
+      firstName: "userFirstName",
+      lastName: "userLastName",
     };
 
     // test logic

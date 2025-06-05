@@ -27,7 +27,7 @@ A modern web application built with Next.js for managing and displaying global e
   <em>Landing Page</em>
 </div>
 
-#### Authentication
+#### Authentication & Registration
 
 <div align="center">
   <table>
@@ -48,18 +48,23 @@ A modern web application built with Next.js for managing and displaying global e
 
 #### User Dashboard
 
+The dashboard provides users with a comprehensive overview of their event activities.
+
 <div align="center">
   <img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800"/>
   <br/>
   <em>Personal Dashboard</em>
 </div>
 
-The dashboard provides users with a comprehensive overview of their event activities. Users can:
+Here users can:
 
-- ⬜View upcoming events they're attending
-- ✅ See their event hosting schedule
-- ✅ Access quick actions for event management
-- ⬜Get notifications about event updates and changes
+- ✅ View some metrics about their engagement in the application (number of past activities joined, etc).
+- ✅ View the upcoming confirmed activity in have applied.
+- ✅ View the next events they are organizing.
+- ✅ Access quick actions for the next activity or event management.
+- ✅ See their event hosting and activities schedule in calendar.
+- ✅ Get a quick reminder of the number of future activities and events scheduled
+- ✅ Get notifications about people waiting for their confirmation.
 
 #### Explore Events
 
@@ -71,28 +76,50 @@ The dashboard provides users with a comprehensive overview of their event activi
 
 The Explore page serves as a central hub for discovering events:
 
-- 🔄 Browse all public events with advanced filtering options
-- 🔄 Search events by type: online/in-person (TODO: by location, date, or category)
-- ✅ View detailed event information
-- 🔄 Subscribe to events of interest
-- ✅ Share events with other users
-
-#### My Events
+- ✅ Browse all public events
+- ✅ Search events by type: online/in-person, by country (TO-DO: by city, date range, or category)
+- ✅ Preview event information and access the full event description.
+- ✅ Subscribe to events of interest.
+- ✅ Share events as a creator with other users.
+- ✅ precise event location and time are hidden until the participation is confirmed
 
 <div align="center">
-  <img src="./public/screenshots/my-events.png" alt="My Events" width="800"/>
+  <img src="./public/screenshots/eventDetails.png" alt="Explore Events" width="600"/>
+  <br/>
+  <em>Public Event Details View</em>
+</div>
+
+#### Joining Page
+
+<div align="center">
+  <img src="./public/screenshots/joining.png" alt="Joinig" width="800"/>
+  <br/>
+  <em>Joining Page</em>
+</div>
+
+The joining page allow the user to:
+
+- ✅ Visualize activities they have applied.
+- ✅ Visualize the application status.
+- ✅ wihdraw their application if they can no loger be present.
+- ✅ Re-apply to participation they have canceclled.
+
+#### Hosting Page
+
+<div align="center">
+  <img src="./public/screenshots/hosting.png" alt="My Events" width="800"/>
   <br/>
   <em>Event Management Center</em>
 </div>
 
-The My Events page is a dedicated space for event management:
+The Hosting page is a dedicated space for event management the user has created:
 
 - ✅ Create and publish new events
 - ✅ Edit existing event details
-- ⬜ Manage participant subscriptions
+- ✅ Manage participant subscriptions (accept or reject)
 - ✅ Handle event cancellations
-- ⬜ View event statistics and attendance
-- ⬜ Send updates to participants
+- ✅ View event applications and attendance
+- ✅ View participants who cancelled their participation
 
 ## Tech Stack
 
@@ -104,13 +131,14 @@ The My Events page is a dedicated space for event management:
 - **Authentication:** JWT + bcryptjs
 - **Testing:** Jest
 - **Linting:** ESLint + Prettier
-- **App state:** Zustand
+- **Global App state:** Zustand
 - **Forms and Validation:** Formik + Yup
 
 ## Project Structure
 
 ```
 ├── .github/             # GitHub configuration files
+├── .husky/              # husky hooks (pre-commit, etc)
 ├── .next/               # Next.js build output
 ├── messages/            # Internationalization messages
 ├── node_modules/        # Dependencies
@@ -133,6 +161,12 @@ The My Events page is a dedicated space for event management:
 │   ├── components/         # React components
 │   ├── i18n/               # Internationalization setup
 │   ├── lib/                # Utility functions
+│   │   ├── types/          # central place for Types
+│   │   ├── validations/    # yup validation schemas
+│   │   ├── ...             # other utility functions ...
+│   │   └── routes/         # Central endpoint strings variables
+│   │
+│   ├── hooks/              # Custom hooks
 │   ├── metadata/           # App metadata for SEO
 │   ├── mocks/              # Mock data & templates
 │   ├── store/              # App state stores
@@ -265,7 +299,7 @@ Our CI/CD pipeline runs automatically on push to `main` and `develop` branches, 
    npm run test:coverage
    ```
 
-### Test Coverage Report
+### Test Coverage Report [TO-UPDATE]
 
 The test coverage report is generated automatically when running `npm run test:coverage`. The report includes:
 
@@ -304,9 +338,20 @@ Time:        4.608 s, estimated 5 s
 ### Local Development Workflow
 
 1. **Develop new features, fiw bugs, refactor, etc**
-2. **Before Committing**
 
-   ```
+2. **Before Committing**  
+   The project uses Husky to enforce code quality checks before each commit. The following checks will run automatically:
+
+   - Code formatting (Prettier)
+   - Linting (ESLint)
+   - Tests
+   - Build verification
+
+   If any check fails, the commit will be blocked until the issues are fixed.
+
+   You can also run these checks manually:
+
+   ```bash
    # Format the code
    npm run format
 
@@ -318,6 +363,18 @@ Time:        4.608 s, estimated 5 s
 
    # Test build process
    npm run build
+   ```
+
+   To temporarily bypass the pre-commit hooks (not recommended):
+
+   ```bash
+   git commit -m "your message" --no-verify
+   ```
+
+3. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "your commit message"  # This command will run the husky verifications automatically
    ```
 
 ## Mock Data

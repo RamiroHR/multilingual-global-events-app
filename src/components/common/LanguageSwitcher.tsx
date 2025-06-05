@@ -4,8 +4,7 @@ import React from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { useParams } from "next/navigation";
-import { FaCheck } from "react-icons/fa6";
-import { IoLanguage } from "react-icons/io5";
+import { Check, Languages } from "lucide-react";
 import { useState } from "react";
 
 export default function LanguageSwitcher() {
@@ -24,7 +23,7 @@ export default function LanguageSwitcher() {
         className="flex items-center rounded p-2 text-gray-200"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <IoLanguage size={30} />
+        <Languages size={30} />
       </button>
 
       {open && (
@@ -39,7 +38,7 @@ export default function LanguageSwitcher() {
               }}
             >
               <span className="mr-2 flex w-4 justify-center">
-                {locale === currentLocale ? <FaCheck className="text-blue-500" /> : <span />}
+                {locale === currentLocale ? <Check className="text-blue-500" /> : <span />}
               </span>
               <span className="text-gray-400">{locale.toUpperCase()}</span>
             </li>

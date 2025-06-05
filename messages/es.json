@@ -20,9 +20,11 @@
   },
   "SignupPage": {
     "title": "Crear cuenta",
-    "email": "Correo Electrónico",
-    "username": "Usuario",
+    "email": "Correo electrónico",
+    "username": "Nombre de usuario",
     "password": "Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
     "button": "Registrar",
     "cta": "¿Ya tienes cuenta? Inicia sesión",
     "error-message": "Error al registrarse. Inténtalo de nuevo",

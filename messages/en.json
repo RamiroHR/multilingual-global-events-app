@@ -16,16 +16,20 @@
     "button": "Login",
     "cta": "Don't have an account? Sign Up",
     "error-message": "Login failed. Please try again.",
-    "success-message": "Login successful!"
+    "success-message": "Login successful!",
+    "submitting": "Logging in..."
   },
   "SignupPage": {
     "title": "Sign Up",
     "email": "Email",
     "username": "Username",
     "password": "Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
     "button": "Signup",
     "cta": "Already have an account? Log In",
     "error-message": "Signup failed. Please try again.",
-    "success-message": "Account created successfully!"
+    "success-message": "Account created successfully!",
+    "submitting": "Creating account..."
   }
 }

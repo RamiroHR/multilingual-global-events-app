@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import dotenv from "dotenv";
 import path from "path";
+import { SignupRequest, LoginRequest } from "@/lib/types/routes";
 
 const testEnvPath = path.resolve(process.cwd(), ".env.test");
 console.log("Test file loading env from:", testEnvPath);
@@ -15,23 +16,11 @@ if (result.error) {
   console.log("Successfully loaded .env.test in test file");
 }
 
-// Types for request Bodies
-type SignupRequestBody = {
-  email: string;
-  username: string;
-  password: string;
-};
-
-type LoginRequestBody = {
-  email: string;
-  password: string;
-};
-
 // Helper function to simulate requests
-const createMockSignupRequest = (body: SignupRequestBody) =>
+const createMockSignupRequest = (body: SignupRequest) =>
   ({ json: async () => body }) as unknown as NextRequest;
 
-const createMockLoginRequest = (body: LoginRequestBody) =>
+const createMockLoginRequest = (body: LoginRequest) =>
   ({ json: async () => body }) as unknown as NextRequest;
 
 // Test suite
@@ -54,6 +43,8 @@ describe("POST /api/auth/login", () => {
       email: "login-test@example.com",
       username: "logintestuser",
       password: "Password123",
+      firstName: "userFirstName",
+      lastName: "userLastName",
     };
     const req = createMockSignupRequest(mockUserData);
     await signupPOST(req);
@@ -96,11 +87,11 @@ describe("POST /api/auth/login", () => {
 
       // assertions
       expect(response.status).toBe(400);
-      expect(data.error).toBe("Validation failed");
+      expect(data.error).toBe("Validation error");
     }
   });
 
-  it("should return401 for invalid credentials", async () => {
+  it("should return 401 for invalid credentials", async () => {
     const testUser = await signupTestUser();
 
     // cases of invalid credentials
@@ -117,7 +108,7 @@ describe("POST /api/auth/login", () => {
 
       //assertions
       expect(response.status).toBe(401);
-      expect(data.error).toBe("Invalid credentials");
+      expect(data.error).toBe("Unauthorized");
     }
   });
 });

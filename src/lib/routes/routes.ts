@@ -5,12 +5,26 @@ export default Object.freeze({
   SIGNUP: "/api/auth/signup",
   VERIFY: "/api/auth/verify",
 
+  // Countries
+  ALL_COUNTRIES: "/api/events/countries",
+
   // Explore Events
-  UPCOMING_EVENTS: "/api/events/upcoming",
+  UPCOMING_EVENTS: (page: number, filters?: { onlineOnly?: boolean; country?: string }) => {
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page.toString());
+    if (filters?.onlineOnly) queryParams.append("onlineOnly", "true");
+    if (filters?.country) queryParams.append("country", filters.country);
+    return `/api/events/upcoming?${queryParams.toString()}`;
+  },
   DETAIL_EVENT: (eventId: string) => `/api/events/${eventId}`,
 
   // Creator events
-  USER_EVENTS: "/api/events/my-events",
+  USER_EVENTS: (params?: { timeFilter?: string; orderBy?: string }) => {
+    const queryParams = new URLSearchParams();
+    if (params?.timeFilter) queryParams.append("timeFilter", params.timeFilter);
+    if (params?.orderBy) queryParams.append("orderBy", params.orderBy);
+    return `/api/events/my-events${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+  },
   CREATE_EVENT: "/api/events/create",
   EDIT_EVENT: (eventId: string) => `/api/events/${eventId}/edit`,
   CANCEL_EVENT: (eventId: string) => `/api/events/${eventId}/cancel`,
