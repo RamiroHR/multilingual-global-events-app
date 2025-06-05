@@ -132,7 +132,7 @@ export default function DashboardHome() {
             icon={<CalendarCheck className="size-6" />}
           />
           <QuickStatsCard
-            title="Events Created"
+            title="Events Hosted"
             value={stats.pastHostedCount}
             icon={<Sparkles className="size-6" />}
           />
