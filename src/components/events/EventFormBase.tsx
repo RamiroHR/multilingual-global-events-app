@@ -52,7 +52,27 @@ export const EventFormBase = ({
 
             {/* Basic Information Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
-              <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Basic Information</h3>
+              <div className="flex items-baseline justify-between">
+                <h3 className="mb-4 text-xl font-semibold text-terracotta-300">
+                  Basic Information
+                </h3>
+                <div className="flex flex-col">
+                  <div className="ml-auto flex items-center gap-4">
+                    <label htmlFor="maxCapacity" className={`${labelStyle} whitespace-nowrap`}>
+                      Maximum Capacity :
+                    </label>
+                    <Field
+                      type="number"
+                      name="maxCapacity"
+                      min="2"
+                      max="500"
+                      className={inputFieldStyle}
+                    />
+                  </div>
+                  <ErrorMessage name="maxCapacity" component="div" className={errorStyle} />
+                </div>
+              </div>
+
               <div className="space-y-6">
                 <div>
                   <label htmlFor="title" className={labelStyle}>
@@ -87,8 +107,9 @@ export const EventFormBase = ({
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">
               <div className="grid grid-cols-2 gap-6">
                 {/* Left panel */}
-                <div className="space-y-6">
-                  <h3 className="mb-4 text-xl font-semibold text-terracotta-300">Event Details</h3>
+                <div className="space-y-5">
+                  <h3 className="mb-6 text-xl font-semibold text-terracotta-300">Event Details</h3>
+
                   <div>
                     <label htmlFor="date" className={labelStyle}>
                       Start Date
@@ -115,66 +136,82 @@ export const EventFormBase = ({
                 </div>
 
                 {/* Right panel */}
-                <div className="space-y-6">
-                  <div className="flex items-center">
-                    <label htmlFor="maxCapacity" className={labelStyle}>
-                      Maximum Capacity :
-                    </label>
-                    <Field
-                      type="number"
-                      name="maxCapacity"
-                      min="2"
-                      max="500"
-                      className={inputFieldStyle}
-                    />
-                    <ErrorMessage name="maxCapacity" component="div" className={errorStyle} />
-                  </div>
-
+                <div className="mt-1 space-y-6">
                   <div>
-                    <label className={labelStyle}>Event Type</label>
-                    <div className="mt-2 flex space-x-6">
-                      <label className="inline-flex items-center">
-                        <Field
-                          type="radio"
-                          name="isOnline"
-                          value="false"
-                          checked={values.isOnline === false}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setFieldValue("isOnline", e.target.value === "true");
-                          }}
-                          className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
-                        />
-                        <span className="ml-2 text-lunar-300">In-person</span>
-                      </label>
-                      <label className="inline-flex items-center">
-                        <Field
-                          type="radio"
-                          name="isOnline"
-                          value="true"
-                          checked={values.isOnline === true}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setFieldValue("isOnline", e.target.value === "true");
-                          }}
-                          className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
-                        />
-                        <span className="ml-2 text-lunar-300">Online</span>
-                      </label>
+                    <div className="flex items-center gap-8">
+                      <label className={labelStyle}>Event Type: </label>
+                      <div className=" flex space-x-6">
+                        <label className="inline-flex items-center">
+                          <Field
+                            type="radio"
+                            name="isOnline"
+                            value="false"
+                            checked={values.isOnline === false}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              setFieldValue("isOnline", e.target.value === "true");
+                            }}
+                            className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
+                          />
+                          <span className="ml-2 text-lunar-300">In-person</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                          <Field
+                            type="radio"
+                            name="isOnline"
+                            value="true"
+                            checked={values.isOnline === true}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              setFieldValue("isOnline", e.target.value === "true");
+                            }}
+                            className="size-4 border-terracotta-500/30 text-terracotta-400 focus:ring-terracotta-400"
+                          />
+                          <span className="ml-2 text-lunar-300">Online</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
 
                   {!values.isOnline && (
-                    <div>
-                      <label htmlFor="location" className={labelStyle}>
-                        Location
-                      </label>
-                      <Field
-                        type="text"
-                        name="location"
-                        placeholder="Enter event location"
-                        className={inputFieldStyle}
-                      />
-                      <ErrorMessage name="location" component="div" className={errorStyle} />
-                    </div>
+                    <>
+                      <div className="flex justify-between">
+                        <div>
+                          <label htmlFor="city" className={labelStyle}>
+                            City
+                          </label>
+                          <Field
+                            type="text"
+                            name="city"
+                            placeholder="Enter event city"
+                            className={inputFieldStyle}
+                          />
+                          <ErrorMessage name="city" component="div" className={errorStyle} />
+                        </div>
+                        <div>
+                          <label htmlFor="country" className={labelStyle}>
+                            Country
+                          </label>
+                          <Field
+                            type="text"
+                            name="country"
+                            placeholder="Enter event country"
+                            className={inputFieldStyle}
+                          />
+                          <ErrorMessage name="country" component="div" className={errorStyle} />
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor="location" className={labelStyle}>
+                          Location
+                        </label>
+                        <Field
+                          type="text"
+                          name="location"
+                          placeholder="Enter event location"
+                          className={inputFieldStyle}
+                        />
+                        <ErrorMessage name="location" component="div" className={errorStyle} />
+                      </div>
+                    </>
                   )}
 
                   {values.isOnline && (

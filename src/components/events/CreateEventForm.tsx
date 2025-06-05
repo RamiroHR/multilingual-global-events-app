@@ -21,6 +21,8 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
     description: "",
     date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16), // Next week at current time
     endDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16), // Next week + 1 day
+    city: "",
+    country: "",
     location: "",
     isOnline: false,
     maxCapacity: 2,

@@ -34,7 +34,9 @@ export const EventOwnerCard = ({
             ) : (
               <>
                 <MapPin className="mr-1 size-4 text-cosmic-500" />
-                <span>{event.location}</span>
+                <span>
+                  {event.city}, {event.country}
+                </span>
               </>
             )}
           </div>

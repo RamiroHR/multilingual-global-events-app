@@ -52,6 +52,16 @@ export const createEventSchema = yup.object({
     .max(1000, "Description must not exceed 1000 characters"),
   date: yup.string().required("Date is required"),
   endDate: yup.string().required("End date is required"),
+  city: yup.string().when("isOnline", {
+    is: false,
+    then: (schema) => schema.required("City is required"),
+    otherwise: (schema) => schema.nullable().default(""),
+  }),
+  country: yup.string().when("isOnline", {
+    is: false,
+    then: (schema) => schema.required("Country is required"),
+    otherwise: (schema) => schema.nullable().default(""),
+  }),
   location: yup.string().when("isOnline", {
     is: false,
     then: (schema) => schema.required("Location is required for in-person events"),
@@ -83,6 +93,16 @@ export const updateEventSchema = yup.object({
     .max(1000, "Description must not exceed 1000 characters"),
   date: yup.string().required("Date is required"),
   endDate: yup.string().required("End date is required"),
+  city: yup.string().when("isOnline", {
+    is: false,
+    then: (schema) => schema.required("City is required"),
+    otherwise: (schema) => schema.nullable().default(""),
+  }),
+  country: yup.string().when("isOnline", {
+    is: false,
+    then: (schema) => schema.required("Country is required"),
+    otherwise: (schema) => schema.nullable().default(""),
+  }),
   location: yup.string().required("Location is required"),
   isOnline: yup.boolean().required("isOnline status is required"),
   maxCapacity: yup

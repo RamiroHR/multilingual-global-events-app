@@ -13,6 +13,8 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
     description: event.description,
     date: new Date(event.date).toISOString().slice(0, 16),
     endDate: new Date(event.endDate).toISOString().slice(0, 16),
+    city: event.city || "",
+    country: event.country || "",
     location: event.location || "",
     isOnline: event.isOnline,
     maxCapacity: event.maxCapacity,

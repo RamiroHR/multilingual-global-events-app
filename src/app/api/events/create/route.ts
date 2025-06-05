@@ -23,19 +23,13 @@ const createEventHandler: RouteHandler = async (
     }
 
     // get event information from validated request
-    const { title, description, date, endDate, location, isOnline, maxCapacity, webinar } =
-      validationResult.body;
+    const eventData = validationResult.body;
 
     // Create the event
     const event: EventResponse = await createEvent({
-      title,
-      description,
-      date: new Date(date),
-      endDate: new Date(endDate),
-      location,
-      isOnline,
-      maxCapacity,
-      webinar,
+      ...eventData,
+      date: new Date(eventData.date),
+      endDate: new Date(eventData.endDate),
       creatorId: userData.userId,
     });
 
