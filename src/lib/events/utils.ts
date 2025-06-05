@@ -131,6 +131,7 @@ export async function getUpcomingEvents(
       date: {
         gte: currentDate,
       },
+      isCancelled: false,
       ...(filters?.onlineOnly && { isOnline: true }),
       ...(filters?.country && { country: filters.country }),
     },
