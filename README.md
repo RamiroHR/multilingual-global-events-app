@@ -10,12 +10,13 @@ A modern web application built with Next.js for managing and displaying global e
 
 - ✅ Multilingual support using next-intl (EN, ES)
 - ✅ Authentication with JWT
-- ⬜ Event management system
-- ⬜ Concurrency management
-- 🔄 UI made with React
-- 🔄 Responsive design with Tailwind CSS
+- ✅ Event management system
+- ✅ Concurrency management
+- ✅ UI made with React
+- ✅ Responsive design with Tailwind CSS
 - ✅ TypeScript for type safety
-- ✅ Comprehensive testing with Jest, GitHub Actions
+- 🔄 Comprehensive testing with Jest, GitHub Actions
+- ⬜ Notification system
 
 ### Application Screenshots
 
@@ -140,38 +141,38 @@ The Hosting page is a dedicated space for event management the user has created:
 ├── .github/             # GitHub configuration files
 ├── .husky/              # husky hooks (pre-commit, etc)
 ├── .next/               # Next.js build output
-├── messages/            # Internationalization messages
+├── messages/            # Internationalization messages (translations)
 ├── node_modules/        # Dependencies
 │
 ├── prisma/              # Database & ORM configuration
 │   ├── migrations/         # Database migrations
 │   ├── schema.prisma       # Database schema
-│   └── schema.prisma       # Script to seed the database with mock data
+│   └── seed.ts             # Script to seed the database with mock data
 │
-├── public/              # Static files: images
+├── public/              # Static files: app & doc support images
 │
 ├── src/                 # Source code:
 │   ├── app/                # Next.js app directory
-│   │   ├── [locale]/          # Internationalized routes
-│   │   ├── api/               # API routes
+│   │   ├── [locale]/          # Internationalized app page's tree (frontend)
+│   │   ├── api/               # API routes (backend)
 │   │   ├── fonts/             # Font files
-│   │   ├── globals.css        # Global styles
+│   │   ├── globals.css        # Global styles: color palette, etc
 │   │   └── layout.tsx         # Root app layout
 │   │
 │   ├── components/         # React components
-│   ├── i18n/               # Internationalization setup
+│   ├── i18n/               # Internationalization setup & configuration
 │   ├── lib/                # Utility functions
 │   │   ├── types/          # central place for Types
 │   │   ├── validations/    # yup validation schemas
 │   │   ├── ...             # other utility functions ...
-│   │   └── routes/         # Central endpoint strings variables
+│   │   └── routes/         # Centralized endpoint's strings variables
 │   │
 │   ├── hooks/              # Custom hooks
-│   ├── metadata/           # App metadata for SEO
+│   ├── metadata/           # App metadata for SEO performance
 │   ├── mocks/              # Mock data & templates
 │   ├── store/              # App state stores
-│   ├── config.ts           # environment NODE_ENV configuration
-│   └── middleware.ts       # Next.js middleware
+│   ├── config.ts           # environment configuration (NODE_ENV, etc)
+│   └── middleware.ts       # Next.js middlewares
 │
 ├── tests/               # Test files: per routes & files
 │
@@ -279,11 +280,11 @@ Our CI/CD pipeline runs automatically on push to `main` and `develop` branches, 
 
 4. **Integration**
 
-   - ⬜ Tests complete endpoint flows with real HTTP request
+   - 🔄 Tests complete endpoint flows with real HTTP request
 
 5. **Deployment**
    - ⬜ Buil Docker image and pucblish in DockerHub
-   - ⬜ Deploy to Vercel
+   - ✅ Deploy to Vercel
 
 ### Running Tests Locally
 
@@ -339,12 +340,12 @@ Time:        4.608 s, estimated 5 s
 
 1. **Develop new features, fiw bugs, refactor, etc**
 
-2. **Before Committing**  
+2. **Before Committing (manually or automatically)**  
    The project uses Husky to enforce code quality checks before each commit. The following checks will run automatically:
 
    - Code formatting (Prettier)
    - Linting (ESLint)
-   - Tests
+   - Unit tests
    - Build verification
 
    If any check fails, the commit will be blocked until the issues are fixed.
@@ -363,6 +364,9 @@ Time:        4.608 s, estimated 5 s
 
    # Test build process
    npm run build
+
+   # Run husky checks without a commit
+   bash .husky/pre-commit
    ```
 
    To temporarily bypass the pre-commit hooks (not recommended):
@@ -384,7 +388,7 @@ This directory is for development-only mock data. Do not commit actual mock data
 #### Usage
 
 1. Copy `events.template.ts` to `events.ts`
-2. Add your mock data to `events.ts` following the example
+2. Add your mock data to `events.ts` following the example structure
 3. After creating the user mock data, change the importing in `events.ts` to: `import { mockUsers } from "@/mocks/users";`
 4. Use the mock data in your development environment. Importing it in your page.tsx as:
    ```bash
@@ -394,8 +398,8 @@ This directory is for development-only mock data. Do not commit actual mock data
 
 #### Available Templates
 
-- `events.template.ts`: Template for event mock data
-- `users.template.ts`: Template for user mock data
+- `events.template.ts`: Template for "events" mock data
+- `users.template.ts`: Template for "users" profiles mock data
 
 ### Database Seeding
 
@@ -405,7 +409,7 @@ Alternatively the mock data can be used to seed a fresh database. The seed scrip
 - Create the mock events (mix of online and offline events) from the file `src/mocks/events.ts`
 - Set up event participants and relationships as describen in the file `src/mocks/events.ts`
 
-To seed the database with mock data execute:
+To seed the database with mock data: apply prisma migrations, then execute:
 
 ```bash
 npm run seed
