@@ -23,7 +23,20 @@ const cancelEventHandler: RouteHandler<CancelEventParams> = async (
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
-    const event: EventResponse = await cancelEvent(params.eventId, userData.userId);
+    // Get version from request body
+    const body = await req.json();
+    const version = body.version;
+
+    if (typeof version !== "number") {
+      const errorResponse: ErrorResponse = {
+        error: "Bad Request",
+        message: "Version is required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
+    const event: EventResponse = await cancelEvent(params.eventId, userData.userId, version);
     return NextResponse.json(event);
   } catch (error) {
     console.error("Error cancelling event:", error);
@@ -45,12 +58,20 @@ const cancelEventHandler: RouteHandler<CancelEventParams> = async (
         };
         return NextResponse.json(errorResponse, { status: 403 });
       }
+      if (error.message === "The event was already cancelled") {
+        const errorResponse: ErrorResponse = {
+          error: "Conflict",
+          message: "The event was already cancelled",
+          statusCode: 409,
+        };
+        return NextResponse.json(errorResponse, { status: 409 });
+      }
       if (
         error.message === "The event was modified by another user. Please refresh and try again."
       ) {
         const errorResponse: ErrorResponse = {
           error: "Conflict",
-          message: "The event was modified by another user. Please refresh and try again.",
+          message: "The event was already cancelled by another user. Please continue to refresh.",
           statusCode: 409,
         };
         return NextResponse.json(errorResponse, { status: 409 });

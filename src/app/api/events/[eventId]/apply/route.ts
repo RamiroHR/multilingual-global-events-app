@@ -52,10 +52,10 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
         };
         return NextResponse.json(errorResponse, { status: 400 });
       }
-      if (error.message === "Event has reached maximum capacity") {
+      if (error.message.includes("capacity")) {
         const errorResponse: ErrorResponse = {
           error: "Bad Request",
-          message: "Event has reached maximum capacity",
+          message: "Event has reached maximum capacity. Another user has taken the last spot.",
           statusCode: 400,
         };
         return NextResponse.json(errorResponse, { status: 400 });

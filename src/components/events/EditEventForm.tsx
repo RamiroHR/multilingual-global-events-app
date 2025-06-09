@@ -19,6 +19,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
     isOnline: event.isOnline,
     maxCapacity: event.maxCapacity,
     webinar: event.webinar || "",
+    version: event.version,
   };
 
   const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
@@ -27,13 +28,17 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
         ...values,
         date: new Date(values.date).toISOString(),
         endDate: new Date(values.endDate).toISOString(),
+        version: values.version,
       });
+      onSuccess?.();
     } catch (error) {
       console.error("Update error:", error);
       if (error instanceof AxiosError) {
         if (error.response?.status === 409) {
           helpers.setStatus({
-            error: "The event was modified by another user. Please refresh and try again.", // Handle concurrency conflict
+            error:
+              error.response.data.message ||
+              "The event was modified by another user. Please refresh and try again.", // Handle concurrency conflict
           });
         } else if (error.response?.data?.errors) {
           helpers.setErrors(error.response.data.errors); // Handle validation errors: form field specific in Formik
@@ -43,6 +48,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
           });
         }
       }
+      throw error;
     }
   };
 

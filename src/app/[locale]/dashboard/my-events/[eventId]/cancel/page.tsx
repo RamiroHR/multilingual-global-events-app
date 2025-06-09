@@ -16,6 +16,7 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
   const [error, setError] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState("");
   const [eventLoading, setEventLoading] = useState(false);
+  const [eventVersion, setEventVersion] = useState<number | null>(null);
 
   const fetchEvent = useCallback(async () => {
     setEventLoading(true);
@@ -23,6 +24,7 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
     try {
       const response = await axiosInstance.get<Event>(ROUTES.DETAIL_EVENT(params.eventId));
       setEventTitle(response.data.title);
+      setEventVersion(response.data.version);
       setError(null);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -49,7 +51,9 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
     try {
       setLoading(true);
       setError(null);
-      await axiosInstance.patch<Event>(ROUTES.CANCEL_EVENT(params.eventId));
+      await axiosInstance.patch<Event>(ROUTES.CANCEL_EVENT(params.eventId), {
+        version: eventVersion,
+      });
       // router.push("/dashboard/my-events");
       router.back();
     } catch (error: unknown) {
@@ -67,7 +71,7 @@ export default function CancelEvent({ params }: { params: { eventId: string } })
     } finally {
       setLoading(false);
     }
-  }, [params.eventId, router]);
+  }, [params.eventId, router, eventVersion]);
 
   const handleKeep = useCallback(() => {
     // router.push("/dashboard/my-events");

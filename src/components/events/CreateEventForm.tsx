@@ -27,6 +27,7 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
     isOnline: false,
     maxCapacity: 2,
     webinar: "",
+    version: 1,
   };
 
   const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
