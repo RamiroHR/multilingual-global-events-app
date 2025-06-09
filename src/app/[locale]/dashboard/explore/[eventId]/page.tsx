@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import axiosInstance from "@/lib/axios";
@@ -70,6 +70,8 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
       setError("");
       await axiosInstance.post(ROUTES.APPLY_EVENT(params.eventId));
       setHasApplied(true);
+      setCurrentUserStatus("PENDING");
+      await fetchEvent();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
@@ -77,6 +79,11 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
           setError(
             "The event was modified by another user. Please refresh the page and try again."
           );
+        } else if (
+          axiosError.response?.status === 400 &&
+          axiosError.response?.data?.message.includes("capacity")
+        ) {
+          setError(axiosError.response.data.message);
         } else if (axiosError.response?.data) {
           setError(axiosError.response.data.message);
         } else {
@@ -88,7 +95,12 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
     } finally {
       setLoading(false);
     }
-  }, [params.eventId]);
+  }, [params.eventId, fetchEvent]);
+
+  const reservedSeats = useMemo(() => {
+    return event?.participants.filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
+      .length;
+  }, [event]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -136,7 +148,7 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
               location={event.location}
               city={event.city}
               country={event.country}
-              participantsCount={event.participants.length}
+              participantsCount={reservedSeats || 0}
               maxCapacity={event.maxCapacity}
               status={currentUserStatus}
               showParticipants={true}
@@ -146,8 +158,8 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
             <EventDetailsActions
               hasApplied={hasApplied}
               status={currentUserStatus}
-              isFull={event.participants.length >= event.maxCapacity}
-              spotsLeft={event.maxCapacity - event.participants.length}
+              isFull={(reservedSeats || 0) >= event.maxCapacity}
+              spotsLeft={event.maxCapacity - (reservedSeats || 0)}
               onJoinEvent={handleJoinEvent}
               error={error}
             />

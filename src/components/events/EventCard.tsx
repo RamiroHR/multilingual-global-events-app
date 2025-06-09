@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import { Calendar, MapPin, Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,11 @@ export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
       router.push(`/dashboard/explore/${event.id}`);
     }
   }, [event.id, onViewDetails, router]);
+
+  const reservedSeats = useMemo(() => {
+    return event?.participants.filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
+      .length;
+  }, [event]);
 
   return (
     <div className="overflow-hidden rounded-lg border border-lunar-200 bg-gray-50 shadow-md transition-shadow duration-300 hover:shadow-lg">
@@ -65,11 +70,11 @@ export const EventCard = memo(({ event, onViewDetails }: EventCardProps) => {
               View Details
             </button>
             <span className="text-sm">
-              {event.participants.length === event.maxCapacity ? (
+              {(reservedSeats || 0) >= event.maxCapacity ? (
                 <span className="text-terracotta-500">Full</span>
               ) : (
                 <span className="text-cosmic-500">
-                  {event.maxCapacity - event.participants.length} spots left
+                  {event.maxCapacity - (reservedSeats || 0)} spots left
                 </span>
               )}
             </span>
