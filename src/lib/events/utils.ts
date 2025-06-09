@@ -1,6 +1,5 @@
 import { prisma } from "../prisma";
 import { Prisma } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import {
   CreateEventInput,
   UpdateEventInput,
@@ -45,18 +44,20 @@ export async function updateEvent(
       const updatedEvent = await tx.event.update({
         where: {
           id: Number(eventId),
-          version: existingEvent.version, // attempt to access the same version from where the event was fetched
+          version: data.version, // attempt to access the same version from where the event was fetched
         },
         data: {
           ...data,
-          version: existingEvent.version + 1, // Increment version with update
+          version: data.version + 1, // Increment version with update
         },
       });
 
       return updatedEvent;
     });
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
+    // Check for Prisma error by looking at the error code directly
+    // (the native PrismaClientKnownRequestError type is loss when serialized by next.js)
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
       throw new Error("The event was modified by another user. Please refresh and try again.");
     }
     throw error; // other errors
@@ -207,7 +208,7 @@ export async function getEvent(eventId: Id): Promise<EventWithRelations> {
   return event;
 }
 
-export async function cancelEvent(eventId: Id, creatorId: Id): Promise<Event> {
+export async function cancelEvent(eventId: Id, creatorId: Id, version: number): Promise<Event> {
   try {
     // use transacion for read and update data consistency
     return await prisma.$transaction(async (tx) => {
@@ -227,18 +228,19 @@ export async function cancelEvent(eventId: Id, creatorId: Id): Promise<Event> {
       const event = await tx.event.update({
         where: {
           id: Number(eventId),
-          version: existingEvent.version, // verify it is the same version
+          version: version, // verify it is the same version
+          isCancelled: false,
         },
         data: {
           isCancelled: true,
-          version: existingEvent.version + 1, // update version
+          version: version + 1, // update version
         } as Prisma.EventUpdateInput,
       });
 
       return event;
     });
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
       throw new Error("The event was modified by another user. Please refresh and try again.");
     }
     throw error; // for other errors that may occur

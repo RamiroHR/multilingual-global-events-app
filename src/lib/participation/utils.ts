@@ -1,4 +1,3 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { prisma } from "../prisma";
 import {
   Id,
@@ -110,7 +109,7 @@ export async function applyToEvent(eventId: Id, userId: Id): Promise<Application
 
     return result;
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
       throw new Error("The event was modified by another user. Please refresh and try again.");
     }
     throw error;
@@ -218,7 +217,8 @@ export async function getEventApplications(
 // Cancel a participation to an event (as a participant)
 export async function cancelParticipation(
   participationId: Id,
-  userId: Id
+  userId: Id,
+  version: number
 ): Promise<ApplicationWithRelations> {
   try {
     // start a transaction for read and update consistency
@@ -243,11 +243,14 @@ export async function cancelParticipation(
       const updatedParticipation = await tx.eventParticipant.update({
         where: {
           id: Number(participationId),
-          version: participation.version, // target correct version
+          version: version, // target correct version
+          status: {
+            in: ["PENDING", "ACCEPTED"],
+          },
         },
         data: {
           status: "CANCELLED",
-          version: participation.version + 1, // update version
+          version: version + 1, // update version
         },
         include: {
           event: true,
@@ -264,8 +267,10 @@ export async function cancelParticipation(
       return updatedParticipation;
     });
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      throw new Error("The event was modified by another user. Please refresh and try again.");
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
+      throw new Error(
+        "The user application status was modified by another user. Please refresh and try again."
+      );
     }
     throw error;
   }
@@ -297,18 +302,12 @@ export async function updateParticipationStatus(
         throw new Error("Not authorized to update this participation status");
       }
 
-      // Verify the participation is in a valid state for update
-      if (participation.status !== "PENDING") {
-        throw new Error(
-          `Cannot update participation that is ${participation.status.toLowerCase()}`
-        );
-      }
-
       // 2- Update the participation status
       const updatedParticipation = await tx.eventParticipant.update({
         where: {
           id: Number(participationId),
           version: participation.version,
+          status: "PENDING",
         },
         data: {
           status: newStatus,
@@ -329,7 +328,7 @@ export async function updateParticipationStatus(
       return updatedParticipation;
     });
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
+    if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
       throw new Error("The event was modified by another user. Please refresh and try again.");
     }
     throw error;
