@@ -144,6 +144,9 @@ export async function getUserParticipations(userId: Id): Promise<Application[]> 
   const userParticipations = await prisma.eventParticipant.findMany({
     where: {
       userId: Number(userId),
+      event: {
+        isCancelled: false,
+      },
     },
     include: {
       event: {
