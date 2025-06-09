@@ -11,7 +11,7 @@ export const LoadingSpinner = memo(({ size = "md" }: LoadingSpinnerProps) => {
   return (
     <div className="flex justify-center py-8">
       <div
-        className={`${sizeClasses[size]} animate-spin rounded-full border-b-2 border-cosmic-500`}
+        className={`${sizeClasses[size]} animate-spin rounded-full border-b-2 border-terracotta-500`}
       />
     </div>
   );

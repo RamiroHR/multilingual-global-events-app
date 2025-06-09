@@ -36,7 +36,7 @@ export const ConfirmationModal = ({
 
           {/* Error display section */}
           {error && (
-            <div className="rounde-md mt-4 bg-terracotta-100 text-center text-terracotta-800">
+            <div className=" mt-4 rounded-md bg-red-500/10 p-4 text-center text-sm text-red-400">
               {error}
             </div>
           )}
@@ -44,7 +44,7 @@ export const ConfirmationModal = ({
           {/* Action buttons section */}
           <div className="mt-8 flex justify-center gap-4">
             {/* Confirmation action */}
-            {primaryAction && (
+            {primaryAction && !error && (
               <button
                 className="rounded-md border border-terracotta-500/30 px-4 py-2 text-sm font-medium
                       text-terracotta-200 transition-colors hover:bg-space-400/40"
@@ -63,7 +63,7 @@ export const ConfirmationModal = ({
               onClick={secondaryAction.onClick}
               disabled={primaryAction?.isLoading}
             >
-              {secondaryAction.label}
+              {error ? "Continue" : secondaryAction.label}
             </button>
           </div>
         </div>

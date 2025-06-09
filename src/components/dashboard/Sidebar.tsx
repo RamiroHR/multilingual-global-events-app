@@ -20,6 +20,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
 
   // memoized logout handler
   const handleLogout = useCallback(() => {
@@ -60,8 +61,13 @@ export default function Sidebar() {
 
   return (
     <div className="flex h-full w-40 flex-col border-r border-space-300 bg-space-200">
-      <div className="flex h-16 items-center border-b border-space-300 px-4">
+      <div className="mt-4 flex h-16 flex-col items-center border-b border-space-300 px-4">
         <h2 className="text-lg font-semibold text-blue-600">Join The Spot</h2>
+        {user && (
+          <p className="txt-sm text-lunar-300">
+            {user.firstName} {user.lastName}
+          </p>
+        )}
       </div>
       <div className="scrollbar-none flex flex-1 flex-col overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {/* Navigation Bar Items*/}
