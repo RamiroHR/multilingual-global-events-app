@@ -25,6 +25,7 @@ export default function EditEventPage({ params }: { params: { eventId: string } 
       setEvent(response.data);
       setError(null);
     } catch (error) {
+      console.error("Error fetching the event details:", error);
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError<ErrorResponse>;
         if (axiosError.response?.data) {
@@ -54,7 +55,11 @@ export default function EditEventPage({ params }: { params: { eventId: string } 
   }, [router]);
 
   if (loading) {
-    <LoadingSpinner />;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (!event) {

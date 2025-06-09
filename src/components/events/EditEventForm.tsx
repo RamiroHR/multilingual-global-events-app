@@ -30,6 +30,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
         endDate: new Date(values.endDate).toISOString(),
         version: values.version,
       });
+
       onSuccess?.();
     } catch (error) {
       console.error("Update error:", error);
@@ -48,7 +49,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
           });
         }
       }
-      throw error;
+      throw error; // important to display edit event (by creator) race condition error message.
     }
   };
 

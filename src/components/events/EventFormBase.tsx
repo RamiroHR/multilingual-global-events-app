@@ -16,6 +16,7 @@ export const EventFormBase = ({
       await onSubmit(values, helpers);
       onSuccess?.();
     } catch (error) {
+      console.error("Form submission error:", error);
       throw error;
     }
   };

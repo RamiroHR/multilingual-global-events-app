@@ -103,7 +103,12 @@ export const updateEventSchema = yup.object({
     then: (schema) => schema.required("Country is required"),
     otherwise: (schema) => schema.nullable().default(""),
   }),
-  location: yup.string().required("Location is required"),
+  // location: yup.string().required("Location is required"),
+  location: yup.string().when("isOnline", {
+    is: false,
+    then: (schema) => schema.required("Location is required for in-person events"),
+    otherwise: (schema) => schema.nullable().default(""),
+  }),
   isOnline: yup.boolean().required("isOnline status is required"),
   maxCapacity: yup
     .number()
