@@ -83,7 +83,7 @@ const updateParticipationStatusHandler: RouteHandler<UpdateParticipationStatusPa
       ) {
         const errorResponse: ErrorResponse = {
           error: "Conflict",
-          message: "The event was modified by another user. Please refresh and try again.",
+          message: "The application was modified by another user. Please refresh and try again.",
           statusCode: 409,
         };
         return NextResponse.json(errorResponse, { status: 409 });

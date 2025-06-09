@@ -24,13 +24,27 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
       return NextResponse.json(errorResponse, { status: 400 });
     }
 
+    // Get version from request body
+    const body = await req.json();
+    const version = body.version;
+
+    if (typeof version !== "number") {
+      const errorResponse: ErrorResponse = {
+        error: "Bad Request",
+        message: "Version is required",
+        statusCode: 400,
+      };
+      return NextResponse.json(errorResponse, { status: 400 });
+    }
+
     const participationId = params.participationId;
     const userId = userData.userId;
 
     // Update participation status to CANCELLED
     const cancelledParticipation: ApplicationResponse = await cancelParticipation(
       participationId,
-      userId
+      userId,
+      version
     );
 
     return NextResponse.json(cancelledParticipation);
@@ -56,11 +70,13 @@ const cancelParticipationHandler: RouteHandler<CancelParticipationParams> = asyn
         return NextResponse.json(errorResponse, { status: 403 });
       }
       if (
-        error.message === "The event was modified by another user. Please refresh and try again."
+        error.message ===
+        "The user application status was modified by another user. Please refresh and try again."
       ) {
         const errorResponse: ErrorResponse = {
           error: "Conflict",
-          message: "The event was modified by another user. Please refresh and try again.",
+          message:
+            "The user application status was modified by another user. Please try again later.",
           statusCode: 409,
         };
         return NextResponse.json(errorResponse, { status: 409 });

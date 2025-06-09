@@ -15,6 +15,7 @@ export default function CancelParticipation({ params }: { params: { participatio
   const [error, setError] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState("");
   const [eventLoading, setEventLoading] = useState(false);
+  const [participationVersion, setParticipationVersion] = useState<number | null>(null);
 
   const fetchParticipation = useCallback(async () => {
     setEventLoading(true);
@@ -25,6 +26,7 @@ export default function CancelParticipation({ params }: { params: { participatio
         ROUTES.PARTICIPATION_ID(params.participationId)
       );
       setEventTitle(response.data.event.title);
+      setParticipationVersion(response.data.version);
       setError(null);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -52,7 +54,10 @@ export default function CancelParticipation({ params }: { params: { participatio
       setLoading(true);
       setError(null);
       await axiosInstance.delete<ApplicationWithRelations>(
-        ROUTES.CANCEL_PARTICIPATION(params.participationId)
+        ROUTES.CANCEL_PARTICIPATION(params.participationId),
+        {
+          data: { version: participationVersion },
+        }
       );
       router.push("/dashboard/joining");
     } catch (error: unknown) {
@@ -70,7 +75,7 @@ export default function CancelParticipation({ params }: { params: { participatio
     } finally {
       setLoading(false);
     }
-  }, [router, params.participationId]);
+  }, [router, params.participationId, participationVersion]);
 
   const handleKeep = useCallback(() => {
     router.push("/dashboard/joining");

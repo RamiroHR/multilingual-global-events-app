@@ -110,8 +110,13 @@ export const ApplicationCard = ({
         </button>
         <button
           onClick={handleLeaveEvent}
-          className="w-fit rounded-md bg-terracotta-500 px-4 py-2 text-white-50
-            transition-colors hover:bg-terracotta-600"
+          disabled={applicationStatus === "CANCELLED" || applicationStatus === "REJECTED"}
+          className={`w-fit rounded-md px-4 py-2 text-white-50 transition-colors
+            ${
+              applicationStatus === "CANCELLED" || applicationStatus === "REJECTED"
+                ? "cursor-not-allowed bg-gray-400" // Disabled state
+                : "bg-terracotta-500 hover:bg-terracotta-600" // Normal state
+            }`}
         >
           Leave Event
         </button>
