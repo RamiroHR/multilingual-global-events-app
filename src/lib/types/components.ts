@@ -143,6 +143,7 @@ export type EventFormValues = Omit<CreateEventInput, "creatorId" | "date" | "end
   endDate: string;
   location: string;
   webinar?: string;
+  version: number;
 };
 
 export interface EventFormBaseProps {

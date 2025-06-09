@@ -115,6 +115,7 @@ export const updateEventSchema = yup.object({
     then: (schema) => schema.required("Webinar link is required for online events"),
     otherwise: (schema) => schema.nullable(),
   }),
+  version: yup.number().required("Version is required").min(1, "Version must be at least 1"),
 });
 
 // Event application management schema

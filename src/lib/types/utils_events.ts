@@ -23,6 +23,7 @@ export type CreateEventInput = CreateEventBase & {
 // Input type for updating an event (Partial --> fields are optional)
 export type UpdateEventInput = Partial<CreateEventBase> & {
   isCancelled?: boolean;
+  version: number;
 };
 
 // Type for the participant info typically selected
