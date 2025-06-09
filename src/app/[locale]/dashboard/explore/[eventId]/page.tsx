@@ -13,6 +13,7 @@ import { EventDetailsHeader } from "@/components/events/EventDetailsHeader";
 import { EventDetailsInfo } from "@/components/events/EventDetailsInfo";
 import { EventDetailsActions } from "@/components/events/EventDetailsActions";
 import { ApplicationStatus } from "@/lib/types";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function EventDetailsPage({ params }: { params: { eventId: string } }) {
   const router = useRouter();
@@ -109,9 +110,7 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
   if (error || !event) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">
-          {error || "Event not found"}
-        </div>
+        <ErrorMessage error={error || "Event not found"} />
       </div>
     );
   }

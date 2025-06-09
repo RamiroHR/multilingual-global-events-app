@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginSchema, signupSchema } from "@/lib/validations/schemas";
 import { AuthFormProps, AuthFormData } from "@/lib/types/components";
+import { ErrorMessage as CustomErrorMessage } from "@/components/common/ErrorMessage";
 import { Loader2 } from "lucide-react";
 
 export default function AuthForm({ type, onSubmit }: AuthFormProps) {
@@ -104,7 +105,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
             <ErrorMessage name="password" component="div" className={errorStyle} />
           </div>
 
-          {status?.error && <div className={errorStyle}>{status.error}</div>}
+          {status?.error && <CustomErrorMessage error={status.error} />}
 
           {status?.success && <div className="text-sm text-green-500">{status.success}</div>}
 

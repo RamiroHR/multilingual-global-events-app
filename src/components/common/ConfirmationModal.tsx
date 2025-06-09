@@ -1,5 +1,6 @@
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ConfirmationModalProps } from "@/lib/types/components";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export const ConfirmationModal = ({
   title,
@@ -35,11 +36,7 @@ export const ConfirmationModal = ({
           <div>{children}</div>
 
           {/* Error display section */}
-          {error && (
-            <div className=" mt-4 rounded-md bg-red-500/10 p-4 text-center text-sm text-red-400">
-              {error}
-            </div>
-          )}
+          {error && <ErrorMessage error={error} />}
 
           {/* Action buttons section */}
           <div className="mt-8 flex justify-center gap-4">

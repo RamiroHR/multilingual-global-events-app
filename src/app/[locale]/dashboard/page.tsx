@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useAuthStore } from "@/store/authStore";
 import { CalendarCheck, Sparkles, Users } from "lucide-react";
 import { CalendarPreview } from "@/components/dashboard/CalendarPreview";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function DashboardHome() {
   const { user } = useAuthStore();
@@ -111,9 +112,7 @@ export default function DashboardHome() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-space-300">
-          <p className="text-terracotta-500">{error}</p>
-        </div>
+        <ErrorMessage error={error} />
       </div>
     );
   }
@@ -207,12 +206,7 @@ export default function DashboardHome() {
             </p>
           </div>
 
-          {/* <div className="rounded-lg bg-space-200 p-6">
-            <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2>
-            <p className="text-lunar-300">Your upcoming events calendar will appear here.</p>
-          </div> */}
           <div className="rounded-lg bg-space-200 p-6">
-            {/* <h2 className="mb-4 text-xl font-semibold text-terracotta-800">Calendar Preview</h2> */}
             <CalendarPreview
               futureHostedEvents={futureHostedEvents}
               futureActivities={futureActivities}

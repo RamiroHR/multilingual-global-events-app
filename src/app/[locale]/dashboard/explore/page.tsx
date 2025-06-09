@@ -10,6 +10,7 @@ import axios, { AxiosError } from "axios";
 import { EventFilter } from "@/components/events/EventFilter";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useEvents } from "@/hooks/useEvents";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
@@ -118,16 +119,8 @@ export default function ExplorationPage() {
       {loading && <LoadingSpinner />}
 
       {/* Error States */}
-      {error && (
-        <div className="container mx-auto p-4">
-          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">{error}</div>
-        </div>
-      )}
-      {countryError && (
-        <div className="container mx-auto p-4">
-          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">{countryError}</div>
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
+      {countryError && <ErrorMessage error={countryError} />}
 
       {/* Events List */}
       {!loading && !error && <EventList events={events} />}

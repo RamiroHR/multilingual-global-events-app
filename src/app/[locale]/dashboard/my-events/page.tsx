@@ -7,6 +7,7 @@ import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useEvents } from "@/hooks/useEvents";
 import { EventWithRelations, EventOptions } from "@/lib/types";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function MyEventsPage() {
   const router = useRouter();
@@ -62,11 +63,7 @@ export default function MyEventsPage() {
   }
 
   if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-terracotta-500">{error}</div>
-      </div>
-    );
+    return <ErrorMessage error={error} />;
   }
 
   return (

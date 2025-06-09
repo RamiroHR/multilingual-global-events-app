@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ErrorResponse, EventWithRelations } from "@/lib/types";
 import ROUTES from "@/lib/routes/routes";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function EditEventPage({ params }: { params: { eventId: string } }) {
   const router = useRouter();
@@ -64,11 +65,7 @@ export default function EditEventPage({ params }: { params: { eventId: string } 
     <>
       <EditEventForm event={event} onSuccess={handleSuccess} onCancel={handleCancel} />
 
-      {error && (
-        <div className="mt-4 rounded-md bg-terracotta-100 p-4 text-center text-terracotta-800">
-          {error}
-        </div>
-      )}
+      {error && <ErrorMessage error={error} />}
     </>
   );
 }

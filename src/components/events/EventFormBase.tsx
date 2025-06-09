@@ -1,5 +1,6 @@
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { EventFormBaseProps, EventFormValues } from "@/lib/types";
+import { ErrorMessage as CustomErrorMessage } from "@/components/common/ErrorMessage";
 
 export const EventFormBase = ({
   initialValues,
@@ -44,11 +45,7 @@ export const EventFormBase = ({
         {({ isSubmitting, values, setFieldValue, status }) => (
           <Form className="space-y-8">
             {/* Form-level error message (Ex: concurrency conflic, api errors */}
-            {status?.error && (
-              <div className="rounded-md bg-red-500/10 p-4 text-center text-sm text-red-400">
-                {status.error}
-              </div>
-            )}
+            {status?.error && <CustomErrorMessage error={status.error} />}
 
             {/* Basic Information Section */}
             <div className="rounded-lg border border-terracotta-500/20 bg-space-300/30 p-6 backdrop-blur-sm">

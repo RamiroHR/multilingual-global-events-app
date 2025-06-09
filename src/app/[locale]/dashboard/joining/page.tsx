@@ -5,6 +5,7 @@ import { ApplicationCard } from "@/components/events/ApplicationCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useEvents } from "@/hooks/useEvents";
 import { EventOptions, Application } from "@/lib/types";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function JoiningPage() {
   // memoize to fetch event only in mount and when this changes
@@ -48,9 +49,7 @@ export default function JoiningPage() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-space-300">
-          <p className="text-terracotta-500">{error}</p>
-        </div>
+        <ErrorMessage error={error} />
       </div>
     );
   }

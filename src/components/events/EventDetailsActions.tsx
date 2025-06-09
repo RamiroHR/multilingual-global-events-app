@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { EventDetailsActionsProps } from "@/lib/types/components";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export const EventDetailsActions = memo(
   ({ hasApplied, status, isFull, onJoinEvent, error }: EventDetailsActionsProps) => {
@@ -36,11 +37,7 @@ export const EventDetailsActions = memo(
             </span>
           )}
 
-          {error && (
-            <div className="mt-4 rounded-md bg-red-500/10 p-4 text-center text-sm text-red-400">
-              {error}
-            </div>
-          )}
+          {error && <ErrorMessage error={error} />}
         </div>
 
         <span className="text-sm">
