@@ -1,87 +1,79 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import axiosInstance from "@/lib/axios";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
-import { getUserEvents } from "@/lib/events/utils";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useEvents } from "@/hooks/useEvents";
+import { EventWithRelations, EventOptions } from "@/lib/types";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function MyEventsPage() {
   const router = useRouter();
-
-  const [events, setEvents] = useState<
-    Awaited<ReturnType<typeof getUserEvents>> // define the exact type as of what getUserEvents returns
-  >([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get("/api/events/my-events");
-      setEvents(response.data);
-      setError("");
-    } catch (err) {
-      setError("Failed to load events. Please try again later.");
-      console.error("Error fetching events:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // memoize to fetch event only in mount and when this changes
+  const config = useMemo<EventOptions>(
+    () => ({
+      type: "created",
+      options: {
+        timeFilter: "future",
+        orderBy: "asc",
+        onError: (err: string) => console.error(err),
+      },
+    }),
+    []
+  );
+
+  const { data: events, loading, error, fetchEvents } = useEvents(config);
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, [fetchEvents]);
 
-  const handleEdit = (eventId: number) => {
-    router.push(`/dashboard/my-events/${eventId}/edit`);
-  };
+  const handleEdit = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/edit`);
+    },
+    [router]
+  );
 
-  const handleCancel = (eventId: number) => {
-    router.push(`/dashboard/my-events/${eventId}/cancel`);
-  };
+  const handleCancel = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/cancel`);
+    },
+    [router]
+  );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleManageSubscriptions = (eventId: number) => {
-    // TODO: Implement subscription management
-    // console.log("Manage subscriptions (TODO)", eventId);
-  };
+  const handleManageSubscriptions = useCallback(
+    (eventId: number) => {
+      router.push(`/dashboard/my-events/${eventId}/subscriptions`);
+    },
+    [router]
+  );
 
-  const handleCreateSuccess = () => {
+  const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
     fetchEvents(); // Refresh the events list
-  };
+  }, [fetchEvents]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="size-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
-      </div>
-    );
+    <LoadingSpinner />;
   }
 
   if (error) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center text-terracotta-500">{error}</div>
-      </div>
-    );
+    return <ErrorMessage error={error} />;
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6 items-center justify-between">
-        <h1 className="mb-2 text-2xl font-bold text-terracotta-800">
-          My Events
-        </h1>
-        <p className="mb-6 text-lunar-200">
-          Create and manage events that your are hosting!
-        </p>
+        <h1 className="mb-2 text-2xl font-bold text-terracotta-800">My Events</h1>
+        <p className="mb-6 text-lunar-200">Create and manage events that your are hosting!</p>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+          className="rounded bg-terracotta-700 px-4 py-2 text-white transition-colors hover:bg-blue-600"
         >
           Create New Event
         </button>
@@ -99,15 +91,19 @@ export default function MyEventsPage() {
       )}
 
       <div className="space-y-4">
-        {events.map((event) => (
-          <EventOwnerCard
-            key={event.id}
-            event={event}
-            onEdit={handleEdit}
-            onCancel={handleCancel}
-            onManageSubscriptions={handleManageSubscriptions}
-          />
-        ))}
+        {Array.isArray(events) && events.length > 0 ? (
+          events.map((event) => (
+            <EventOwnerCard
+              key={event.id}
+              event={event as EventWithRelations}
+              onEdit={handleEdit}
+              onCancel={handleCancel}
+              onManageSubscriptions={handleManageSubscriptions}
+            />
+          ))
+        ) : (
+          <div className="text-center text-lunar-200">No events found.</div>
+        )}
       </div>
     </div>
   );

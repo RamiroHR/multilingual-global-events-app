@@ -10,12 +10,13 @@ A modern web application built with Next.js for managing and displaying global e
 
 - ✅ Multilingual support using next-intl (EN, ES)
 - ✅ Authentication with JWT
-- ⬜ Event management system
-- ⬜ Concurrency management
-- 🔄 UI made with React
-- 🔄 Responsive design with Tailwind CSS
+- ✅ Event management system
+- ✅ Concurrency management
+- ✅ UI made with React
+- ✅ Responsive design with Tailwind CSS
 - ✅ TypeScript for type safety
-- ✅ Comprehensive testing with Jest, GitHub Actions
+- 🔄 Comprehensive testing with Jest, GitHub Actions
+- ⬜ Notification system
 
 ### Application Screenshots
 
@@ -27,7 +28,7 @@ A modern web application built with Next.js for managing and displaying global e
   <em>Landing Page</em>
 </div>
 
-#### Authentication
+#### Authentication & Registration
 
 <div align="center">
   <table>
@@ -48,18 +49,23 @@ A modern web application built with Next.js for managing and displaying global e
 
 #### User Dashboard
 
+The dashboard provides users with a comprehensive overview of their event activities.
+
 <div align="center">
   <img src="./public/screenshots/dashboard.png" alt="Dashboard" width="800"/>
   <br/>
   <em>Personal Dashboard</em>
 </div>
 
-The dashboard provides users with a comprehensive overview of their event activities. Users can:
+Here users can:
 
-- ⬜View upcoming events they're attending
-- ✅ See their event hosting schedule
-- ✅ Access quick actions for event management
-- ⬜Get notifications about event updates and changes
+- ✅ View some metrics about their engagement in the application (number of past activities joined, etc).
+- ✅ View the upcoming confirmed activity in have applied.
+- ✅ View the next events they are organizing.
+- ✅ Access quick actions for the next activity or event management.
+- ✅ See their event hosting and activities schedule in calendar.
+- ✅ Get a quick reminder of the number of future activities and events scheduled
+- ✅ Get notifications about people waiting for their confirmation.
 
 #### Explore Events
 
@@ -71,28 +77,50 @@ The dashboard provides users with a comprehensive overview of their event activi
 
 The Explore page serves as a central hub for discovering events:
 
-- 🔄 Browse all public events with advanced filtering options
-- 🔄 Search events by type: online/in-person (TODO: by location, date, or category)
-- ✅ View detailed event information
-- 🔄 Subscribe to events of interest
-- ✅ Share events with other users
-
-#### My Events
+- ✅ Browse all public events
+- ✅ Search events by type: online/in-person, by country (TO-DO: by city, date range, or category)
+- ✅ Preview event information and access the full event description.
+- ✅ Subscribe to events of interest.
+- ✅ Share events as a creator with other users.
+- ✅ precise event location and time are hidden until the participation is confirmed
 
 <div align="center">
-  <img src="./public/screenshots/my-events.png" alt="My Events" width="800"/>
+  <img src="./public/screenshots/eventDetails.png" alt="Explore Events" width="600"/>
+  <br/>
+  <em>Public Event Details View</em>
+</div>
+
+#### Joining Page
+
+<div align="center">
+  <img src="./public/screenshots/joining.png" alt="Joinig" width="800"/>
+  <br/>
+  <em>Joining Page</em>
+</div>
+
+The joining page allow the user to:
+
+- ✅ Visualize activities they have applied.
+- ✅ Visualize the application status.
+- ✅ wihdraw their application if they can no loger be present.
+- ✅ Re-apply to participation they have canceclled.
+
+#### Hosting Page
+
+<div align="center">
+  <img src="./public/screenshots/hosting.png" alt="My Events" width="800"/>
   <br/>
   <em>Event Management Center</em>
 </div>
 
-The My Events page is a dedicated space for event management:
+The Hosting page is a dedicated space for event management the user has created:
 
 - ✅ Create and publish new events
 - ✅ Edit existing event details
-- ⬜ Manage participant subscriptions
+- ✅ Manage participant subscriptions (accept or reject)
 - ✅ Handle event cancellations
-- ⬜ View event statistics and attendance
-- ⬜ Send updates to participants
+- ✅ View event applications and attendance
+- ✅ View participants who cancelled their participation
 
 ## Tech Stack
 
@@ -104,40 +132,47 @@ The My Events page is a dedicated space for event management:
 - **Authentication:** JWT + bcryptjs
 - **Testing:** Jest
 - **Linting:** ESLint + Prettier
-- **App state:** Zustand
+- **Global App state:** Zustand
 - **Forms and Validation:** Formik + Yup
 
 ## Project Structure
 
 ```
 ├── .github/             # GitHub configuration files
+├── .husky/              # husky hooks (pre-commit, etc)
 ├── .next/               # Next.js build output
-├── messages/            # Internationalization messages
+├── messages/            # Internationalization messages (translations)
 ├── node_modules/        # Dependencies
 │
 ├── prisma/              # Database & ORM configuration
 │   ├── migrations/         # Database migrations
 │   ├── schema.prisma       # Database schema
-│   └── schema.prisma       # Script to seed the database with mock data
+│   └── seed.ts             # Script to seed the database with mock data
 │
-├── public/              # Static files: images
+├── public/              # Static files: app & doc support images
 │
 ├── src/                 # Source code:
 │   ├── app/                # Next.js app directory
-│   │   ├── [locale]/          # Internationalized routes
-│   │   ├── api/               # API routes
+│   │   ├── [locale]/          # Internationalized app page's tree (frontend)
+│   │   ├── api/               # API routes (backend)
 │   │   ├── fonts/             # Font files
-│   │   ├── globals.css        # Global styles
+│   │   ├── globals.css        # Global styles: color palette, etc
 │   │   └── layout.tsx         # Root app layout
 │   │
 │   ├── components/         # React components
-│   ├── i18n/               # Internationalization setup
+│   ├── i18n/               # Internationalization setup & configuration
 │   ├── lib/                # Utility functions
-│   ├── metadata/           # App metadata for SEO
+│   │   ├── types/          # central place for Types
+│   │   ├── validations/    # yup validation schemas
+│   │   ├── ...             # other utility functions ...
+│   │   └── routes/         # Centralized endpoint's strings variables
+│   │
+│   ├── hooks/              # Custom hooks
+│   ├── metadata/           # App metadata for SEO performance
 │   ├── mocks/              # Mock data & templates
 │   ├── store/              # App state stores
-│   ├── config.ts           # environment NODE_ENV configuration
-│   └── middleware.ts       # Next.js middleware
+│   ├── config.ts           # environment configuration (NODE_ENV, etc)
+│   └── middleware.ts       # Next.js middlewares
 │
 ├── tests/               # Test files: per routes & files
 │
@@ -245,11 +280,11 @@ Our CI/CD pipeline runs automatically on push to `main` and `develop` branches, 
 
 4. **Integration**
 
-   - ⬜ Tests complete endpoint flows with real HTTP request
+   - 🔄 Tests complete endpoint flows with real HTTP request
 
 5. **Deployment**
    - ⬜ Buil Docker image and pucblish in DockerHub
-   - ⬜ Deploy to Vercel
+   - ✅ Deploy to Vercel
 
 ### Running Tests Locally
 
@@ -265,7 +300,7 @@ Our CI/CD pipeline runs automatically on push to `main` and `develop` branches, 
    npm run test:coverage
    ```
 
-### Test Coverage Report
+### Test Coverage Report [TO-UPDATE]
 
 The test coverage report is generated automatically when running `npm run test:coverage`. The report includes:
 
@@ -304,9 +339,20 @@ Time:        4.608 s, estimated 5 s
 ### Local Development Workflow
 
 1. **Develop new features, fiw bugs, refactor, etc**
-2. **Before Committing**
 
-   ```
+2. **Before Committing (manually or automatically)**  
+   The project uses Husky to enforce code quality checks before each commit. The following checks will run automatically:
+
+   - Code formatting (Prettier)
+   - Linting (ESLint)
+   - Unit tests
+   - Build verification
+
+   If any check fails, the commit will be blocked until the issues are fixed.
+
+   You can also run these checks manually:
+
+   ```bash
    # Format the code
    npm run format
 
@@ -315,6 +361,24 @@ Time:        4.608 s, estimated 5 s
 
    # Run tests
    npm run test:coverage
+
+   # Test build process
+   npm run build
+
+   # Run husky checks without a commit
+   bash .husky/pre-commit
+   ```
+
+   To temporarily bypass the pre-commit hooks (not recommended):
+
+   ```bash
+   git commit -m "your message" --no-verify
+   ```
+
+3. **Commit your changes**
+   ```bash
+   git add .
+   git commit -m "your commit message"  # This command will run the husky verifications automatically
    ```
 
 ## Mock Data
@@ -324,7 +388,7 @@ This directory is for development-only mock data. Do not commit actual mock data
 #### Usage
 
 1. Copy `events.template.ts` to `events.ts`
-2. Add your mock data to `events.ts` following the example
+2. Add your mock data to `events.ts` following the example structure
 3. After creating the user mock data, change the importing in `events.ts` to: `import { mockUsers } from "@/mocks/users";`
 4. Use the mock data in your development environment. Importing it in your page.tsx as:
    ```bash
@@ -334,8 +398,8 @@ This directory is for development-only mock data. Do not commit actual mock data
 
 #### Available Templates
 
-- `events.template.ts`: Template for event mock data
-- `users.template.ts`: Template for user mock data
+- `events.template.ts`: Template for "events" mock data
+- `users.template.ts`: Template for "users" profiles mock data
 
 ### Database Seeding
 
@@ -345,7 +409,7 @@ Alternatively the mock data can be used to seed a fresh database. The seed scrip
 - Create the mock events (mix of online and offline events) from the file `src/mocks/events.ts`
 - Set up event participants and relationships as describen in the file `src/mocks/events.ts`
 
-To seed the database with mock data execute:
+To seed the database with mock data: apply prisma migrations, then execute:
 
 ```bash
 npm run seed

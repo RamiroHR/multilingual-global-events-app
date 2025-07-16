@@ -1,4 +1,3 @@
-// prisma/seed.ts
 import { PrismaClient } from "@prisma/client";
 import { mockUsers } from "../src/mocks/users";
 import { mockEvents } from "../src/mocks/events";
@@ -21,6 +20,10 @@ async function main() {
         data: {
           email: user.email,
           username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
           password: {
             create: {
               password: hashedPassword,
@@ -34,10 +37,9 @@ async function main() {
   // Create events
   const createdEvents = await Promise.all(
     mockEvents.map(async (event) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { creator, participants, ...eventData } = event;
-      const createdCreator = createdUsers.find(
-        (u) => u.email === creator.email
-      );
+      const createdCreator = createdUsers.find((u) => u.email === creator.email);
 
       if (!createdCreator) {
         throw new Error(`Creator with email ${creator.email} not found`);
@@ -48,11 +50,15 @@ async function main() {
           title: eventData.title,
           description: eventData.description,
           date: eventData.date,
+          endDate: eventData.endDate,
           location: eventData.location,
+          city: eventData.city,
+          country: eventData.country,
           isOnline: eventData.isOnline,
           maxCapacity: eventData.maxCapacity,
-          creatorId: createdCreator.id,
           webinar: eventData.webinar,
+          version: eventData.version,
+          creatorId: createdCreator.id,
         },
       });
     })
@@ -62,14 +68,10 @@ async function main() {
   await Promise.all(
     mockEvents.flatMap((event, index) =>
       event.participants.map(async (participant) => {
-        const createdParticipant = createdUsers.find(
-          (u) => u.email === participant.user.email
-        );
+        const createdParticipant = createdUsers.find((u) => u.email === participant.user.email);
 
         if (!createdParticipant) {
-          throw new Error(
-            `Participant with email ${participant.user.email} not found`
-          );
+          throw new Error(`Participant with email ${participant.user.email} not found`);
         }
 
         return prisma.eventParticipant.create({
@@ -77,6 +79,7 @@ async function main() {
             eventId: createdEvents[index].id, // Use the newly created event's ID
             userId: createdParticipant.id,
             status: participant.status,
+            version: 1,
           },
         });
       })

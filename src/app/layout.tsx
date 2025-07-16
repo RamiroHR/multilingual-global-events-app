@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,8 +15,7 @@ const geistMono = localFont({
 });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const OG_IMAGE_URL =
-  process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
+const OG_IMAGE_URL = process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
 
 // Fallback metadata, including Open Graph & Twitter cards
 export const metadata: Metadata = {
@@ -52,10 +52,8 @@ export default function RootLayout({
 }>) {
   return (
     <html>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

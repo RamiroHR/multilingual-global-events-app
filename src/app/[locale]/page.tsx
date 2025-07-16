@@ -7,9 +7,7 @@ export default function HomePage() {
   const t = useTranslations("HomePage");
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-2">
-      <h1 className="block text-3xl font-bold italic text-blue-600">
-        {t("title")}
-      </h1>
+      <h1 className="block text-3xl font-bold italic text-blue-600">{t("title")}</h1>
       <p className="text-m block italic text-gray-300">{t("subtitle")}</p>
       <Image
         className="mt-4 h-auto w-full max-w-[200px]"

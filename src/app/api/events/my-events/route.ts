@@ -1,17 +1,33 @@
 import { NextResponse } from "next/server";
-import { getUserEvents } from "@/lib/events/utils";
-import { RouteHandler, withAuth } from "@/lib/auth/index";
+import { getEventsByCreator } from "@/lib/events/utils";
+import { withAuth } from "@/lib/auth/utils";
+import { RouteHandler } from "@/lib/types";
+import { MyEventsResponse, ErrorResponse, MyEventsParams } from "@/lib/types/routes";
 
-const getMyEventsHandler: RouteHandler = async (req, userData) => {
+const getMyEventsHandler: RouteHandler<MyEventsParams> = async (
+  req,
+  userData
+): Promise<NextResponse<MyEventsResponse | ErrorResponse>> => {
   try {
-    const events = await getUserEvents(userData.userId);
+    // Extract query parameters from the URL
+    const { searchParams } = new URL(req.url);
+    const timeFilter = searchParams.get("timeFilter") as "all" | "future" | "past" | null;
+    const orderBy = searchParams.get("orderBy") as "asc" | "desc" | null;
+
+    const events = await getEventsByCreator(userData.userId, {
+      timeFilter: timeFilter || "all",
+      orderBy: orderBy || "asc",
+    });
+
     return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching user events:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    const errorResponse: ErrorResponse = {
+      error: "Internal Server Error",
+      message: "Failed to fetch user events",
+      statusCode: 500,
+    };
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 };
 

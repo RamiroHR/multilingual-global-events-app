@@ -1,20 +1,7 @@
-import { Event, User } from "@prisma/client";
+import { useMemo } from "react";
 import { format } from "date-fns";
 import { MapPin, Users, Globe, Edit, Users2, X } from "lucide-react";
-
-interface EventOwnerCardProps {
-  event: Event & {
-    creator: User;
-    participants: {
-      id: number;
-      status: string;
-      user: User;
-    }[];
-  };
-  onEdit: (eventId: number) => void;
-  onCancel: (eventId: number) => void;
-  onManageSubscriptions: (eventId: number) => void;
-}
+import { EventOwnerCardProps } from "@/lib/types";
 
 export const EventOwnerCard = ({
   event,
@@ -22,17 +9,18 @@ export const EventOwnerCard = ({
   onCancel,
   onManageSubscriptions,
 }: EventOwnerCardProps) => {
+  const reservedSeats = useMemo(() => {
+    return event.participants.filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
+      .length;
+  }, [event]);
+
   return (
     <div className="flex items-center justify-between rounded-lg border border-lunar-200 bg-gray-50 p-4 shadow-sm transition-shadow hover:shadow-md">
       {/* Event Info Section */}
       <div className="flex-1 space-y-2">
-        <div className="flex items-start justify-between">
-          <h3 className="text-lg font-semibold text-space-100">
-            {event.title}
-          </h3>
-          <span className="text-sm text-lunar-500">
-            {format(new Date(event.date), "PPP")}
-          </span>
+        <div className="flex items-baseline justify-between">
+          <h3 className="text-lg font-semibold text-space-100">{event.title}</h3>
+          <span className="text-sm text-lunar-500">{format(new Date(event.date), "PPP")}</span>
         </div>
 
         <div className="flex flex-wrap gap-4 text-sm text-space-300">
@@ -46,16 +34,18 @@ export const EventOwnerCard = ({
             ) : (
               <>
                 <MapPin className="mr-1 size-4 text-cosmic-500" />
-                <span>{event.location}</span>
+                <span>
+                  {event.city}, {event.country}
+                </span>
               </>
             )}
           </div>
 
-          {/* Participants Count */}
+          {/* Already reserved places Count */}
           <div className="flex items-center">
             <Users className="mr-1 size-4 text-cosmic-500" />
             <span>
-              {event.participants.length} / {event.maxCapacity} participants
+              {reservedSeats} / {event.maxCapacity} participants
             </span>
           </div>
         </div>

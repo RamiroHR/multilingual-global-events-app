@@ -1,54 +1,105 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { EventList } from "@/components/events/EventList";
 import axiosInstance from "@/lib/axios";
-import { Event, User } from "@prisma/client";
-
-type EventWithRelations = Event & {
-  creator: User;
-  participants: {
-    id: number;
-    status: string;
-    user: User;
-  }[];
-};
+import { EventWithRelations } from "@/lib/types/utils_events";
+import { ErrorResponse } from "@/lib/types/routes";
+import ROUTES from "@/lib/routes/routes";
+import axios, { AxiosError } from "axios";
+import { EventFilter } from "@/components/events/EventFilter";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { useEvents } from "@/hooks/useEvents";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const [events, setEvents] = useState<EventWithRelations[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [countryError, setCountryError] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
+  const [page, setPage] = useState(1);
+  const [events, setEvents] = useState<EventWithRelations[]>([]);
+
+  const {
+    data: fetchedEvents,
+    loading,
+    error,
+    fetchEvents,
+    hasMore,
+  } = useEvents({
+    type: "upcoming",
+    options: {
+      onlineOnly: showOnlineOnly,
+      country: selectedCountry,
+      page,
+      onError: (err) => console.error(err),
+    },
+  });
+
+  // fetch all countries available in database - on mount !
+  const fetchCountries = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      const response = await axiosInstance.get("/api/events/upcoming");
-      setEvents(response.data);
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setLoading(false);
+      const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
+      setAvailableCountries(response.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<ErrorResponse>;
+        if (axiosError.response?.data) {
+          setCountryError(axiosError.response.data.message);
+        } else {
+          setCountryError("Failed to fetch events");
+        }
+      } else {
+        setCountryError("An unexpected error occurred");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCountries();
+  }, [fetchCountries]);
+
+  // when filter change, reset page and events, then fetch first page
+  useEffect(() => {
+    setPage(1);
+    setEvents([]); // clear accumulated events
+    fetchEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showOnlineOnly, selectedCountry]);
+
+  // When page or fetchedEvents change, update accumulated events
+  useEffect(() => {
+    if (page === 1) {
+      setEvents(fetchedEvents as EventWithRelations[]);
+    } else if (fetchedEvents && Array.isArray(fetchedEvents)) {
+      setEvents((prev) => [...prev, ...(fetchedEvents as EventWithRelations[])]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchedEvents, page]);
+
+  // handler load More
+  const handleLoadMore = () => {
+    if (hasMore && !loading) {
+      setPage((prev) => prev + 1);
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
+  // Filter handlers
+  const handleFilterChange = useCallback((checked: boolean) => {
+    setShowOnlineOnly(checked);
   }, []);
 
-  const displayedEvents = showOnlineOnly
-    ? events.filter((event) => event.isOnline)
-    : events;
+  const handleCountryChange = useCallback((country: string | null) => {
+    setSelectedCountry(country);
+  }, []);
 
   return (
     <div className="min-h-screen rounded bg-space-300">
       {/* Title Section */}
       <div className=" bg-space-300">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-terracotta-800">
-            Explore Events
-          </h1>
+          <h1 className="text-2xl font-bold text-terracotta-800">Explore Events</h1>
           <p className="mt-2 text-lunar-200">
             Discover and join exciting events from around the world
           </p>
@@ -56,40 +107,47 @@ export default function ExplorationPage() {
       </div>
 
       {/* Filters Section */}
-      <div className="rounded bg-gradient-to-r from-space-300 to-terracotta-900 shadow-sm">
-        <div className="container mx-auto p-4">
-          <div className="flex items-center justify-end space-x-4">
-            <label className="flex items-center space-x-2 text-space-200">
-              <input
-                type="checkbox"
-                checked={showOnlineOnly}
-                onChange={(e) => setShowOnlineOnly(e.target.checked)}
-                className="rounded border-lunar-300 text-cosmic-500 focus:ring-cosmic-500"
-              />
-              <span>Show online events only</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <EventFilter
+        showOnlineOnly={showOnlineOnly}
+        onFilterChange={handleFilterChange}
+        selectedCountry={selectedCountry}
+        onCountryChange={handleCountryChange}
+        availableCountries={availableCountries}
+      />
 
       {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="size-8 animate-spin rounded-full border-b-2 border-cosmic-500"></div>
-        </div>
-      )}
+      {loading && <LoadingSpinner />}
 
-      {/* Error State */}
-      {error && (
-        <div className="container mx-auto p-4">
-          <div className="rounded-md bg-terracotta-100 p-4 text-terracotta-800">
-            {error}
-          </div>
-        </div>
-      )}
+      {/* Error States */}
+      {error && <ErrorMessage error={error} />}
+      {countryError && <ErrorMessage error={countryError} />}
 
       {/* Events List */}
-      {!loading && !error && <EventList events={displayedEvents} />}
+      {!loading && !error && <EventList events={events} />}
+
+      {/* Load More Button */}
+      {!loading && !error && (
+        <div className="container mx-auto p-4 text-center">
+          {hasMore ? (
+            <button
+              onClick={handleLoadMore}
+              disabled={loading}
+              className="rounded bg-terracotta-600 px-6 py-2 text-white hover:bg-terracotta-700 disabled:opacity-50"
+            >
+              {loading ? (
+                <span className="flex items-center">
+                  <LoadingSpinner />
+                  <span className="ml-2">Loading...</span>
+                </span>
+              ) : (
+                "Load More Events"
+              )}
+            </button>
+          ) : (
+            <p className="text-lunar-200">No more upcoming events to load</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

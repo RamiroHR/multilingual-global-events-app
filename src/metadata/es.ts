@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-const OG_IMAGE_URL =
-  process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
+const OG_IMAGE_URL = process.env.NEXT_PUBLIC_OG_IMAGE_URL || "http://localhost:3000/astronaut.png";
 
 const es: Metadata = {
   title: "Sumate al Spot - Descubre Eventos Globales",
