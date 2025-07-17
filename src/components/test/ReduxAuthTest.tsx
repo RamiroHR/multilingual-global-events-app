@@ -25,9 +25,9 @@ export default function ReduxAuthTest() {
 
   return (
     <div className="flex flex-col gap-2 rounded border p-1">
-      <h1>Test Redux-Toolkit authStore </h1>
-      <p>User is Logged In? : {isLoggedIn ? "Yes" : "No"}</p>
-      <p>User Name : {user ? user.email : "no user"}</p>
+      <h1>Redux Toolkit Test</h1>
+      <p>Logged In? : {isLoggedIn ? "Yes" : "No"}</p>
+      <p>User: {user ? user.email : "no user"}</p>
       <button onClick={handleLogin} className="rounded border p-1">
         LogIn
       </button>

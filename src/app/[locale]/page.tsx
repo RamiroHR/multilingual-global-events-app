@@ -1,7 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
-import ReduxAuthTest from "@/components/test/ReduxAuthTest";
 
 // Define locale-specific Home Page
 export default function HomePage() {
@@ -23,8 +22,6 @@ export default function HomePage() {
           {t("cta")}
         </button>
       </Link>
-      {/* testing simple features */}
-      <ReduxAuthTest />
     </div>
   );
 }
