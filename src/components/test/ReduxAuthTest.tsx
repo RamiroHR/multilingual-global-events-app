@@ -1,18 +1,17 @@
 "use client";
 
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
+import { useAppSelector, useAppDispatch } from "@/hooks/reduxHooks";
 import { login, logout } from "@/redux/features/authSlice";
 
 export default function ReduxAuthTest() {
-  const { user, isLoggedIn } = useSelector((state: RootState) => state.auth);
-  const dispatch = useDispatch();
+  const { user, isLoggedIn } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const handleLogin = () => {
     dispatch(
       login({
         id: "100",
-        email: "user100@example.com",
+        email: "user101@example.com",
         username: "user100",
         firstName: "Test",
         lastName: "User100",
