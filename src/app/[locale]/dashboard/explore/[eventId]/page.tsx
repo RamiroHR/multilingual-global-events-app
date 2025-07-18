@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
+import { useAppSelector } from "@/hooks/reduxHooks";
 import axiosInstance from "@/lib/axios";
 import axios, { AxiosError } from "axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
@@ -17,7 +17,7 @@ import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function EventDetailsPage({ params }: { params: { eventId: string } }) {
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user } = useAppSelector((state) => state.auth);
 
   const [event, setEvent] = useState<EventWithRelations>();
   const [loading, setLoading] = useState(true);
