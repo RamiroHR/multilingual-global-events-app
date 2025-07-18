@@ -44,10 +44,10 @@ const applyEventHandler: RouteHandler<ApplyEventParams> = async (
         };
         return NextResponse.json(errorResponse, { status: 404 });
       }
-      if (error.message === "You have already applied to this event") {
+      if (error.message === "You already have applied to this event") {
         const errorResponse: ErrorResponse = {
           error: "Bad Request",
-          message: "You have already applied to this event",
+          message: "You already have applied to this event",
           statusCode: 400,
         };
         return NextResponse.json(errorResponse, { status: 400 });
