@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { EventList } from "@/components/events/EventList";
-import axiosInstance from "@/lib/axios";
+// import axiosInstance from "@/lib/axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
-import { ErrorResponse } from "@/lib/types/routes";
-import ROUTES from "@/lib/routes/routes";
-import axios, { AxiosError } from "axios";
+// import { ErrorResponse } from "@/lib/types/routes";
+// import ROUTES from "@/lib/routes/routes";
+// import axios, { AxiosError } from "axios";
+import { useGetCountriesQuery } from "@/redux/services/countriesApi"; //
+import { getErrorMessage } from "@/lib/errors/utils"; //
 import { EventFilter } from "@/components/events/EventFilter";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { useEvents } from "@/hooks/useEvents";
@@ -14,9 +16,9 @@ import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function ExplorationPage() {
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
+  // const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [countryError, setCountryError] = useState<string | null>(null);
+  // const [countryError, setCountryError] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
   const [events, setEvents] = useState<EventWithRelations[]>([]);
@@ -38,27 +40,29 @@ export default function ExplorationPage() {
   });
 
   // fetch all countries available in database - on mount !
-  const fetchCountries = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
-      setAvailableCountries(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setCountryError(axiosError.response.data.message);
-        } else {
-          setCountryError("Failed to fetch events");
-        }
-      } else {
-        setCountryError("An unexpected error occurred");
-      }
-    }
-  }, []);
+  const { data: availableCountries = [], error: countriesError } = useGetCountriesQuery();
 
-  useEffect(() => {
-    fetchCountries();
-  }, [fetchCountries]);
+  // const fetchCountries = useCallback(async () => {
+  //   try {
+  //     const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
+  //     setAvailableCountries(response.data);
+  //   } catch (error: unknown) {
+  //     if (axios.isAxiosError(error)) {
+  //       const axiosError = error as AxiosError<ErrorResponse>;
+  //       if (axiosError.response?.data) {
+  //         setCountryError(axiosError.response.data.message);
+  //       } else {
+  //         setCountryError("Failed to fetch events");
+  //       }
+  //     } else {
+  //       setCountryError("An unexpected error occurred");
+  //     }
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   fetchCountries();
+  // }, [fetchCountries]);
 
   // when filter change, reset page and events, then fetch first page
   useEffect(() => {
@@ -120,7 +124,7 @@ export default function ExplorationPage() {
 
       {/* Error States */}
       {error && <ErrorMessage error={error} />}
-      {countryError && <ErrorMessage error={countryError} />}
+      {countriesError && <ErrorMessage error={getErrorMessage(countriesError)} />}
 
       {/* Events List */}
       {!loading && !error && <EventList events={events} />}
