@@ -35,19 +35,21 @@ export default function ExplorationPage() {
   // Append new fetched events (NO duplicates) when page changes (fetching more events)
   useEffect(() => {
     if (fetchedEvents && fetchedEvents.length > 0) {
-      // Only append events that we don't already have (discard by comparing IDs)
-      const existingEventIds = new Set(events.map((event) => event.id));
-      const newEvents = fetchedEvents.filter((event) => !existingEventIds.has(event.id));
-
-      if (newEvents.length > 0) {
-        if (page === 1) {
-          setEvents(fetchedEvents);
-        } else {
-          setEvents((prev) => [...prev, ...newEvents]);
-        }
+      if (page === 1) {
+        setEvents(fetchedEvents);
+      } else {
+        // Only append events that we don't already have (compare IDs and filter)
+        setEvents((prev) => {
+          const existingEventIds = new Set(prev.map((event) => event.id));
+          const newEvents = fetchedEvents.filter((event) => !existingEventIds.has(event.id));
+          return [...prev, ...newEvents];
+        });
       }
     }
-  }, [fetchedEvents, page, events]);
+    if (page === 1 && (!fetchedEvents || fetchedEvents.length === 0)) {
+      setEvents([]);
+    }
+  }, [fetchedEvents, page]);
 
   // handler "Load More"
   const handleLoadMore = () => {
