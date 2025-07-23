@@ -3,7 +3,7 @@ import { EventDetailsActionsProps } from "@/lib/types/components";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export const EventDetailsActions = memo(
-  ({ hasApplied, status, isFull, onJoinEvent, error }: EventDetailsActionsProps) => {
+  ({ hasApplied, status, isFull, onJoinEvent, error, isJoining }: EventDetailsActionsProps) => {
     return (
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -14,7 +14,7 @@ export const EventDetailsActions = memo(
                 ? "cursor-not-allowed bg-gray-400"
                 : "bg-cosmic-500 hover:bg-cosmic-600"
             }`}
-            disabled={isFull || hasApplied}
+            disabled={isFull || hasApplied || isJoining}
           >
             {isFull ? "Event is Full" : "Join Event"}
           </button>

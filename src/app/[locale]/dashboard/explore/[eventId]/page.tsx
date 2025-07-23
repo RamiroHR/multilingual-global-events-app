@@ -1,116 +1,69 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/hooks/reduxHooks";
-import axiosInstance from "@/lib/axios";
-import axios, { AxiosError } from "axios";
-import { EventWithRelations } from "@/lib/types/utils_events";
-import { ErrorResponse } from "@/lib/types/routes";
-import ROUTES from "@/lib/routes/routes";
+import { useGetEventDetailsQuery, useJoinEventMutation } from "@/redux/services/eventDetailsApi";
+import { getEventError, getJoinEventError } from "@/lib/errors/utils";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { EventDetailsHeader } from "@/components/events/EventDetailsHeader";
 import { EventDetailsInfo } from "@/components/events/EventDetailsInfo";
 import { EventDetailsActions } from "@/components/events/EventDetailsActions";
-import { ApplicationStatus } from "@/lib/types";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { EventWithRelations } from "@/lib/types/utils_events";
+import { ApplicationStatus } from "@/lib/types";
 
 export default function EventDetailsPage({ params }: { params: { eventId: string } }) {
   const router = useRouter();
   const { user } = useAppSelector((state) => state.auth);
-
-  const [event, setEvent] = useState<EventWithRelations>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [hasApplied, setHasApplied] = useState(false);
   const [currentUserStatus, setCurrentUserStatus] = useState<ApplicationStatus | undefined>(
     undefined
   );
 
-  const fetchEvent = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get<EventWithRelations>(
-        ROUTES.DETAIL_EVENT(params.eventId)
-      );
-      setEvent(response.data);
+  // Fetch event details
+  const { data: event, isLoading, error } = useGetEventDetailsQuery({ eventId: params.eventId });
 
-      // Check if the current user has already applied
-      if (user?.id) {
-        const currentUser = response.data.participants.find(
-          (p: EventWithRelations["participants"][0]) =>
-            p.user.id === Number(user?.id) &&
-            (p.status === "PENDING" || p.status === "ACCEPTED" || p.status === "REJECTED")
-        );
-        setHasApplied(!!currentUser);
-        setCurrentUserStatus(currentUser?.status as ApplicationStatus | undefined);
-      }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to fetch event details");
-        }
-      } else {
-        setError("An unexpected error occurred");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [params.eventId, user?.id]);
-
+  // Update local states
   useEffect(() => {
-    fetchEvent();
-  }, [fetchEvent]);
+    if (user && event) {
+      const currentUser = event.participants.find(
+        (p: EventWithRelations["participants"][0]) =>
+          p.user.id === Number(user?.id) &&
+          (p.status === "PENDING" || p.status === "ACCEPTED" || p.status === "REJECTED")
+      );
+      setHasApplied(!!currentUser);
+      setCurrentUserStatus(currentUser?.status as ApplicationStatus | undefined);
+    }
+  }, [user, event]);
 
+  // Join event fetch function and associated states
+  const [joinEvent, { isLoading: isJoining, error: joinError }] = useJoinEventMutation();
+
+  // Join event logic
   const handleJoinEvent = useCallback(async () => {
     try {
-      // apply to event logic
-      setLoading(true);
-      setError("");
-      await axiosInstance.post(ROUTES.APPLY_EVENT(params.eventId));
-      setHasApplied(true);
-      setCurrentUserStatus("PENDING");
-      await fetchEvent();
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.status === 409) {
-          setError(
-            "The event was modified by another user. Please refresh the page and try again."
-          );
-        } else if (
-          axiosError.response?.status === 400 &&
-          axiosError.response?.data?.message.includes("capacity")
-        ) {
-          setError(axiosError.response.data.message);
-        } else if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to join the event. Please try again later.");
-        }
-      } else {
-        setError("An unexpected error occurred. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
+      // the mutation service automatically refetches 'event'.
+      await joinEvent({ eventId: params.eventId }).unwrap();
+    } catch (error) {
+      console.error("Failed to join event", error);
     }
-  }, [params.eventId, fetchEvent]);
+  }, [params.eventId, joinEvent]);
 
+  // computed reserved seats (not available)
   const reservedSeats = useMemo(() => {
     return event?.participants.filter((p) => p.status === "ACCEPTED" || p.status === "PENDING")
       .length;
   }, [event]);
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingSpinner />;
   }
 
   if (error || !event) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <ErrorMessage error={error || "Event not found"} />
+        <ErrorMessage error={getEventError(error) || "Event not found"} />
       </div>
     );
   }
@@ -160,7 +113,8 @@ export default function EventDetailsPage({ params }: { params: { eventId: string
               isFull={(reservedSeats || 0) >= event.maxCapacity}
               spotsLeft={event.maxCapacity - (reservedSeats || 0)}
               onJoinEvent={handleJoinEvent}
-              error={error}
+              error={getJoinEventError(joinError)}
+              isJoining={isJoining}
             />
           </div>
         </div>

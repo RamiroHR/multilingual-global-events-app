@@ -83,6 +83,7 @@ export interface EventDetailsActionsProps {
   spotsLeft: number;
   onJoinEvent: () => Promise<void>;
   error?: string | null;
+  isJoining: boolean;
 }
 
 // Type for the application in the joining page
