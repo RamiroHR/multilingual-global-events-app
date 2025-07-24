@@ -59,7 +59,7 @@ export const getJoinEventError = (error: unknown) => {
           if (msg.includes("already have applied")) {
             return "You have already applied to this event";
           }
-          if (msg.inlcudes("capacity")) {
+          if (msg.includes("capacity")) {
             return "Event has reached maximum capacity";
           }
           return "Invalid request. Please check your input";
@@ -76,4 +76,50 @@ export const getJoinEventError = (error: unknown) => {
       }
     }
   }
+  return "Something went wrong. Please try again.";
+};
+
+//
+// edit event error
+export const getEditEventError = (error: unknown) => {
+  if (!error) return null;
+
+  if (typeof error === "object" && error !== null) {
+    if ("status" in error) {
+      switch ((error as any).status) {
+        case 400:
+          const msg = (error as any).data?.message;
+          if (msg.includes("Event ID is required")) {
+            return "Invalid request: Event Id is required.";
+          }
+          if (msg.includes("Invalid request data")) {
+            return "Invalid Input data. Please check your input.";
+          }
+          return "Invalid request.";
+        case 403:
+          return "Your don't have permission to edit this event.";
+        case 404:
+          return "Event not found.";
+        case 409:
+          return "The event was modified by another user. Please refresh and try again.";
+        case 500:
+          return "Server error. Please try again later.";
+        default:
+          return "Failed to modify the event. Please try again.";
+      }
+    }
+  }
+  return "Something went wrong. Please try again.";
+};
+
+export const hasValidationErrors = (
+  err: unknown
+): err is { data: { errors: Record<string, string> } } => {
+  return (
+    err &&
+    typeof err === "object" &&
+    "data" in err &&
+    (err as any).data?.errors &&
+    typeof (err as any).data.errors === "object"
+  );
 };

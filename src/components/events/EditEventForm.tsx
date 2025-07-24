@@ -3,9 +3,8 @@ import { EventFormBase } from "./EventFormBase";
 import { updateEventSchema } from "@/lib/validations/schemas";
 import { ObjectSchema } from "yup";
 import { EditEventFormProps, EventFormValues } from "@/lib/types";
-import axiosInstance from "@/lib/axios";
-import { AxiosError } from "axios";
-import ROUTES from "@/lib/routes/routes";
+import { useEditEventMutation } from "@/redux/services/eventDetailsApi";
+import { getEditEventError, hasValidationErrors } from "@/lib/errors/utils";
 
 export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps) => {
   const initialValues: EventFormValues = {
@@ -22,32 +21,28 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
     version: event.version,
   };
 
+  const [editEvent] = useEditEventMutation();
+
   const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
     try {
-      await axiosInstance.put(ROUTES.EDIT_EVENT(event.id.toString()), {
-        ...values,
-        date: new Date(values.date).toISOString(),
-        endDate: new Date(values.endDate).toISOString(),
-        version: values.version,
-      });
+      await editEvent({
+        eventId: event.id.toString(),
+        updatedData: {
+          ...values,
+          date: new Date(values.date).toISOString(),
+          endDate: new Date(values.endDate).toISOString(),
+          version: values.version,
+        },
+      }).unwrap();
 
       onSuccess?.();
     } catch (error) {
-      console.error("Update error:", error);
-      if (error instanceof AxiosError) {
-        if (error.response?.status === 409) {
-          helpers.setStatus({
-            error:
-              error.response.data.message ||
-              "The event was modified by another user. Please refresh and try again.", // Handle concurrency conflict
-          });
-        } else if (error.response?.data?.errors) {
-          helpers.setErrors(error.response.data.errors); // Handle validation errors: form field specific in Formik
-        } else {
-          helpers.setStatus({
-            error: error.response?.data?.error || "An unexpected error occurred", // Handle any other API errors
-          });
-        }
+      console.error("Failed to update the event details:", error);
+      if (hasValidationErrors(error)) {
+        helpers.setErrors(error.data.errors);
+      } else {
+        const errorMessage = getEditEventError(error) ?? "An unexpected error occurred";
+        helpers.setStatus({ error: errorMessage });
       }
       throw error; // important to display edit event (by creator) race condition error message.
     }

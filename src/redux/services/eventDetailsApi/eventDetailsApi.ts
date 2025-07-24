@@ -1,7 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import ROUTES from "@/lib/routes/routes";
 import { baseQuery } from "@/redux/services/baseQuery";
-import { EventDetailsEntity, EventDetailsQuery, ApplyEventEntity } from "./eventDetailsApi.types";
+import { EventDetailsQuery, UpdateEventDetailsQuery } from "./eventDetailsApi.types";
+import { EventDetailsEntity, ApplyEventEntity, EventEntity } from "./eventDetailsApi.types";
 
 export const eventDetailsApi = createApi({
   reducerPath: "eventDetailsApi",
@@ -20,8 +21,17 @@ export const eventDetailsApi = createApi({
       // data to refetch after mutation success
       invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
     }),
+    editEvent: builder.mutation<EventEntity, UpdateEventDetailsQuery>({
+      query: ({ eventId, updatedData }) => ({
+        url: ROUTES.EDIT_EVENT(eventId),
+        method: "PUT",
+        body: updatedData,
+      }),
+      invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
+    }),
   }),
 });
 
 export const { useGetEventDetailsQuery } = eventDetailsApi;
 export const { useJoinEventMutation } = eventDetailsApi;
+export const { useEditEventMutation } = eventDetailsApi;
