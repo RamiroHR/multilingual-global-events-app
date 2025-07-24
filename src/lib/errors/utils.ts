@@ -20,97 +20,86 @@ export const getErrorMessage = (error: unknown) => {
 };
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+type ErrorMessageHandler = (error: unknown) => string | null;
+type ErrorMessages = {
+  [key: number]: string | ErrorMessageHandler;
+  default?: string;
+};
+
 /**
- * Handle RTK Query errors when fetching event details
- * @param error
- * @returns A user-friendly error message
+ * Creates custom "get Error" function for each message structure type object
+ * @param messages
+ * @returns a function that convert 'RTK Query error' to a user-friendly version from 'messages'
  */
-export const getEventError = (error: unknown) => {
+const createErrorHandler = (messages: ErrorMessages) => (error: unknown) => {
   if (!error) return null;
 
-  if (typeof error === "object" && error !== null) {
-    if ("status" in error) {
-      switch ((error as any).status) {
-        case 403:
-          return "You don't have permission to view this event";
-        case 404:
-          return "Event not found";
-        case 500:
-          return "Server error. Please try again later.";
-        default:
-          return "Unable to load event details";
-      }
+  if (typeof error === "object" && error !== null && "status" in error) {
+    const status = (error as any).status;
+    const messageHandler = messages[status];
+
+    if (typeof messageHandler === "function") {
+      return messageHandler(error);
+    } else if (typeof messageHandler === "string") {
+      return messageHandler;
     }
   }
-  return "Something went wrong. Please try again.";
+
+  return messages.default || "Something went wrong. Please try again.";
 };
 
-//
+// Base configuration for common error messages
+const BASE_ERROR_MESSAGES: ErrorMessages = {
+  404: "Resource not found",
+  409: "The resource was modified by another user. Please refresh and try again.",
+  500: "Server error. Please try again later.",
+  default: "Something went wrong. Please try again.",
+};
+
+// Create handlers with base + overrides.
+export const getEventError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  403: "You don't have permission to view this event",
+  404: "Event not found",
+  default: "Unable to load event details",
+});
+
 // Handle RTK Query error when applying to an event
-export const getJoinEventError = (error: unknown) => {
-  if (!error) return null;
-
-  if (typeof error === "object" && error !== null) {
-    if ("status" in error) {
-      switch ((error as any).status) {
-        case 400:
-          // check for specific error meessages from route
-          const msg = (error as any).data?.message || "";
-          if (msg.includes("already have applied")) {
-            return "You have already applied to this event";
-          }
-          if (msg.includes("capacity")) {
-            return "Event has reached maximum capacity";
-          }
-          return "Invalid request. Please check your input";
-        case 403:
-          return "You don't have permission to apply to this event";
-        case 404:
-          return "Event not found";
-        case 409:
-          return "The event was modified by another user. Please refresh and try again.";
-        case 500:
-          return "Server error. Please try again later.";
-        default:
-          return "Failed to join event. Please try again.";
-      }
+export const getJoinEventError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  400: (error: unknown) => {
+    const msg = (error as any).data?.message || "";
+    if (msg.includes("already have applied")) {
+      return "You have already applied to this event";
     }
-  }
-  return "Something went wrong. Please try again.";
-};
-
-//
-// edit event error
-export const getEditEventError = (error: unknown) => {
-  if (!error) return null;
-
-  if (typeof error === "object" && error !== null) {
-    if ("status" in error) {
-      switch ((error as any).status) {
-        case 400:
-          const msg = (error as any).data?.message;
-          if (msg.includes("Event ID is required")) {
-            return "Invalid request: Event Id is required.";
-          }
-          if (msg.includes("Invalid request data")) {
-            return "Invalid Input data. Please check your input.";
-          }
-          return "Invalid request.";
-        case 403:
-          return "Your don't have permission to edit this event.";
-        case 404:
-          return "Event not found.";
-        case 409:
-          return "The event was modified by another user. Please refresh and try again.";
-        case 500:
-          return "Server error. Please try again later.";
-        default:
-          return "Failed to modify the event. Please try again.";
-      }
+    if (msg.includes("capacity")) {
+      return "Event has reached maximum capacity";
     }
-  }
-  return "Something went wrong. Please try again.";
-};
+    return "Invalid request. Please check your input";
+  },
+  403: "You don't have permission to apply to this event",
+  404: "Event not found",
+  409: "The event was modified by another user. Please refresh and try again.",
+  default: "Failed to join event. Please try again",
+});
+
+// Handle RTK Query error when aditing an event
+export const getEditEventError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  400: (error: unknown) => {
+    const msg = (error as any).data?.message || "";
+    if (msg.includes("Event ID is required")) {
+      return "Invalid request: Event Id is required.";
+    }
+    if (msg.includes("Invalid request data")) {
+      return "Invalid Input data. Please check your input.";
+    }
+    return "Invalid request.";
+  },
+  403: "You don't have permission to edit this event",
+  404: "Event not found",
+  default: "Failed to modify the event. Please try again",
+});
 
 export const hasValidationErrors = (
   err: unknown
