@@ -56,7 +56,9 @@ const BASE_ERROR_MESSAGES: ErrorMessages = {
   default: "Something went wrong. Please try again.",
 };
 
-// Create handlers with base + overrides.
+// Create handlers with base + overrides:
+
+// Get Event Details errors
 export const getEventError = createErrorHandler({
   ...BASE_ERROR_MESSAGES,
   403: "You don't have permission to view this event",
@@ -64,7 +66,7 @@ export const getEventError = createErrorHandler({
   default: "Unable to load event details",
 });
 
-// Handle RTK Query error when applying to an event
+// Apply event errors
 export const getJoinEventError = createErrorHandler({
   ...BASE_ERROR_MESSAGES,
   400: (error: unknown) => {
@@ -83,7 +85,7 @@ export const getJoinEventError = createErrorHandler({
   default: "Failed to join event. Please try again",
 });
 
-// Handle RTK Query error when aditing an event
+// Edit Event errors
 export const getEditEventError = createErrorHandler({
   ...BASE_ERROR_MESSAGES,
   400: (error: unknown) => {
@@ -112,3 +114,30 @@ export const hasValidationErrors = (
     typeof (err as any).data.errors === "object"
   );
 };
+
+// Cancel Event errors
+export const getCancelEventError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  400: (error: unknown) => {
+    const msg = (error as any).data?.message || "";
+    if (msg.includes("Event ID is required")) {
+      return "Bad request: event ID is required";
+    }
+    if (msg.includes("Version is required")) {
+      return "Bad request: Version is required";
+    }
+    return "Invalid request";
+  },
+  403: "You don't have permission to cancel this event",
+  404: "Event not found",
+  409: (error: unknown) => {
+    const msg = (error as any).data?.message || "";
+    if (msg.includes("already cancelled")) {
+      return "The event was already cancelled. Please continue.";
+    }
+    if (msg.includes("modified by another user")) {
+      return "The event was modified by another user. Please refresh and try again.";
+    }
+    return "The event has been modified meanwhile. Please refresh and try again.";
+  },
+});

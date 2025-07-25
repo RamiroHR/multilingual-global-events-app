@@ -19,3 +19,9 @@ export type UpdateEventDetailsQuery = {
   eventId: string;
   updatedData: EventFormValues;
 };
+
+// cancel event
+export type CancelEventQuery = {
+  eventId: string;
+  version: number;
+};

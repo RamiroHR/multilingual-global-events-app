@@ -1,7 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import ROUTES from "@/lib/routes/routes";
 import { baseQuery } from "@/redux/services/baseQuery";
-import { EventDetailsQuery, UpdateEventDetailsQuery } from "./eventDetailsApi.types";
+// query params types:
+import {
+  EventDetailsQuery,
+  UpdateEventDetailsQuery,
+  CancelEventQuery,
+} from "./eventDetailsApi.types";
+// query response types:
 import { EventDetailsEntity, ApplyEventEntity, EventEntity } from "./eventDetailsApi.types";
 
 export const eventDetailsApi = createApi({
@@ -29,9 +35,23 @@ export const eventDetailsApi = createApi({
       }),
       invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
     }),
+    cancelEvent: builder.mutation<EventEntity, CancelEventQuery>({
+      query: ({ eventId, version }) => ({
+        url: ROUTES.CANCEL_EVENT(eventId),
+        method: "PATCH",
+        body: { version: version },
+      }),
+      invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
+    }),
   }),
 });
 
-export const { useGetEventDetailsQuery } = eventDetailsApi;
-export const { useJoinEventMutation } = eventDetailsApi;
-export const { useEditEventMutation } = eventDetailsApi;
+export const {
+  useGetEventDetailsQuery,
+  useJoinEventMutation,
+  useEditEventMutation,
+  useCancelEventMutation,
+} = eventDetailsApi;
+// export const { useJoinEventMutation } = eventDetailsApi;
+// export const { useEditEventMutation } = eventDetailsApi;
+// export const { useCancelEventMutation } = eventDetailsApi;
