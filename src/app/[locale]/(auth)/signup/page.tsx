@@ -6,7 +6,8 @@ import AuthForm from "@/components/auth/AuthForm";
 import { Link, useRouter } from "@/i18n/navigation";
 import axios, { AxiosError } from "axios";
 import axiosInstance from "@/lib/axios";
-import { useAuthStore } from "@/store/authStore";
+import { useAppDispatch } from "@/hooks/reduxHooks";
+import { login } from "@/redux/features/authSlice";
 import ROUTES from "@/lib/routes/routes";
 import { AuthFormData } from "@/lib/types/components";
 import { AuthResponse, ErrorResponse } from "@/lib/types/routes";
@@ -14,7 +15,7 @@ import { AuthResponse, ErrorResponse } from "@/lib/types/routes";
 export default function SignupPage() {
   const t = useTranslations("SignupPage");
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
+  const dispatch = useAppDispatch();
 
   const handleSignup = useCallback(
     async (data: AuthFormData) => {
@@ -34,13 +35,15 @@ export default function SignupPage() {
         });
 
         // update login app state - get info from the api response structure
-        login({
-          id: res.data.user.id,
-          email: res.data.user.email,
-          username: res.data.user.username,
-          firstName: res.data.user.firstName,
-          lastName: res.data.user.lastName,
-        });
+        dispatch(
+          login({
+            id: res.data.user.id,
+            email: res.data.user.email,
+            username: res.data.user.username,
+            firstName: res.data.user.firstName,
+            lastName: res.data.user.lastName,
+          })
+        );
 
         // store jwt token in local storage & redirect
         localStorage.setItem("token", res.data.token);
@@ -58,7 +61,7 @@ export default function SignupPage() {
         throw new Error(t("error-message"));
       }
     },
-    [t, router, login]
+    [t, router, dispatch]
   );
 
   return (

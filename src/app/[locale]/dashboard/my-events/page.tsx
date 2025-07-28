@@ -1,39 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { useEvents } from "@/hooks/useEvents";
-import { EventWithRelations, EventOptions } from "@/lib/types";
+import { EventWithRelations } from "@/lib/types";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { useGetUserEventsQuery } from "@/redux/services/eventsApi";
+import { getUserEventsError } from "@/lib/errors/utils";
 
 export default function MyEventsPage() {
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  // memoize to fetch event only in mount and when this changes
-  const config = useMemo<EventOptions>(
-    () => ({
-      type: "created",
-      options: {
-        timeFilter: "future",
-        orderBy: "asc",
-        onError: (err: string) => console.error(err),
-      },
-    }),
-    []
-  );
-
-  const { data: events, loading, error, fetchEvents } = useEvents(config);
-
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+  // Use RTK Query to fetch user events
+  const {
+    data: events,
+    isLoading,
+    error,
+    refetch,
+  } = useGetUserEventsQuery({
+    timeFilter: "future",
+    orderBy: "asc",
+  });
 
   const handleEdit = useCallback(
     (eventId: number) => {
+      sessionStorage.setItem("shouldRefreshEvents", "true");
       router.push(`/dashboard/my-events/${eventId}/edit`);
     },
     [router]
@@ -41,6 +35,7 @@ export default function MyEventsPage() {
 
   const handleCancel = useCallback(
     (eventId: number) => {
+      sessionStorage.setItem("shouldRefreshEvents", "true");
       router.push(`/dashboard/my-events/${eventId}/cancel`);
     },
     [router]
@@ -55,15 +50,23 @@ export default function MyEventsPage() {
 
   const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
-    fetchEvents(); // Refresh the events list
-  }, [fetchEvents]);
+  }, []);
 
-  if (loading) {
-    <LoadingSpinner />;
+  // Check if the event list should be refreshed (after editing, canceling, etc)
+  useEffect(() => {
+    const shouldRefresh = sessionStorage.getItem("shouldRefreshEvents");
+    if (shouldRefresh === "true") {
+      refetch();
+      sessionStorage.removeItem("shouldRefreshEvents");
+    }
+  }, [refetch]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <ErrorMessage error={error} />;
+    return <ErrorMessage error={getUserEventsError(error) ?? "Failed to load events"} />;
   }
 
   return (

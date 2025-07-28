@@ -6,7 +6,8 @@ import { Link, useRouter } from "@/i18n/navigation";
 import axios, { AxiosError } from "axios";
 import axiosInstance from "@/lib/axios";
 import AuthForm from "@/components/auth/AuthForm";
-import { useAuthStore } from "@/store/authStore";
+import { useAppDispatch } from "@/hooks/reduxHooks";
+import { login } from "@/redux/features/authSlice";
 import ROUTES from "@/lib/routes/routes";
 import { AuthFormData } from "@/lib/types/components";
 import { ErrorResponse, AuthResponse } from "@/lib/types/routes";
@@ -14,7 +15,7 @@ import { ErrorResponse, AuthResponse } from "@/lib/types/routes";
 export default function LoginPage() {
   const t = useTranslations("LoginPage");
   const router = useRouter();
-  const login = useAuthStore((state) => state.login);
+  const dispatch = useAppDispatch();
 
   const handleLogin = useCallback(
     async (data: AuthFormData) => {
@@ -24,14 +25,16 @@ export default function LoginPage() {
           password: data.password,
         });
 
-        // change login app state
-        login({
-          id: res.data.user.id,
-          email: res.data.user.email,
-          username: res.data.user.username,
-          firstName: res.data.user.firstName,
-          lastName: res.data.user.lastName,
-        });
+        // dispatch login action to new payload ot update the state
+        dispatch(
+          login({
+            id: res.data.user.id,
+            email: res.data.user.email,
+            username: res.data.user.username,
+            firstName: res.data.user.firstName,
+            lastName: res.data.user.lastName,
+          })
+        );
 
         // store jwt token in local storage & redirect user
         localStorage.setItem("token", res.data.token);
@@ -49,7 +52,7 @@ export default function LoginPage() {
         throw new Error(t("error-message"));
       }
     },
-    [login, router, t]
+    [dispatch, router, t]
   );
 
   return (

@@ -9,13 +9,13 @@ import { EventWithRelations, Application, ErrorResponse } from "@/lib/types";
 import { NextEventCard } from "@/components/events/NextEventCard";
 import { ApplicationCard } from "@/components/events/ApplicationCard";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { useAuthStore } from "@/store/authStore";
+import { useAppSelector } from "@/hooks/reduxHooks";
 import { CalendarCheck, Sparkles, Users } from "lucide-react";
 import { CalendarPreview } from "@/components/dashboard/CalendarPreview";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function DashboardHome() {
-  const { user } = useAuthStore();
+  const { user } = useAppSelector((state) => state.auth);
 
   const [events, setEvents] = useState<EventWithRelations[]>([]);
   const [activities, setActivities] = useState<Application[]>([]);

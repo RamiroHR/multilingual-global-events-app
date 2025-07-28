@@ -4,9 +4,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { HomeIcon, CompassIcon, LogOutIcon, Ticket, Crown } from "lucide-react";
-import { useAuthStore } from "@/store/authStore";
+import { useAppSelector, useAppDispatch } from "@/hooks/reduxHooks";
+import { logout } from "@/redux/features/authSlice";
 import { NavItem } from "@/lib/types/components";
 import { useCallback, useMemo } from "react";
+import ReduxAuthTest from "@/components/test/ReduxAuthTest";
 
 const navigation: NavItem[] = [
   { name: "Home", href: "/dashboard", icon: HomeIcon },
@@ -19,14 +21,14 @@ const navigation: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const logout = useAuthStore((state) => state.logout);
-  const user = useAuthStore((state) => state.user);
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   // memoized logout handler
   const handleLogout = useCallback(() => {
-    logout();
+    dispatch(logout());
     router.push("/");
-  }, [logout, router]);
+  }, [dispatch, router]);
 
   // memoized navigation itemss - static navigation array (not recreated in every render)
   const navItems = useMemo(() => {
@@ -84,6 +86,9 @@ export default function Sidebar() {
             sizes="(max-width: 100px) 100vw, 200px"
           />
         </div>
+
+        {/* testing simple features */}
+        <ReduxAuthTest />
 
         {/* Log-Out */}
         <button

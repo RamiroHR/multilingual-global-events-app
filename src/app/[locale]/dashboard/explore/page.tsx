@@ -2,90 +2,65 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { EventList } from "@/components/events/EventList";
-import axiosInstance from "@/lib/axios";
 import { EventWithRelations } from "@/lib/types/utils_events";
-import { ErrorResponse } from "@/lib/types/routes";
-import ROUTES from "@/lib/routes/routes";
-import axios, { AxiosError } from "axios";
+import { useGetCountriesQuery } from "@/redux/services/countriesApi";
+import { useLazyGetUpcomingEventsQuery } from "@/redux/services/eventsApi";
+import { getErrorMessage } from "@/lib/errors/utils";
 import { EventFilter } from "@/components/events/EventFilter";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { useEvents } from "@/hooks/useEvents";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
 
 export default function ExplorationPage() {
-  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
-  const [availableCountries, setAvailableCountries] = useState<string[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [countryError, setCountryError] = useState<string | null>(null);
-
   const [page, setPage] = useState(1);
+  const [showOnlineOnly, setShowOnlineOnly] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [events, setEvents] = useState<EventWithRelations[]>([]);
 
-  const {
-    data: fetchedEvents,
-    loading,
-    error,
-    fetchEvents,
-    hasMore,
-  } = useEvents({
-    type: "upcoming",
-    options: {
-      onlineOnly: showOnlineOnly,
-      country: selectedCountry,
-      page,
-      onError: (err) => console.error(err),
-    },
-  });
-
   // fetch all countries available in database - on mount !
-  const fetchCountries = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get(ROUTES.ALL_COUNTRIES);
-      setAvailableCountries(response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setCountryError(axiosError.response.data.message);
-        } else {
-          setCountryError("Failed to fetch events");
-        }
-      } else {
-        setCountryError("An unexpected error occurred");
-      }
-    }
-  }, []);
+  const { data: availableCountries = [], error: countriesError } = useGetCountriesQuery();
 
-  useEffect(() => {
-    fetchCountries();
-  }, [fetchCountries]);
+  // lazy query hook to fetch events on trigger and destructured variables
+  const [trigger, result] = useLazyGetUpcomingEventsQuery();
+  const { data: eventsData, isLoading, error } = result;
+  const fetchedEvents = eventsData?.events;
+  const hasMore = eventsData?.hasMore;
 
-  // when filter change, reset page and events, then fetch first page
+  // Update page 1 events when filters change
   useEffect(() => {
     setPage(1);
-    setEvents([]); // clear accumulated events
-    fetchEvents();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showOnlineOnly, selectedCountry]);
+    setEvents([]);
+    trigger({ page: 1, onlineOnly: showOnlineOnly, country: selectedCountry });
+  }, [showOnlineOnly, selectedCountry, trigger]);
 
-  // When page or fetchedEvents change, update accumulated events
+  // Append new fetched events (NO duplicates) when page changes (fetching more events)
   useEffect(() => {
-    if (page === 1) {
-      setEvents(fetchedEvents as EventWithRelations[]);
-    } else if (fetchedEvents && Array.isArray(fetchedEvents)) {
-      setEvents((prev) => [...prev, ...(fetchedEvents as EventWithRelations[])]);
+    if (fetchedEvents && fetchedEvents.length > 0) {
+      if (page === 1) {
+        setEvents(fetchedEvents);
+      } else {
+        // Only append events that we don't already have (compare IDs and filter)
+        setEvents((prev) => {
+          const existingEventIds = new Set(prev.map((event) => event.id));
+          const newEvents = fetchedEvents.filter((event) => !existingEventIds.has(event.id));
+          return [...prev, ...newEvents];
+        });
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (page === 1 && (!fetchedEvents || fetchedEvents.length === 0)) {
+      setEvents([]);
+    }
   }, [fetchedEvents, page]);
 
-  // handler load More
+  // handler "Load More"
   const handleLoadMore = () => {
-    if (hasMore && !loading) {
-      setPage((prev) => prev + 1);
+    const nextPage = page + 1;
+    if (hasMore && !isLoading) {
+      setPage(nextPage);
+      trigger({ page: nextPage, onlineOnly: showOnlineOnly, country: selectedCountry });
     }
   };
 
-  // Filter handlers
+  // Filter handlers passed as props
   const handleFilterChange = useCallback((checked: boolean) => {
     setShowOnlineOnly(checked);
   }, []);
@@ -116,25 +91,25 @@ export default function ExplorationPage() {
       />
 
       {/* Loading State */}
-      {loading && <LoadingSpinner />}
+      {isLoading && <LoadingSpinner />}
 
       {/* Error States */}
-      {error && <ErrorMessage error={error} />}
-      {countryError && <ErrorMessage error={countryError} />}
+      {error && <ErrorMessage error={getErrorMessage(error)} />}
+      {countriesError && <ErrorMessage error={getErrorMessage(countriesError)} />}
 
       {/* Events List */}
-      {!loading && !error && <EventList events={events} />}
+      {!isLoading && !error && <EventList events={events ?? []} />}
 
       {/* Load More Button */}
-      {!loading && !error && (
+      {!isLoading && !error && (
         <div className="container mx-auto p-4 text-center">
           {hasMore ? (
             <button
               onClick={handleLoadMore}
-              disabled={loading}
+              disabled={isLoading}
               className="rounded bg-terracotta-600 px-6 py-2 text-white hover:bg-terracotta-700 disabled:opacity-50"
             >
-              {loading ? (
+              {isLoading ? (
                 <span className="flex items-center">
                   <LoadingSpinner />
                   <span className="ml-2">Loading...</span>

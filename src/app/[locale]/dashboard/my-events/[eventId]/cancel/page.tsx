@@ -1,93 +1,48 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useCallback } from "react";
-import axiosInstance from "@/lib/axios";
-import axios, { AxiosError } from "axios";
-import ROUTES from "@/lib/routes/routes";
-import { Event } from "@/lib/types";
-import { ErrorResponse } from "@/lib/types/routes";
+import { useCallback } from "react";
 import { ConfirmationModal } from "@/components/common/ConfirmationModal";
+import { useGetEventDetailsQuery } from "@/redux/services/eventDetailsApi";
+import { useCancelEventMutation } from "@/redux/services/eventDetailsApi";
+import { getCancelEventError, getEventError } from "@/lib/errors/utils";
 
 export default function CancelEvent({ params }: { params: { eventId: string } }) {
   const router = useRouter();
+  const [cancelEvent, { isLoading: isCanceling, error: cancelError }] = useCancelEventMutation();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventLoading, setEventLoading] = useState(false);
-  const [eventVersion, setEventVersion] = useState<number | null>(null);
+  // fetch event details
+  const {
+    data: event,
+    isLoading: eventLoading,
+    error: eventError,
+  } = useGetEventDetailsQuery({ eventId: params.eventId });
 
-  const fetchEvent = useCallback(async () => {
-    setEventLoading(true);
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-    try {
-      const response = await axiosInstance.get<Event>(ROUTES.DETAIL_EVENT(params.eventId));
-      setEventTitle(response.data.title);
-      setEventVersion(response.data.version);
-      setError(null);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to load event.");
-        }
-      } else {
-        setError("An unexpected error occurred while loading the event.");
-      }
-      console.error("Error fetching the event:", error);
-    } finally {
-      setEventLoading(false);
-    }
-  }, [params.eventId]); // run when component mounts to get the event title
-
-  useEffect(() => {
-    if (params.eventId) fetchEvent();
-  }, [params.eventId, fetchEvent]);
-
+  // handle cancel event with mutation
   const handleCancel = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
-      await axiosInstance.patch<Event>(ROUTES.CANCEL_EVENT(params.eventId), {
-        version: eventVersion,
-      });
-      // router.push("/dashboard/my-events");
+      await cancelEvent({ eventId: params.eventId, version: event?.version ?? 0 }).unwrap();
       router.back();
     } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError<ErrorResponse>;
-        if (axiosError.response?.data) {
-          setError(axiosError.response.data.message);
-        } else {
-          setError("Failed to cancel the event. Please try again later");
-        }
-      } else {
-        setError("An unexpected error occurred while canceling the event");
-      }
       console.error("Error canceling the event:", error);
-    } finally {
-      setLoading(false);
     }
-  }, [params.eventId, router, eventVersion]);
+  }, [cancelEvent, router, params.eventId, event]);
 
+  // redirection flow
   const handleKeep = useCallback(() => {
-    // router.push("/dashboard/my-events");
     router.back();
   }, [router]);
 
   return (
     <ConfirmationModal
       title="Are you sure you want to cancel this event?"
-      eventTitle={eventTitle}
+      eventTitle={event?.title || `<${getEventError(eventError)}>` || "{Something went wrong}"}
       isLoading={eventLoading}
-      error={error}
+      error={getCancelEventError(cancelError)}
       primaryAction={{
         label: "Yes, cancel this event",
         onClick: handleCancel,
-        isLoading: loading,
+        isLoading: isCanceling,
       }}
       secondaryAction={{
         label: "No, keep this event.",

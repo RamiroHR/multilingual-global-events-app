@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useAuthStore } from "@/store/authStore";
+import { store } from "@/redux/store";
+import { logout } from "@/redux/features/authSlice";
 import ROUTES from "@/lib/routes/routes";
 
 // Create axios instance
@@ -28,7 +29,7 @@ axiosInstance.interceptors.response.use(
       error.config.url !== ROUTES.LOGIN &&
       error.config.url !== ROUTES.SIGNUP
     ) {
-      useAuthStore.getState().logout(); // Clear auth state
+      store.dispatch(logout()); // Clear auth state from RTK store
       localStorage.removeItem("token"); // Clear token stored
       window.location.href = "/login"; // Redirect to login page
     }

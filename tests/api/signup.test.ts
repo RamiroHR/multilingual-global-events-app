@@ -7,13 +7,13 @@ import path from "path";
 import { SignupRequest, LoginRequest } from "@/lib/types/routes";
 
 const testEnvPath = path.resolve(process.cwd(), ".env.test");
-console.log("Test file loading env from:", testEnvPath);
+// console.log("Test file loading env from:", testEnvPath);
 const result = dotenv.config({ path: testEnvPath, override: true });
 
 if (result.error) {
   console.error("Error loading .env.test in test file:", result.error);
 } else {
-  console.log("Successfully loaded .env.test in test file");
+  // console.log("Successfully loaded .env.test in test file");
 }
 
 // helper function to simulate the request body to send to the endpoint
