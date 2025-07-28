@@ -19,20 +19,20 @@ export const eventDetailsApi = createApi({
       query: ({ eventId }) => ROUTES.DETAIL_EVENT(eventId),
       providesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
     }),
-    joinEvent: builder.mutation<ApplyEventEntity, EventDetailsQuery>({
-      query: ({ eventId }) => ({
-        url: ROUTES.APPLY_EVENT(eventId),
-        method: "POST",
-      }),
-      // data to refetch after mutation success
-      invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
-    }),
     editEvent: builder.mutation<EventEntity, UpdateEventDetailsQuery>({
       query: ({ eventId, updatedData }) => ({
         url: ROUTES.EDIT_EVENT(eventId),
         method: "PUT",
         body: updatedData,
       }),
+      invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
+    }),
+    joinEvent: builder.mutation<ApplyEventEntity, EventDetailsQuery>({
+      query: ({ eventId }) => ({
+        url: ROUTES.APPLY_EVENT(eventId),
+        method: "POST",
+      }),
+      // data to refetch after mutation success
       invalidatesTags: (result, error, { eventId }) => [{ type: "EventDetails", id: eventId }],
     }),
     cancelEvent: builder.mutation<EventEntity, CancelEventQuery>({
@@ -48,10 +48,7 @@ export const eventDetailsApi = createApi({
 
 export const {
   useGetEventDetailsQuery,
-  useJoinEventMutation,
   useEditEventMutation,
+  useJoinEventMutation,
   useCancelEventMutation,
 } = eventDetailsApi;
-// export const { useJoinEventMutation } = eventDetailsApi;
-// export const { useEditEventMutation } = eventDetailsApi;
-// export const { useCancelEventMutation } = eventDetailsApi;
