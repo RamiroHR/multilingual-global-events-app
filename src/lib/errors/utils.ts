@@ -141,3 +141,26 @@ export const getCancelEventError = createErrorHandler({
     return "The event has been modified meanwhile. Please refresh and try again.";
   },
 });
+
+// get user events errors
+export const getUserEventsError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  403: "You don't have permission to view these events",
+  404: "No events found",
+  default: "Failed to load your events. Please try again.",
+});
+
+// create event errors
+export const getCreateEventError = createErrorHandler({
+  ...BASE_ERROR_MESSAGES,
+  400: (error: unknown) => {
+    const msg = (error as any).data?.message || "";
+    if (msg.includes("Invalid request data")) {
+      return "Please check your input and try again";
+    }
+    return "Invalid request data. Please correct the form fields.";
+  },
+  403: "You don't have permission to create events",
+  500: "Failed to create event. Internal server Error.",
+  default: "Failed to create event. Please try again.",
+});
