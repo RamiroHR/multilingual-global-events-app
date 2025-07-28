@@ -14,7 +14,14 @@ export const descriptionSchema = yup
   .min(10, "Description must be at least 10 characters")
   .max(1000, "Description must not exceed 1000 characters");
 
-export const dateSchema = yup.string().required("Date is required");
+export const dateSchema = yup
+  .string()
+  .required("Date is required")
+  .test("start-date-in-future", "Start date must be in the future", function (value) {
+    const now = new Date();
+    if (!value) return true;
+    return new Date(value) > now;
+  });
 
 export const endDateSchema = yup
   .string()
