@@ -22,6 +22,7 @@ export default function EditEventPage({ params }: { params: { eventId: string } 
   }, [router]);
 
   const handleCancel = useCallback(() => {
+    localStorage.removeItem("form_edit-event-form"); // Clear the saved form data
     router.back();
   }, [router]);
 

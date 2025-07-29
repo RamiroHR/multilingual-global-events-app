@@ -14,6 +14,22 @@ export default function MyEventsPage() {
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
 
+  // Check if there's saved form data on mount to restore the pre-completed modal
+  useEffect(() => {
+    const savedFormData = localStorage.getItem("form_create-event-form");
+    if (savedFormData) {
+      try {
+        const parsed = JSON.parse(savedFormData);
+        // If there's saved form data, show the create form modal
+        if (parsed && Object.keys(parsed).length > 0) {
+          setShowCreateForm(true);
+        }
+      } catch (error) {
+        console.error("Failed to parse saved form data:", error);
+      }
+    }
+  }, []);
+
   // Use RTK Query to fetch user events
   const {
     data: events,
@@ -52,6 +68,11 @@ export default function MyEventsPage() {
     setShowCreateForm(false);
   }, []);
 
+  const handleCancelCreation = useCallback(() => {
+    localStorage.removeItem("form_create-event-form"); // Clear the saved form data
+    setShowCreateForm(false);
+  }, []);
+
   // Check if the event list should be refreshed (after editing, canceling, etc)
   useEffect(() => {
     const shouldRefresh = sessionStorage.getItem("shouldRefreshEvents");
@@ -85,10 +106,7 @@ export default function MyEventsPage() {
       {showCreateForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="max-h-[90vh] w-[70%] max-w-4xl overflow-y-auto rounded-lg bg-space-200 shadow-xl">
-            <CreateEventForm
-              onSuccess={handleCreateSuccess}
-              onCancel={() => setShowCreateForm(false)}
-            />
+            <CreateEventForm onSuccess={handleCreateSuccess} onCancel={handleCancelCreation} />
           </div>
         </div>
       )}
