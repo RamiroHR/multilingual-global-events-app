@@ -58,6 +58,7 @@ export const EditEventForm = ({ event, onSuccess, onCancel }: EditEventFormProps
       title="Edit Event"
       onSuccess={onSuccess}
       onCancel={onCancel}
+      formKey="edit-event-form"
     />
   );
 };

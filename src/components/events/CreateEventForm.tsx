@@ -39,7 +39,7 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
           helpers.setErrors({ webinar: "Webinar link is required for online events" });
           return;
         }
-        // For online events, we can set location to empty string
+        // For online events, set location to empty string
         values.location = "";
       }
       // For in-person events
@@ -79,6 +79,7 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
       title="Create New Event"
       onSuccess={onSuccess || (() => router.push("/dashboard/my-events"))}
       onCancel={onCancel}
+      formKey="create-event-form"
     />
   );
 };
