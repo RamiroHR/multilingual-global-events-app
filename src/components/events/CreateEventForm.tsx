@@ -3,10 +3,9 @@ import { EventFormBase } from "./EventFormBase";
 import { createEventSchema } from "@/lib/validations/schemas";
 import { EventFormValues } from "@/lib/types";
 import { ObjectSchema } from "yup";
-import { AxiosError } from "axios";
-import axiosInstance from "@/lib/axios";
 import { useRouter } from "next/navigation";
-import ROUTES from "@/lib/routes/routes";
+import { useCreateEventMutation } from "@/redux/services/eventsApi";
+import { hasValidationErrors, getCreateEventError } from "@/lib/errors/utils";
 
 interface CreateEventFormProps {
   onSuccess?: () => void;
@@ -30,6 +29,8 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
     version: 1,
   };
 
+  const [createEvent] = useCreateEventMutation();
+
   const handleSubmit = async (values: EventFormValues, helpers: FormikHelpers<EventFormValues>) => {
     try {
       // For online events
@@ -38,7 +39,7 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
           helpers.setErrors({ webinar: "Webinar link is required for online events" });
           return;
         }
-        // For online events, we can set location to empty string
+        // For online events, set location to empty string
         values.location = "";
       }
       // For in-person events
@@ -56,23 +57,14 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
         endDate: new Date(values.endDate),
       };
 
-      await axiosInstance.post(ROUTES.CREATE_EVENT, formData);
-
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        router.push("/dashboard/my-events");
-      }
+      await createEvent(formData).unwrap();
     } catch (error) {
-      console.error("Submit error:", error);
-      if (error instanceof AxiosError) {
-        if (error.response?.data?.errors) {
-          helpers.setErrors(error.response.data.errors);
-        } else {
-          helpers.setStatus({
-            error: error.response?.data?.error || "An unexpected error occurred",
-          });
-        }
+      console.error("Failed to create event:", error);
+      if (hasValidationErrors(error)) {
+        helpers.setErrors(error.data.errors);
+      } else {
+        const errorMessage = getCreateEventError(error) ?? "An Unexpected error ocurred";
+        helpers.setStatus({ error: errorMessage });
       }
     }
   };
@@ -87,6 +79,7 @@ export const CreateEventForm = ({ onSuccess, onCancel }: CreateEventFormProps) =
       title="Create New Event"
       onSuccess={onSuccess || (() => router.push("/dashboard/my-events"))}
       onCancel={onCancel}
+      formKey="create-event-form"
     />
   );
 };

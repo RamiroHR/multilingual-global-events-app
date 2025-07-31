@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import { loginSchema, signupSchema } from "@/lib/validations/schemas";
 import { AuthFormProps, AuthFormData } from "@/lib/types/components";
 import { ErrorMessage as CustomErrorMessage } from "@/components/common/ErrorMessage";
@@ -25,6 +25,24 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
     }),
   };
 
+  const handleSubmit = useCallback(
+    async (values: AuthFormData, { setSubmitting, setStatus }: FormikHelpers<AuthFormData>) => {
+      try {
+        await onSubmit(values);
+        setStatus({ sucess: t("success-message") });
+      } catch (error) {
+        if (error instanceof Error) {
+          setStatus({ error: error.message });
+        } else {
+          setStatus({ error: t("error-message") });
+        }
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [onSubmit, t]
+  );
+
   const fieldStyle =
     "w-full rounded border bg-blue-100 p-2 text-gray-500" +
     " focus:outline-none focus:ring-2 focus:ring-blue-400";
@@ -37,20 +55,7 @@ export default function AuthForm({ type, onSubmit }: AuthFormProps) {
       validationSchema={validationSchema}
       validateOnMount={false}
       validateOnChange={false}
-      onSubmit={async (values, { setSubmitting, setStatus }) => {
-        try {
-          await onSubmit(values);
-          setStatus({ sucess: t("success-message") });
-        } catch (error) {
-          if (error instanceof Error) {
-            setStatus({ error: error.message });
-          } else {
-            setStatus({ error: t("error-message") });
-          }
-        } finally {
-          setSubmitting(false);
-        }
-      }}
+      onSubmit={handleSubmit}
     >
       {({ isSubmitting, status }) => (
         <Form className="flex flex-col gap-4">

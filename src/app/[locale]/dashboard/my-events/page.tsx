@@ -1,39 +1,49 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EventOwnerCard } from "@/components/events/EventOwnerCard";
 import { CreateEventForm } from "@/components/events/CreateEventForm";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { useEvents } from "@/hooks/useEvents";
-import { EventWithRelations, EventOptions } from "@/lib/types";
+import { EventWithRelations } from "@/lib/types";
 import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { useGetUserEventsQuery } from "@/redux/services/eventsApi";
+import { getUserEventsError } from "@/lib/errors/utils";
 
 export default function MyEventsPage() {
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  // memoize to fetch event only in mount and when this changes
-  const config = useMemo<EventOptions>(
-    () => ({
-      type: "created",
-      options: {
-        timeFilter: "future",
-        orderBy: "asc",
-        onError: (err: string) => console.error(err),
-      },
-    }),
-    []
-  );
-
-  const { data: events, loading, error, fetchEvents } = useEvents(config);
-
+  // Check if there's saved form data on mount to restore the pre-completed modal
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    const savedFormData = localStorage.getItem("form_create-event-form");
+    if (savedFormData) {
+      try {
+        const parsed = JSON.parse(savedFormData);
+        // If there's saved form data, show the create form modal
+        if (parsed && Object.keys(parsed).length > 0) {
+          setShowCreateForm(true);
+        }
+      } catch (error) {
+        console.error("Failed to parse saved form data:", error);
+      }
+    }
+  }, []);
+
+  // Use RTK Query to fetch user events
+  const {
+    data: events,
+    isLoading,
+    error,
+    refetch,
+  } = useGetUserEventsQuery({
+    timeFilter: "future",
+    orderBy: "asc",
+  });
 
   const handleEdit = useCallback(
     (eventId: number) => {
+      sessionStorage.setItem("shouldRefreshEvents", "true");
       router.push(`/dashboard/my-events/${eventId}/edit`);
     },
     [router]
@@ -41,6 +51,7 @@ export default function MyEventsPage() {
 
   const handleCancel = useCallback(
     (eventId: number) => {
+      sessionStorage.setItem("shouldRefreshEvents", "true");
       router.push(`/dashboard/my-events/${eventId}/cancel`);
     },
     [router]
@@ -55,15 +66,28 @@ export default function MyEventsPage() {
 
   const handleCreateSuccess = useCallback(() => {
     setShowCreateForm(false);
-    fetchEvents(); // Refresh the events list
-  }, [fetchEvents]);
+  }, []);
 
-  if (loading) {
-    <LoadingSpinner />;
+  const handleCancelCreation = useCallback(() => {
+    localStorage.removeItem("form_create-event-form"); // Clear the saved form data
+    setShowCreateForm(false);
+  }, []);
+
+  // Check if the event list should be refreshed (after editing, canceling, etc)
+  useEffect(() => {
+    const shouldRefresh = sessionStorage.getItem("shouldRefreshEvents");
+    if (shouldRefresh === "true") {
+      refetch();
+      sessionStorage.removeItem("shouldRefreshEvents");
+    }
+  }, [refetch]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
 
   if (error) {
-    return <ErrorMessage error={error} />;
+    return <ErrorMessage error={getUserEventsError(error) ?? "Failed to load events"} />;
   }
 
   return (
@@ -82,10 +106,7 @@ export default function MyEventsPage() {
       {showCreateForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
           <div className="max-h-[90vh] w-[70%] max-w-4xl overflow-y-auto rounded-lg bg-space-200 shadow-xl">
-            <CreateEventForm
-              onSuccess={handleCreateSuccess}
-              onCancel={() => setShowCreateForm(false)}
-            />
+            <CreateEventForm onSuccess={handleCreateSuccess} onCancel={handleCancelCreation} />
           </div>
         </div>
       )}
